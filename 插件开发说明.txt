@@ -1,0 +1,21 @@
+一、本次更新，解决方案中去除代理程序源码，仅保留插件源码。
+
+二、插件调试方法：
+1. 如果你点击启动提示“由于缺少调试目标"Publish\Flexlive.CQP.CSharpPrxoy.exe"... ”
+解决办法，在项目上点击右键选择【属性】，在打开的页面中左侧的选项卡中选择【调试】，在【启动操作】处选择【启动外部程序】，然后点击右测的浏览，选择到你的解决方案中的Publish文件夹下的Flexlive.CQP.CSharpPrxoy.exe即可。
+
+其它提示不能调试的也参照上述方法解决调试问题。
+
+
+三、另外，自己重新开发的插件创建项目的时候要注意以下几处修改：
+
+1.项目.net版本使用3.5以下。
+2.生成的输出路径改为 “..\..\Bin\”
+3.生成事件中，在后期生成事件命令行中添加以下内容
+xcopy  /C /I /R /Y  $(TargetPath) $(TargetDir)CSharpPlugins\
+xcopy  /C /I /R /Y  $(TargetPath) $(SolutionDir)Publish\CSharpPlugins\
+4.调试按上述办法修改。
+
+四、插件发布时请把Publish文件夹拷贝到酷Q目录下即可。其它使用见帮助。https://cqp.cc/t/29261 和 SDK文档。
+
+五、加群 8621436
