@@ -14,3 +14,10 @@ E:\刘晨旭\作品\exe作品\qq自定义回复\Flexlive.CQP.PluginSolution\src\
 E:\刘晨旭\作品\exe作品\qq自定义回复\Flexlive.CQP.PluginSolution\src\Flexlive.CQP.CSharpPlugins.Demo\obj\Release\Flexlive.CQP.CSharpPlugins.Demo.dll
 E:\刘晨旭\作品\exe作品\qq自定义回复\Flexlive.CQP.PluginSolution\src\Flexlive.CQP.CSharpPlugins.Demo\obj\Release\Flexlive.CQP.CSharpPlugins.Demo.pdb
 E:\刘晨旭\作品\exe作品\qq自定义回复\Flexlive.CQP.PluginSolution\src\Flexlive.CQP.CSharpPlugins.Demo\obj\Release\Flexlive.CQP.CSharpPlugins.Demo.csprojResolveAssemblyReference.cache
+E:\刘晨旭\作品\exe作品\qq-replay-addon\Flexlive.CQP.PluginSolution\Bin\Flexlive.CQP.CSharpPlugins.Demo.dll
+E:\刘晨旭\作品\exe作品\qq-replay-addon\Flexlive.CQP.PluginSolution\Bin\Flexlive.CQP.CSharpPlugins.Demo.pdb
+E:\刘晨旭\作品\exe作品\qq-replay-addon\Flexlive.CQP.PluginSolution\src\Flexlive.CQP.CSharpPlugins.Demo\obj\Release\Flexlive.CQP.CSharpPlugins.Demo.csprojResolveAssemblyReference.cache
+E:\刘晨旭\作品\exe作品\qq-replay-addon\Flexlive.CQP.PluginSolution\src\Flexlive.CQP.CSharpPlugins.Demo\obj\Release\Flexlive.CQP.CSharpPlugins.Demo.FormSettings.resources
+E:\刘晨旭\作品\exe作品\qq-replay-addon\Flexlive.CQP.PluginSolution\src\Flexlive.CQP.CSharpPlugins.Demo\obj\Release\Flexlive.CQP.CSharpPlugins.Demo.csproj.GenerateResource.Cache
+E:\刘晨旭\作品\exe作品\qq-replay-addon\Flexlive.CQP.PluginSolution\src\Flexlive.CQP.CSharpPlugins.Demo\obj\Release\Flexlive.CQP.CSharpPlugins.Demo.dll
+E:\刘晨旭\作品\exe作品\qq-replay-addon\Flexlive.CQP.PluginSolution\src\Flexlive.CQP.CSharpPlugins.Demo\obj\Release\Flexlive.CQP.CSharpPlugins.Demo.pdb

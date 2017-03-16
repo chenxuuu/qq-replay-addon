@@ -33,6 +33,59 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             */
         }
 
+        private static string[] GoodThings= {
+                                            "看AV释放压力：重铸自我",
+                                            "组模型：今天的喷漆会很完美",
+                                            "十连抽：每张都是稀有",
+                                            "在群里扯淡：今天也要兵库北",
+                                            "和女神聊天：女神好感度上升",
+                                            "啪啪啪；啪啪啪啪啪啪啪",
+                                            "熬夜：夜间的效率更高",
+                                            "锻炼：八分钟给你比利般的身材",
+                                            "散步：遇到妹子主动搭讪",
+                                            "打排位赛：遇到大腿上分500",
+                                            "汇报工作：被夸奖工作认真",
+                                            "抚摸猫咪：才不是特意蹭你的呢",
+                                            "遛狗：遇见女神遛狗搭讪",
+                                            "烹饪：黑暗料理界就由我来打败",
+                                            "告白：其实我也喜欢你好久了",
+                                            "私聊群主：最新种子入手",
+                                            "追新番：完结之前我绝不会死",
+                                            "使用膜法：上台拿衣服",
+                                            "下副本：配合默契一次通过",
+                                            "抢沙发：沙发入手弹无虚发",
+                                            "网购：商品大减价",
+                                            "跳槽：新工作待遇大幅提升",
+                                            "读书；知识就是力量",
+                                            "早睡：早睡早起方能养生",
+                                            "逛街：物美价廉大优惠"};
+        private static string[] BadThings = {
+                                            "看AV释放压力：会被家人撞到",
+                                            "组模型：精神不集中板件被剪断了",
+                                            "十连抽：全都是库伦",
+                                            "在群里扯淡：浪费一整天",
+                                            "和女神聊天：我去洗澡了，呵呵",
+                                            "啪啪啪；会卡在里面",
+                                            "熬夜：明天有很重要的事",
+                                            "锻炼：会拉伤肌肉",
+                                            "散步：走路会踩到水坑",
+                                            "打排位赛：我方三人挂机",
+                                            "汇报工作：上班偷玩游戏被扣工资",
+                                            "抚摸猫咪：死开！愚蠢的人类",
+                                            "遛狗：狗狗随地大小便被罚款",
+                                            "烹饪：难道这就是……仰望星空派？",
+                                            "告白：对不起，你是一个好人",
+                                            "私聊群主：收到有码葫芦娃",
+                                            "追新番：会被剧透",
+                                            "使用膜法：上台拿衣服",
+                                            "下副本：会被灭到散团",
+                                            "抢沙发：会被挂起来羞耻play",
+                                            "网购：问题产品需要退换",
+                                            "跳槽：再忍一忍就加薪了",
+                                            "读书；注意力完全无法集中",
+                                            "早睡：会在半夜醒来，然后失眠",
+                                            "逛街：会遇到奸商"};
+
         public static int isOpenScan = 0;
         public static int scanCount = 0;
         /*
@@ -165,7 +218,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             if (msg.ToUpper() == "HELP")
             {
                 //CQ.SendGroupMessage(fromGroup, msg.ToUpper().IndexOf("help").ToString());
-                CQ.SendGroupMessage(fromGroup, "命令帮助：\r\n！add 词条：回答\r\n！del 词条：回答\r\n！list 词条\r\n所有符号均为全角符号\r\n词条中请勿包含冒号\r\n点歌功能测试中，关键词：点歌、坷垃金曲\r\n私聊发送“赞我”可使接待给你点赞\r\n如有bug请反馈");
+                CQ.SendGroupMessage(fromGroup, "命令帮助：\r\n！add 词条：回答\r\n！del 词条：回答\r\n！list 词条\r\n所有符号均为全角符号\r\n词条中请勿包含冒号\r\n点歌功能测试中，关键词：点歌、坷垃金曲\r\n私聊发送“赞我”可使接待给你点赞\r\n发送“今日运势”可以查看今日运势\r\n如有bug请反馈");
             }
             else if (msg == "点歌" || msg == "坷垃金曲")
             {
@@ -263,7 +316,46 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                                                 RandKey.ToString()
                                                                 ));
             }
-
+            else if(msg == "今日黄历" || msg == "今日运势")
+            {
+                string ReplayString="";
+                Random ran = new Random(System.DateTime.Now.DayOfYear + (int)(fromQQ - (fromQQ/10000) * 10000) );
+                //int RanKey = ran.Next(0, 25);
+                int sum1, sum2, sum3, sum4, bad1, bad2;
+                sum1 = ran.Next(0, 25);
+                sum2 = ran.Next(0, 25);
+                while (sum2 == sum1)
+                {
+                    sum2 = ran.Next(0, 25);
+                }
+                sum3 = ran.Next(0, 25);
+                while (sum3 == sum1 || sum3 == sum2)
+                {
+                    sum3 = ran.Next(0, 25);
+                }
+                sum4 = ran.Next(0, 25);
+                while (sum4 == sum1 || sum4 == sum1 || sum4 == sum3)
+                {
+                    sum4 = ran.Next(0, 25);
+                }
+                bad1 = ran.Next(0, 25);
+                bad2 = ran.Next(0, 25);
+                while (bad2 == bad1)
+                {
+                    bad2 = ran.Next(0, 25);
+                }
+                ReplayString = string.Format("{0}\r\n你的今日运势如下~\r\n宜：\r\n{1}\r\n{2}\r\n{3}\r\n{4}\r\n忌：\r\n{5}\r\n{6}\r\n今日日期：{7}",
+                                            CQ.CQCode_At(fromQQ),
+                                            GoodThings[sum1],
+                                            GoodThings[sum2],
+                                            GoodThings[sum3],
+                                            GoodThings[sum4],
+                                            BadThings[bad1],
+                                            BadThings[bad2],
+                                            System.DateTime.Today.ToString().Replace(" 0:00:00", "")
+                                            );
+                CQ.SendGroupMessage(fromGroup, ReplayString);
+            }
             else if (msg.IndexOf("！addadmin ") == 0 && fromQQ == 961726194)
             {
                 insert(123456, "给我列一下狗管理", msg.Replace("！addadmin ", ""));
