@@ -1,0 +1,41 @@
+package com.sweetcreeper.qqplugin;
+
+import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.plugin.java.JavaPlugin;
+
+public class Qqplugin extends JavaPlugin implements Listener
+{
+	public static String player;
+	public static String msg;
+	
+	@Override//重写父类的方法
+	public void onEnable()
+	{
+		getLogger().info("QQGroupMessagePlugin is started successfully!");
+		//注册监听
+		Bukkit.getPluginManager().registerEvents(this,this);
+		player="nonemessage233";
+		msg="nonemessage233";
+		sockes my = new sockes();
+		my.start();
+	}
+	@Override
+	public void onDisable()
+	{
+		getLogger().info("QQGroupMessagePlugin is stoped successfully!");
+	}
+	
+	@EventHandler
+	public void onPlayerSay(AsyncPlayerChatEvent event)
+	{
+		player=event.getPlayer().getName();
+		msg=event.getMessage();
+		//socket(event.getPlayer().getName(), event.getMessage());
+		//Bukkit.broadcastMessage("player:"+event.getPlayer().getName()+",msg:"+event.getMessage());
+	}
+	
+}
+

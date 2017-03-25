@@ -3,7 +3,9 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Xml.Linq;
 
 namespace Flexlive.CQP.CSharpPlugins.Demo
@@ -13,6 +15,9 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
     /// </summary>
     public class MyPlugin : CQAppAbstract
     {
+        private static byte[] result = new byte[4096];
+        private static int myProt = 2333;   // 端口  
+        static Socket serverSocket;
         /// <summary>
         /// 应用初始化，用来初始化应用的基本信息。
         /// </summary>
@@ -25,13 +30,64 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             this.Version = new Version("1.0.0.0");
             this.Author = "晨旭";
             this.Description = "群成员可自定义回复消息";
-            /*
-            System.Timers.Timer t = new System.Timers.Timer(10000);// 实例化 Timer 类，设置间隔时间为 10000 毫秒
-            t.Elapsed += new System.Timers.ElapsedEventHandler(theout);// 到达时间的时候执行事件
-            t.AutoReset = true;// 设置是执行一次（false）还是一直执行 (true)
-            t.Enabled = true;// 是否执行 System.Timers.Timer.Elapsed 事件
-            */
+
+            IPAddress ip = IPAddress.Parse("127.0.0.1");
+            serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            serverSocket.Bind(new IPEndPoint(ip, myProt));  // 绑定 IP 地址：端口  
+            serverSocket.Listen(10);    // 设定最多 10 个排队连接请求  
+            Console.WriteLine("启动监听 {0} 成功", serverSocket.LocalEndPoint.ToString());
+            // 通过 Clientsoket 发送数据  
+            Thread myThread = new Thread(ListenClientConnect);
+            myThread.Start();
         }
+
+        /// <summary>  
+        /// 监听客户端连接  
+        /// </summary>  
+        private static void ListenClientConnect()
+        {
+            while (true)
+            {
+                Socket clientSocket = serverSocket.Accept();
+                //clientSocket.Send(Encoding.ASCII.GetBytes("Server Say Hello\r\n"));
+
+                Socket myClientSocket = (Socket)clientSocket;
+                int receiveNumber;
+                receiveNumber = myClientSocket.Receive(result);
+                //Console.WriteLine("接收客户端 {0} 消息{1}", myClientSocket.RemoteEndPoint.ToString(), Encoding.UTF8.GetString(result, 0, receiveNumber));
+                string replay = Encoding.UTF8.GetString(result, 0, receiveNumber);
+                if (replay.IndexOf("<") != -1)
+                {
+                    if (replay.IndexOf("]][[") != -1)
+                    {
+                        try
+                        {
+                            string[] str2;
+                            str2 = replay.Split(new string[] { "]][[" }, StringSplitOptions.None);
+                            foreach (string i in str2)
+                            {
+                                CQ.SendGroupMessage(241464054, i);
+                                ReplayGroupStatic(241464054, i);
+                            }
+                        }
+                        catch { }
+                    }
+                    else
+                    {
+                        CQ.SendGroupMessage(241464054, replay);
+                        ReplayGroupStatic(241464054, replay);
+                    }
+                }
+                clientSocket.Send(Encoding.UTF8.GetBytes("ok233"));
+                clientSocket.Send(Encoding.UTF8.GetBytes(mcmsg));
+                mcmsg = "";
+
+                myClientSocket.Shutdown(SocketShutdown.Both);
+                myClientSocket.Close();
+            }
+        }
+
+        public static string mcmsg = "";
 
         private static string[] GoodThings= {
                                             "看不可描述的漫画：释放压力重铸自我",
@@ -181,11 +237,36 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 CQ.SendPrivateMessage(fromQQ, "已为你一次性点赞十次，每天只能十次哦");
                 //CQ.SendGroupMessage(fromGroup, "已为QQ" + fromQQ + "点赞十次");
             }
+            else if (msg.IndexOf("绑定") != -1)
+            {
+                if (replay_get(1, fromQQ.ToString()) == "")
+                {
+                    insert(1, fromQQ.ToString(), msg.Replace("绑定", ""));
+                    CQ.SendPrivateMessage(fromQQ, "绑定id:" + msg.Replace("绑定", "") + "成功！");
+                }
+                else
+                {
+                    CQ.SendPrivateMessage(fromQQ, "你已经绑定过了，想换id私聊服主去吧");
+                }
+            }
             else
             {
                 CQ.SendPrivateMessage(fromQQ, "人家不认识你了啦");
             }
 
+        }
+
+        public static void SendMinecraftMessage(long fromGroup, string msg)
+        {
+            if(fromGroup == 241464054)
+            {
+                CQ.SendGroupMessage(fromGroup, msg);
+                mcmsg += "|||||[群消息]<接待喵>" + msg;
+            }
+            else
+            {
+                CQ.SendGroupMessage(fromGroup, msg);
+            }
         }
 
         /// <summary>
@@ -200,8 +281,23 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
         /// <param name="font">字体。</param>
         public override void GroupMessage(int subType, int sendTime, long fromGroup, long fromQQ, string fromAnonymous, string msg, int font)
         {
-            
+
             // 处理群消息。
+
+            if (fromGroup == 241464054)
+            {
+                string reply = replay_get(1, fromQQ.ToString());
+                if (reply != "")
+                {
+                    mcmsg += "|||||[群消息]<" + reply + ">" + msg;
+                }
+                else
+                {
+                    CQ.SendPrivateMessage(fromQQ, "检测到你没有绑定服务器id，请回复“绑定id”来绑定（没空格），如：\r\n绑定notch");
+                }
+            }
+
+
             //if (fromGroup == 339837275)
             //{
             var groupMember = CQ.GetGroupMemberInfo(fromGroup, fromQQ);
@@ -220,11 +316,11 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             if (msg.ToUpper() == "HELP")
             {
                 //CQ.SendGroupMessage(fromGroup, msg.ToUpper().IndexOf("help").ToString());
-                CQ.SendGroupMessage(fromGroup, "命令帮助：\r\n！add 词条：回答\r\n！del 词条：回答\r\n！list 词条\r\n所有符号均为全角符号\r\n词条中请勿包含冒号\r\n点歌功能测试中，关键词：点歌、坷垃金曲\r\n私聊发送“赞我”可使接待给你点赞\r\n发送“今日运势”可以查看今日运势\r\n如有bug请反馈");
+                SendMinecraftMessage(fromGroup, "命令帮助：\r\n！add 词条：回答\r\n！del 词条：回答\r\n！list 词条\r\n所有符号均为全角符号\r\n词条中请勿包含冒号\r\n点歌功能测试中，关键词：点歌、坷垃金曲\r\n私聊发送“赞我”可使接待给你点赞\r\n发送“今日运势”可以查看今日运势\r\n如有bug请反馈");
             }
             else if (msg == "点歌" || msg == "坷垃金曲")
             {
-                CQ.SendGroupMessage(fromGroup, string.Format("{0}正在发送歌曲，请稍候哦~", CQ.CQCode_At(fromQQ)));
+                SendMinecraftMessage(fromGroup, string.Format("{0}正在发送歌曲，请稍候哦~", CQ.CQCode_At(fromQQ)));
             }
             else if (msg == "赞我" || msg== "点赞")
             {
@@ -234,7 +330,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             }
             else if (msg.IndexOf("！list ") == 0)
             {
-                CQ.SendGroupMessage(fromGroup, string.Format("当前词条回复如下：\r\n{0}\r\n全局词库内容：\r\n{1}",
+                SendMinecraftMessage(fromGroup, string.Format("当前词条回复如下：\r\n{0}\r\n全局词库内容：\r\n{1}",
                                                                 list_get(fromGroup, msg.Replace("！list ", "")),
                                                                 list_get(2333, msg.Replace("！list ", "")) ));
             }
@@ -262,16 +358,16 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                             }
                         }
                         insert(fromGroup, tmsg, tans);
-                        CQ.SendGroupMessage(fromGroup, "添加完成！\r\n词条：" + tmsg + "\r\n回答为：" + tans);
+                        SendMinecraftMessage(fromGroup, "添加完成！\r\n词条：" + tmsg + "\r\n回答为：" + tans);
                     }
                     else
                     {
-                        CQ.SendGroupMessage(fromGroup, "格式错误！");
+                        SendMinecraftMessage(fromGroup, "格式错误！");
                     }
                 }
                 else
                 {
-                    CQ.SendGroupMessage(fromGroup, "你没有权限调教接待喵");
+                    SendMinecraftMessage(fromGroup, "你没有权限调教接待喵");
                 }
             }
             else if (msg.IndexOf("！del ") == 0)
@@ -297,16 +393,16 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                             }
                         }
                         remove(fromGroup, tmsg, tans);
-                        CQ.SendGroupMessage(fromGroup, "删除完成！\r\n词条：" + tmsg + "\r\n回答为：" + tans);
+                        SendMinecraftMessage(fromGroup, "删除完成！\r\n词条：" + tmsg + "\r\n回答为：" + tans);
                     }
                     else
                     {
-                        CQ.SendGroupMessage(fromGroup, "格式错误！");
+                        SendMinecraftMessage(fromGroup, "格式错误！");
                     }
                 }
                 else
                 {
-                    CQ.SendGroupMessage(fromGroup, "你没有权限调教接待喵");
+                    SendMinecraftMessage(fromGroup, "你没有权限调教接待喵");
                 }
             }
             //else if (msg == "签到")
@@ -365,7 +461,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                             BadThings[bad2],
                                             System.DateTime.Today.ToString().Replace(" 0:00:00", "")
                                             );
-                CQ.SendGroupMessage(fromGroup, ReplayString);
+                SendMinecraftMessage(fromGroup, ReplayString);
             }
 
             else if (msg == "昨日黄历" || msg == "昨日运势")
@@ -420,7 +516,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                             BadThings[bad2],
                                             System.DateTime.Today.ToString().Replace(" 0:00:00", "")
                                             );
-                CQ.SendGroupMessage(fromGroup, ReplayString);
+                SendMinecraftMessage(fromGroup, ReplayString);
             }
             else if (msg == "明日黄历" || msg == "明日运势")
             {
@@ -474,23 +570,23 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                             BadThings[bad2],
                                             System.DateTime.Today.ToString().Replace(" 0:00:00", "")
                                             );
-                CQ.SendGroupMessage(fromGroup, ReplayString);
+                SendMinecraftMessage(fromGroup, ReplayString);
             }
 
 
             else if (msg.IndexOf("！addadmin ") == 0 && fromQQ == 961726194)
             {
                 insert(123456, "给我列一下狗管理", msg.Replace("！addadmin ", ""));
-                CQ.SendGroupMessage(fromGroup, "已添加一位狗管理");
+                SendMinecraftMessage(fromGroup, "已添加一位狗管理");
             }
             else if (msg.IndexOf("！deladmin ") == 0 && fromQQ == 961726194)
             {
                 remove(123456, "给我列一下狗管理", msg.Replace("！deladmin ", ""));
-                CQ.SendGroupMessage(fromGroup, "已删除一位狗管理");
+                SendMinecraftMessage(fromGroup, "已删除一位狗管理");
             }
             else if(msg == "给我列一下狗管理")
             {
-                CQ.SendGroupMessage(fromGroup, "当前狗管理如下：\r\n" + list_get(123456, "给我列一下狗管理"));
+                SendMinecraftMessage(fromGroup, "当前狗管理如下：\r\n" + list_get(123456, "给我列一下狗管理"));
             }
             else if (replay_ok != "")
             {
@@ -498,19 +594,48 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 {
                     Random ran = new Random(System.DateTime.Now.Millisecond);
                     int RandKey = ran.Next(0, 2);
-                    if (RandKey == 0) { CQ.SendGroupMessage(fromGroup, replay_ok); } else { CQ.SendGroupMessage(fromGroup, replay_common); }
+                    if (RandKey == 0) { SendMinecraftMessage(fromGroup, replay_ok); } else { SendMinecraftMessage(fromGroup, replay_common); }
                 }
                 else
                 {
-                    CQ.SendGroupMessage(fromGroup, replay_ok);
+                    SendMinecraftMessage(fromGroup, replay_ok);
                 }
             }
             else if (replay_common != "")
             {
-                CQ.SendGroupMessage(fromGroup, replay_common);
+                SendMinecraftMessage(fromGroup, replay_common);
             }
 
             //}
+        }
+
+
+        public static void ReplayGroupStatic(long fromGroup, string msg)
+        {
+            string replay_ok = replay_get(fromGroup, msg);
+            string replay_common = replay_get(2333, msg);
+
+            //CQ.SendGroupMessage(fromGroup, msg);
+
+            //System.Windows.Forms.MessageBox.Show(msg);
+
+            if (replay_ok != "")
+            {
+                if (replay_common != "")
+                {
+                    Random ran = new Random(System.DateTime.Now.Millisecond);
+                    int RandKey = ran.Next(0, 2);
+                    if (RandKey == 0) { SendMinecraftMessage(fromGroup, replay_ok); } else { SendMinecraftMessage(fromGroup, replay_common); }
+                }
+                else
+                {
+                    SendMinecraftMessage(fromGroup, replay_ok);
+                }
+            }
+            else if (replay_common != "")
+            {
+                SendMinecraftMessage(fromGroup, replay_common);
+            }
         }
 
 
