@@ -12,8 +12,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+
 
 public class Qqplugin extends JavaPlugin implements Listener
 {
@@ -28,9 +31,19 @@ public class Qqplugin extends JavaPlugin implements Listener
 		Bukkit.getPluginManager().registerEvents(this,this);
 		
 		new BukkitRunnable(){     
-		    //int s = 10;//设置定10秒后执行某段代码
+		    int s = 0;//设置定10秒后执行某段代码
 		    @Override    
 		    public void run(){
+		    	if(s>=60)
+		    	{
+		    		Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "tm abc 发钱啦！");
+		    		Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "eco give * 1");
+		    		s=0;
+		    	}
+		    	else
+		    	{
+		    		s++;
+		    	}
 		        //s--;//迭代递减,我看官方的教程是没这个的,我没试过,你也可以删除试试
 		        //if(s==0){
 		            //这个写10秒后执行的代码(假如定义的定时器每次是1秒)
@@ -67,6 +80,19 @@ public class Qqplugin extends JavaPlugin implements Listener
 		                	{
 		                		Bukkit.broadcastMessage(sourceStrArray[i]);
 		                	}
+		                	else if(sourceStrArray[i].indexOf("command>")!=-1)
+		                	{
+		                		Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), sourceStrArray[i].replace("command>", ""));
+		                		if(player!="none233")
+		                		{
+		                			msg+="]][[<提示>"+sourceStrArray[i].replace("command>", "")+"已执行";
+		                		}
+		                		else
+		                		{
+		                			player="ok";
+		                			msg="<提示>"+sourceStrArray[i].replace("command>", "")+"已执行";
+		                		}
+		                	}
 		                }
 		                //Bukkit.broadcastMessage("debug:"+info);
 		                //4.关闭资源
@@ -76,9 +102,9 @@ public class Qqplugin extends JavaPlugin implements Listener
 		                os.close();
 		                socket.close();
 		            } catch (UnknownHostException e) {
-		                e.printStackTrace();
+		                //e.printStackTrace();
 		            } catch (IOException e) {
-		                e.printStackTrace();
+		                //e.printStackTrace();
 		            }
 		        //}
 		    } 
@@ -104,6 +130,50 @@ public class Qqplugin extends JavaPlugin implements Listener
 			msg="<"+event.getPlayer().getName()+">"+event.getMessage();
 		}
 		//Bukkit.broadcastMessage("player:"+event.getPlayer().getName()+",msg:"+event.getMessage());
+	}
+	
+	@EventHandler
+	public void onPlayerJoin(PlayerJoinEvent event)
+	{
+		if(player!="none233")
+		{
+			msg+="]][[<消息>"+event.getPlayer().getName()+"上线了";
+		}
+		else
+		{
+			player="ok";
+			msg="<消息>"+event.getPlayer().getName()+"上线了";
+		}
+	}
+	
+	/*
+	@EventHandler
+	public void onPlayerKick(PlayerKickEvent event)
+	{
+		if(player!="none233")
+		{
+			msg+="]][[<消息>"+event.getPlayer().getName()+"被op踢出去了";
+		}
+		else
+		{
+			player="ok";
+			msg="<消息>"+event.getPlayer().getName()+"被op踢出去了";
+		}
+	}*/
+	
+	
+	@EventHandler
+	public void onPlayerQuit(PlayerQuitEvent event)
+	{
+		if(player!="none233")
+		{
+			msg+="]][[<消息>"+event.getPlayer().getName()+"掉线了";
+		}
+		else
+		{
+			player="ok";
+			msg="<消息>"+event.getPlayer().getName()+"掉线了";
+		}
 	}
 	/*
 	public void socket(String player, String msg)

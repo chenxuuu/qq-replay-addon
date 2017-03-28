@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml.Linq;
 
@@ -58,6 +59,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 string replay = Encoding.UTF8.GetString(result, 0, receiveNumber);
                 if (replay.IndexOf("<") != -1)
                 {
+                    
                     if (replay.IndexOf("]][[") != -1)
                     {
                         try
@@ -79,6 +81,11 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     }
                 }
                 clientSocket.Send(Encoding.UTF8.GetBytes("ok233"));
+                mcmsg = mcmsg.Replace("\r\n", "|||||<");
+                mcmsg = mcmsg.Replace("[CQ:image,file=", "[图片：");
+                mcmsg = mcmsg.Replace("[CQ:at,qq=", "[@");
+                mcmsg = mcmsg.Replace("[CQ:record,file=", "[语音：");
+
                 clientSocket.Send(Encoding.UTF8.GetBytes(mcmsg));
                 mcmsg = "";
 
@@ -287,6 +294,17 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             if (fromGroup == 241464054)
             {
                 string reply = replay_get(1, fromQQ.ToString());
+                if (fromQQ == 961726194 && msg.IndexOf("命令") == 0)
+                {
+                    mcmsg += "|||||command>" + msg.Replace("命令","");
+                }
+                else if (msg.IndexOf("命令") == 0)
+                {
+                    if (reply != "")
+                    {
+                        CQ.SendGroupMessage(fromGroup, "封禁" + reply + "命令执行成功！");
+                    }
+                }
                 if (reply != "")
                 {
                     mcmsg += "|||||[群消息]<" + reply + ">" + msg;
