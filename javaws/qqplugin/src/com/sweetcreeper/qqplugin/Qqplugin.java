@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -91,6 +92,23 @@ public class Qqplugin extends JavaPlugin implements Listener
 		                		{
 		                			player="ok";
 		                			msg="<提示>"+sourceStrArray[i].replace("command>", "")+"已执行";
+		                		}
+		                	}
+		                	else if(sourceStrArray[i].indexOf("sum>")!=-1)
+		                	{
+		                		String result="";
+		                		for(Player p : Bukkit.getOnlinePlayers())
+		                		{
+		                			result+=p.getName()+",";
+		                		}
+		                		if(player!="none233")
+		                		{
+		                			msg+="]][[<提示>服务器当前在线人数为"+Bukkit.getOnlinePlayers().size()+"人，玩家列表："+result;
+		                		}
+		                		else
+		                		{
+		                			player="ok";
+		                			msg="<提示>服务器当前在线人数为"+Bukkit.getOnlinePlayers().size()+"人，玩家列表："+result;
 		                		}
 		                	}
 		                }
