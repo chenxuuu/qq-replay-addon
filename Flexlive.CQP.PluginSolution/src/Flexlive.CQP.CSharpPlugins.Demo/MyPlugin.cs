@@ -252,9 +252,9 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     CQ.SendPrivateMessage(fromQQ, "绑定id:" + msg.Replace("绑定", "") + "成功！");
 
                     var groupMember = CQ.GetGroupMemberInfo(241464054, fromQQ);
-                    CQ.SendGroupMessage(567145439, "接待喵糖拌管理：玩家" + msg.Replace("绑定", "") + "已成功绑定QQ：" + fromQQ.ToString() +
+                    CQ.SendGroupMessage(567145439, "接待喵糖拌管理：\r\n玩家id：" + msg.Replace("绑定", "") + "\r\n已成功绑定QQ：" + fromQQ.ToString() +
                                                     "\r\n群名片：" + groupMember.GroupCard +
-                                                    "如有乱绑定请尽快处理");
+                                                    "\r\n如有乱绑定请尽快处理");
                 }
                 else
                 {
@@ -310,9 +310,10 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                         CQ.SendGroupMessage(fromGroup, "封禁" + reply + "命令执行成功！");
                     }
                 }
-                else if(msg.IndexOf("人数") != -1 || msg.IndexOf("少人") != -1 || msg.IndexOf("谁在") != -1)
+                else if(msg.IndexOf("人数") != -1 || msg.IndexOf("少人") != -1 || msg.IndexOf("谁在") != -1 || msg.IndexOf("有谁") != -1 || msg.IndexOf("在线") != -1)
                 {
                     mcmsg += "|||||sum>我要看人数";
+                    mcmsg += "|||||[群消息]<" + reply + ">" + msg;
                 }
                 else if (reply != "")
                 {
@@ -320,7 +321,15 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 }
                 else
                 {
-                    CQ.SendPrivateMessage(fromQQ, "检测到你没有绑定服务器id，请回复“绑定id”来绑定（没空格），如：\r\n绑定notch\r\n提醒超过三次将自动将你移出本群");
+                    if(msg.IndexOf("绑定") == 0)
+                    {
+                        CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n你眼瞎吗，我让你私聊我来绑定id");
+                    }
+                    else
+                    {
+                        CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n检测到你没有绑定服务器id，请私聊我发送“绑定id”来绑定（没空格），如：\r\n绑定notch\r\n长时间未绑定你将会被移出本群");
+                    }
+
                 }
 
                 if (msg == "签到")
@@ -344,15 +353,17 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                         Random ran = new Random(System.DateTime.Now.Millisecond);
                         int RandKey = ran.Next(0, 501);
                         CoinsTemp += RandKey;
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n签到成功！获得游戏币"+ RandKey + "枚！\r\n银行内游戏币" + CoinsTemp + "枚\r\n回复“关于签到”查看如何取钱");
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n签到成功！获得游戏币"+ RandKey + "枚！\r\n银行内游戏币" + CoinsTemp + "枚\r\n回复“帮助”查看如何取钱");
                         del(2, fromQQ.ToString());
                         del(3, fromQQ.ToString());
+                        del(4, fromQQ.ToString());
                         insert(2, fromQQ.ToString(), CoinsTemp.ToString());
                         insert(3, fromQQ.ToString(), System.DateTime.Today.ToString());
+                        insert(4, fromQQ.ToString(), "0");
                     }
                 }
 
-                if (msg == "我要取钱")
+                if (msg == "取钱" || msg == "我要取钱")
                 {
                     string CoinStr = replay_get(2, fromQQ.ToString());
                     int CoinsTemp;
@@ -369,7 +380,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     del(2, fromQQ.ToString());
                 }
 
-                if (msg == "查询余额")
+                if (msg == "查询" || msg == "查询余额")
                 {
                     string CoinStr = replay_get(2, fromQQ.ToString());
                     int CoinsTemp;
@@ -384,15 +395,16 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n你当前余额为" + CoinsTemp.ToString() + "游戏币");
                 }
 
-                if (msg == "关于签到")
+                if (msg == "帮助")
                 {
-                    SendMinecraftMessage(fromGroup, "关于签到奖励：\r\n每日可随机领取0-500游戏币的奖励，奖励暂存在银行中。\r\n取钱方式：当你在服务器在线时，在群里发送“我要取钱”即可取出所有钱，不在服务器时取钱将导致余额将丢失。\r\n回复“查询余额”可查询当前银行内余额。\r\n回复“抽奖”可花费100游戏币进行抽奖，中奖率为玄学");
+                    SendMinecraftMessage(fromGroup, "关于签到奖励：\r\n每日可随机领取0-500游戏币的奖励，奖励暂存在银行中。\r\n取钱方式：当你在服务器在线时，在群里发送“取钱”即可取出所有钱，不在服务器时取钱将导致余额将丢失。\r\n回复“查询”可查询当前银行内余额。\r\n回复“抽奖”可花费100游戏币进行抽奖，中奖率为玄学");
                 }
 
                 if (msg == "抽奖")
                 {
                     string CoinStr = replay_get(2, fromQQ.ToString());
-                    int CoinsTemp;
+                    string RanCount = replay_get(4, fromQQ.ToString());
+                    int CoinsTemp, Counttemp;
                     if (CoinStr != "")
                     {
                         CoinsTemp = int.Parse(CoinStr);
@@ -401,29 +413,50 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     {
                         CoinsTemp = 0;
                     }
-                    if(CoinsTemp<100)
+
+                    if (RanCount != "")
                     {
-                        SendMinecraftMessage(fromGroup, "你只有" + CoinsTemp + "游戏币，你个穷逼还想抽奖？");
+                        Counttemp = int.Parse(RanCount);
                     }
                     else
                     {
-                        Random ran = new Random(System.DateTime.Now.Millisecond);
-                        int RandKey = ran.Next(0, 180);
-                        CoinsTemp -= 100;
-                        if (RandKey%13 >= 2)
+                        Counttemp = 0;
+                    }
+
+                    if (Counttemp < 5)
+                    {
+                        if (CoinsTemp < 100)
                         {
-                            CoinsTemp += RandKey;
-                            SendMinecraftMessage(fromGroup, "恭喜你抽中了" + RandKey + "游戏币，当前余额" + CoinsTemp + "游戏币");
-                            del(2, fromQQ.ToString());
-                            insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                            SendMinecraftMessage(fromGroup, "你只有" + CoinsTemp + "游戏币，你个穷逼还想抽奖？");
                         }
                         else
                         {
-                            SendMinecraftMessage(fromGroup, "啊哦，你没有中奖。当前余额" + CoinsTemp + "游戏币");
-                            del(2, fromQQ.ToString());
-                            insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                            Random ran = new Random(System.DateTime.Now.Millisecond);
+                            int RandKey = ran.Next(0, 500);
+                            CoinsTemp -= 100;
+                            if (RandKey > 350)
+                            {
+                                CoinsTemp += RandKey;
+                                SendMinecraftMessage(fromGroup, "恭喜你抽中了" + RandKey + "游戏币，当前余额" + CoinsTemp + "游戏币");
+                                del(2, fromQQ.ToString());
+                                insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                            }
+                            else
+                            {
+                                SendMinecraftMessage(fromGroup, "啊哦，你没有中奖。当前余额" + CoinsTemp + "游戏币");
+                                del(2, fromQQ.ToString());
+                                insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                            }
+                            Counttemp++;
+                            del(4, fromQQ.ToString());
+                            insert(4, fromQQ.ToString(), Counttemp.ToString());
                         }
                     }
+                    else
+                    {
+                        SendMinecraftMessage(fromGroup, "今日抽奖次数已用完！");
+                    }
+
                 }
             }
 
@@ -446,11 +479,42 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             if (msg.ToUpper() == "HELP")
             {
                 //CQ.SendGroupMessage(fromGroup, msg.ToUpper().IndexOf("help").ToString());
-                SendMinecraftMessage(fromGroup, "命令帮助：\r\n！add 词条：回答\r\n！del 词条：回答\r\n！list 词条\r\n所有符号均为全角符号\r\n词条中请勿包含冒号\r\n点歌功能测试中，关键词：点歌、坷垃金曲\r\n私聊发送“赞我”可使接待给你点赞\r\n发送“今日运势”可以查看今日运势\r\n如有bug请反馈");
+                SendMinecraftMessage(fromGroup, "命令帮助：\r\n！add 词条：回答\r\n！del 词条：回答\r\n！list 词条\r\n所有符号均为全角符号\r\n词条中请勿包含冒号\r\n发送“点歌”+数字序号即可点歌（如点歌14，最大134）\r\n发送“坷垃金曲”+数字序号即可点金坷垃歌（如坷垃金曲21，最大71）\r\n私聊发送“赞我”可使接待给你点赞\r\n发送“今日运势”可以查看今日运势\r\n如有bug请反馈");
             }
-            else if (msg == "点歌" || msg == "坷垃金曲")
+            else if (msg.IndexOf("点歌") == 0)
             {
-                SendMinecraftMessage(fromGroup, string.Format("{0}正在发送歌曲，请稍候哦~", CQ.CQCode_At(fromQQ)));
+                int song = 0;
+                try
+                {
+                    song = int.Parse(msg.Replace("点歌", ""));
+                }catch { }
+                if (song >= 1 && song <= 134)
+                {
+                    SendMinecraftMessage(fromGroup, string.Format("{0}正在发送歌曲{1}，请稍候哦~\r\n如未收到请重试", CQ.CQCode_At(fromQQ), song.ToString()));
+                    CQ.SendGroupMessage(fromGroup, "[CQ:record,file=CoolQ 语音时代！\\点歌\\" + song.ToString().PadLeft(3, '0') + ".mp3]");
+                }
+                else
+                {
+                    SendMinecraftMessage(fromGroup, string.Format("{0}编号不对哦，编号只能是1-134", CQ.CQCode_At(fromQQ)));
+                }
+            }
+            else if (msg.IndexOf("坷垃金曲") == 0)
+            {
+                int song = 0;
+                try
+                {
+                    song = int.Parse(msg.Replace("坷垃金曲", ""));
+                }
+                catch { }
+                if (song >= 1 && song <= 71)
+                {
+                    SendMinecraftMessage(fromGroup, string.Format("{0}正在发送坷垃金曲{1}，请稍候哦~\r\n如未收到请重试", CQ.CQCode_At(fromQQ), song.ToString()));
+                    CQ.SendGroupMessage(fromGroup, "[CQ:record,file=CoolQ 语音时代！\\坷垃金曲\\" + song.ToString().PadLeft(3, '0') + ".mp3]");
+                }
+                else
+                {
+                    SendMinecraftMessage(fromGroup, string.Format("{0}编号不对哦，编号只能是1-71", CQ.CQCode_At(fromQQ)));
+                }
             }
             else if (msg == "赞我" || msg== "点赞")
             {
@@ -581,7 +645,9 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     bad2 = ran.Next(0, 25);
                     count++; if (count > 10) { bad2 = 25; break; }
                 }count = 0;
-                ReplayString = string.Format("{0}\r\n你的今日运势如下~\r\n宜：\r\n{1}\r\n{2}\r\n{3}\r\n{4}\r\n忌：\r\n{5}\r\n{6}\r\n今日日期：{7}",
+
+                int allsum = ran.Next(0, 100);
+                ReplayString = string.Format("{0}\r\n你的今日运势如下~\r\n宜：\r\n{1}\r\n{2}\r\n{3}\r\n{4}\r\n忌：\r\n{5}\r\n{6}\r\n今日日期：{7}\r\n今日综合幸运指数：{8}%",
                                             CQ.CQCode_At(fromQQ),
                                             GoodThings[sum1],
                                             GoodThings[sum2],
@@ -589,7 +655,8 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                             GoodThings[sum4],
                                             BadThings[bad1],
                                             BadThings[bad2],
-                                            System.DateTime.Today.ToString().Replace(" 0:00:00", "")
+                                            System.DateTime.Today.ToString().Replace(" 0:00:00", ""),
+                                            allsum.ToString()
                                             );
                 SendMinecraftMessage(fromGroup, ReplayString);
             }
@@ -944,6 +1011,35 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             return "";
         }
 
+
+        private static string[] lunch =
+        {
+            "清炒鸡蛋",
+            "现成的菜",
+            "热干面",
+            "小面",
+            "烧茄子",
+            "肉丝面",
+            "拉面",
+            "西红柿炒蛋",
+            "鱼香茄子",
+            "不吃"
+        };
+        private static string[] dinner =
+        {
+            "清炒鸡蛋",
+            "现成的菜",
+            "热干面",
+            "小面",
+            "烧茄子",
+            "肉丝面",
+            "拉面",
+            "西红柿炒蛋",
+            "鱼香茄子",
+            "不吃",
+            "好心人",
+            "东门包子"
+        };
         /// <summary>
         /// Type=4 讨论组消息。
         /// </summary>
@@ -956,7 +1052,20 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
         public override void DiscussMessage(int subType, int sendTime, long fromDiscuss, long fromQQ, string msg, int font)
         {
             // 处理讨论组消息。
-            //CQ.SendDiscussMessage(fromDiscuss, String.Format("[{0}]{1}你发的讨论组消息是：{2}", CQ.ProxyType, CQ.CQCode_At(fromQQ), msg));
+            
+            if (msg.IndexOf("今天吃") != -1 || msg.IndexOf("吃什么") != -1 || msg.IndexOf("吃啥") != -1)
+            {
+                Random ran = new Random(System.DateTime.Now.DayOfYear);
+                int lunch_key = ran.Next(0, 10);
+                int dinner_key = ran.Next(0, 12);
+                CQ.SendDiscussMessage(fromDiscuss, String.Format("今天推荐你吃：\r\n午饭：{0}\r\n晚饭：{1}\r\n今日日期：{2}", lunch[lunch_key], dinner[dinner_key], System.DateTime.Today.ToString().Replace(" 0:00:00", "")));
+            }
+
+            if (msg.IndexOf("满楼") != -1)
+            {
+                CQ.SendDiscussMessage(fromDiscuss, "[CQ:record,file=CoolQ 语音时代！\\满楼\\2.mp3]");
+            }
+
         }
 
         /// <summary>
