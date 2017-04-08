@@ -246,7 +246,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             }
             else if (msg.IndexOf("绑定") != -1)
             {
-                if (replay_get(1, fromQQ.ToString()) == "")
+                if (replay_get(1, fromQQ.ToString()) == "" && msg.Replace("绑定", "").ToUpper() != "ID" && msg.Replace("绑定", "").ToUpper() != "")
                 {
                     insert(1, fromQQ.ToString(), msg.Replace("绑定", ""));
                     CQ.SendPrivateMessage(fromQQ, "绑定id:" + msg.Replace("绑定", "") + "成功！");
@@ -256,9 +256,17 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                                     "\r\n群名片：" + groupMember.GroupCard +
                                                     "\r\n如有乱绑定请尽快处理");
                 }
-                else
+                else if(msg.Replace("绑定", "").ToUpper() != "ID")
                 {
                     CQ.SendPrivateMessage(fromQQ, "你已经绑定过了，想换id私聊服主去吧");
+                }
+                else if (msg.Replace("绑定", "").ToUpper() == "ID")
+                {
+                    CQ.SendPrivateMessage(fromQQ, "你的id叫“id”？");
+                }
+                else
+                {
+                    CQ.SendPrivateMessage(fromQQ, "还能不能好好地绑定账号了？");
                 }
             }
             else
@@ -327,7 +335,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     }
                     else
                     {
-                        CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n检测到你没有绑定服务器id，请私聊我发送“绑定id”来绑定（没空格），如：\r\n绑定notch\r\n长时间未绑定你将会被移出本群");
+                        CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n检测到你没有绑定服务器id，请私聊我发送“绑定”+“你自己的id”来绑定（没空格），如：\r\n绑定notch\r\n长时间未绑定你将会被移出本群");
                     }
 
                 }
@@ -397,7 +405,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
 
                 if (msg == "帮助")
                 {
-                    SendMinecraftMessage(fromGroup, "关于签到奖励：\r\n每日可随机领取0-500游戏币的奖励，奖励暂存在银行中。\r\n取钱方式：当你在服务器在线时，在群里发送“取钱”即可取出所有钱，不在服务器时取钱将导致余额将丢失。\r\n回复“查询”可查询当前银行内余额。\r\n回复“抽奖”可花费100游戏币进行抽奖，中奖率为玄学");
+                    SendMinecraftMessage(fromGroup, "关于签到奖励：\r\n每日可随机领取0-500游戏币的奖励，奖励暂存在银行中。\r\n取钱方式：在群里发送“取钱”即可取出所有钱。\r\n回复“查询”可查询当前银行内余额。\r\n回复“抽奖”可花费100游戏币进行抽奖，中奖率为玄学");
                 }
 
                 if (msg == "抽奖")
@@ -459,11 +467,21 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
 
                 }
             }
+            if (fromGroup == 567145439)
+            {
+                if (msg.IndexOf("删除") == 0)
+                {
+                    if (msg.Replace("删除","") != "")
+                    {
+                        del(1, msg.Replace("删除", ""));
+                        SendMinecraftMessage(fromGroup, "已删除QQ：" + msg.Replace("删除", "") + "所绑定的id。");
+                    }
+                }
+            }
 
-
-            //if (fromGroup == 339837275)
-            //{
-            var groupMember = CQ.GetGroupMemberInfo(fromGroup, fromQQ);
+                //if (fromGroup == 339837275)
+                //{
+                var groupMember = CQ.GetGroupMemberInfo(fromGroup, fromQQ);
 
             //CQ.SendGroupMessage(fromGroup, String.Format("[{4}]{0} 你的群名片：{1}， 入群时间：{2}， 最后发言：{3}。", CQ.CQCode_At(fromQQ),
             //    groupMember.GroupCard, groupMember.JoinTime, groupMember.LastSpeakingTime, CQ.ProxyType));
@@ -610,6 +628,14 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             //}
             else if(msg == "今日黄历" || msg == "今日运势")
             {
+                if (fromQQ == 1262897311 || fromQQ == 66831919)
+                {
+                    string rs = string.Format("{0}\r\n你的今日运势如下~\r\n会被捅死。\r\n今日日期：{1}",
+                            CQ.CQCode_At(fromQQ), System.DateTime.Today.ToString().Replace(" 0:00:00", "")
+                            );
+                    SendMinecraftMessage(fromGroup, rs);
+                    return;
+                }
                 string ReplayString="";
                 Random ran = new Random(System.DateTime.Now.DayOfYear + (int)(fromQQ - (fromQQ/10000) * 10000) );
                 //int RanKey = ran.Next(0, 25);
@@ -663,6 +689,14 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
 
             else if (msg == "昨日黄历" || msg == "昨日运势")
             {
+                if(fromQQ== 1262897311 || fromQQ== 66831919)
+                {
+                    string rs = string.Format("{0}\r\n你的昨日运势如下~\r\n会被捅死。\r\n今日日期：{1}",
+                            CQ.CQCode_At(fromQQ), System.DateTime.Today.ToString().Replace(" 0:00:00", "")
+                            );
+                    SendMinecraftMessage(fromGroup, rs);
+                    return;
+                }
                 string ReplayString = "";
                 Random ran = new Random(System.DateTime.Now.DayOfYear - 1 + (int)(fromQQ - (fromQQ / 10000) * 10000));
                 //int RanKey = ran.Next(0, 25);
@@ -717,6 +751,14 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             }
             else if (msg == "明日黄历" || msg == "明日运势")
             {
+                if (fromQQ == 1262897311 || fromQQ == 66831919)
+                {
+                    string rs = string.Format("{0}\r\n你的明日运势如下~\r\n会被捅死。\r\n今日日期：{1}",
+                            CQ.CQCode_At(fromQQ), System.DateTime.Today.ToString().Replace(" 0:00:00", "")
+                            );
+                    SendMinecraftMessage(fromGroup, rs);
+                    return;
+                }
                 string ReplayString = "";
                 Random ran = new Random(System.DateTime.Now.DayOfYear + 1 + (int)(fromQQ - (fromQQ / 10000) * 10000));
                 //int RanKey = ran.Next(0, 25);
