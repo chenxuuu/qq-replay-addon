@@ -91,7 +91,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
 
                 myClientSocket.Shutdown(SocketShutdown.Both);
                 myClientSocket.Close();
-            }
+            }//与minecraft消息进行通讯
         }
 
         public static string mcmsg = "";
@@ -244,7 +244,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 CQ.SendPrivateMessage(fromQQ, "已为你一次性点赞十次，每天只能十次哦");
                 //CQ.SendGroupMessage(fromGroup, "已为QQ" + fromQQ + "点赞十次");
             }
-            else if (msg.IndexOf("绑定") != -1)
+            else if (msg.IndexOf("绑定") == 0)
             {
                 if (replay_get(1, fromQQ.ToString()) == "" && msg.Replace("绑定", "").ToUpper() != "ID" && msg.Replace("绑定", "").ToUpper() != "")
                 {
@@ -466,7 +466,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     }
 
                 }
-            }
+            }  //糖拌群
             if (fromGroup == 567145439)
             {
                 if (msg.IndexOf("删除") == 0)
@@ -477,11 +477,10 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                         SendMinecraftMessage(fromGroup, "已删除QQ：" + msg.Replace("删除", "") + "所绑定的id。");
                     }
                 }
-            }
+            }  //糖拌管理群
 
-                //if (fromGroup == 339837275)
-                //{
-                var groupMember = CQ.GetGroupMemberInfo(fromGroup, fromQQ);
+
+            var groupMember = CQ.GetGroupMemberInfo(fromGroup, fromQQ);
 
             //CQ.SendGroupMessage(fromGroup, String.Format("[{4}]{0} 你的群名片：{1}， 入群时间：{2}， 最后发言：{3}。", CQ.CQCode_At(fromQQ),
             //    groupMember.GroupCard, groupMember.JoinTime, groupMember.LastSpeakingTime, CQ.ProxyType));
@@ -489,10 +488,6 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             //CQ.SendGroupMessage(fromGroup, string.Format("{0}发的群消息是：{1}", CQ.CQCode_At(fromQQ), msg));
             string replay_ok = replay_get(fromGroup, msg);
             string replay_common = replay_get(2333, msg);
-
-            //CQ.SendGroupMessage(fromGroup, msg);
-
-            //System.Windows.Forms.MessageBox.Show(msg);
 
             if (msg.ToUpper() == "HELP")
             {
@@ -617,15 +612,6 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     SendMinecraftMessage(fromGroup, "你没有权限调教接待喵");
                 }
             }
-            //else if (msg == "签到")
-            //{
-            //    Random ran = new Random(System.DateTime.Now.Millisecond);
-            //    int RandKey = ran.Next(0, 500);
-            //    CQ.SendGroupMessage(fromGroup, string.Format("{0}\r\n签到成功\r\n获得经验{1}点\r\n然而这并没有什么乱用\r\n所以本机器人并没有记录这条签到信息\r\n私聊发送“赞我”可给你点赞",
-            //                                                    CQ.CQCode_At(fromQQ),
-            //                                                    RandKey.ToString()
-            //                                                    ));
-            //}
             else if(msg == "今日黄历" || msg == "今日运势")
             {
                 if (fromQQ == 1262897311 || fromQQ == 66831919)
@@ -686,7 +672,6 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                             );
                 SendMinecraftMessage(fromGroup, ReplayString);
             }
-
             else if (msg == "昨日黄历" || msg == "昨日运势")
             {
                 if(fromQQ== 1262897311 || fromQQ== 66831919)
@@ -811,8 +796,6 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                             );
                 SendMinecraftMessage(fromGroup, ReplayString);
             }
-
-
             else if (msg.IndexOf("！addadmin ") == 0 && fromQQ == 961726194)
             {
                 insert(123456, "给我列一下狗管理", msg.Replace("！addadmin ", ""));
@@ -845,7 +828,14 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 SendMinecraftMessage(fromGroup, replay_common);
             }
 
-            //}
+            if(fromGroup== 115872123 && msg.IndexOf("跨群") == 0)
+            {
+                SendMinecraftMessage(567477706, groupMember.GroupCard + "(" + fromQQ + ")\r\n" + msg.Replace("跨群", "") + "\r\n消息来自某里世界，以“跨群”开头的消息可跨群发送");
+            }
+            if (fromGroup == 567477706 && msg.IndexOf("跨群") == 0)
+            {
+                SendMinecraftMessage(115872123, groupMember.GroupCard + "(" + fromQQ + ")\r\n" + msg.Replace("跨群", "") + "\r\n消息来自某崩坏群，以“跨群”开头的消息可跨群发送");
+            }
         }
 
 
@@ -879,13 +869,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
 
 
         static string path = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;//AppDomain.CurrentDomain.SetupInformation.ApplicationBase
-        /*
-        public static string ba_nrandom(long group, long qq)
-        {
-            SetGroupMemberGag(group, qq, 60);
-            return "";
-        }
-        */
+
 
         public static string replay_get(long group, string msg)
         {
@@ -964,7 +948,6 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
         }
 
 
-
         public static void insert(long group, string msg, string ans)
         {
             if(msg.IndexOf("\r\n") < 0 & msg != "")
@@ -983,7 +966,6 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 root.Save(path + group + ".xml");
             }
         }
-
 
         public static void createxml(long group)
         {
@@ -1010,7 +992,6 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 createxml(group);//创建该文件，如果路径文件夹不存在，则报错。
             }
         }
-
 
         public static int AdminCheck(long fromQQ)
         {
