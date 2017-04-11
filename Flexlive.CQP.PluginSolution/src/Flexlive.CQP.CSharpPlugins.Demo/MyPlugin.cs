@@ -303,7 +303,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
         {
 
             // 处理群消息。
-
+            var groupMember = CQ.GetGroupMemberInfo(fromGroup, fromQQ);
             if (fromGroup == 241464054)
             {
                 string reply = replay_get(1, fromQQ.ToString());
@@ -336,6 +336,9 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     else
                     {
                         CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n检测到你没有绑定服务器id，请私聊我发送“绑定”+“你自己的id”来绑定（没空格），如：\r\n绑定notch\r\n长时间未绑定你将会被移出本群");
+                        CQ.SendGroupMessage(567145439, "接待喵糖拌管理：\r\nQQ：" + fromQQ.ToString() +
+                                "\r\n群名片：" + groupMember.GroupCard +
+                                "\r\n没有绑定id\r\n如长时间没绑请将其移出群");
                     }
 
                 }
@@ -370,7 +373,6 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                         insert(4, fromQQ.ToString(), "0");
                     }
                 }
-
                 if (msg == "取钱" || msg == "我要取钱")
                 {
                     string CoinStr = replay_get(2, fromQQ.ToString());
@@ -387,7 +389,6 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "已为玩家" + reply + "充值" + CoinsTemp.ToString() + "游戏币！");
                     del(2, fromQQ.ToString());
                 }
-
                 if (msg == "查询" || msg == "查询余额")
                 {
                     string CoinStr = replay_get(2, fromQQ.ToString());
@@ -402,12 +403,10 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     }
                     SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n你当前余额为" + CoinsTemp.ToString() + "游戏币");
                 }
-
                 if (msg == "帮助")
                 {
                     SendMinecraftMessage(fromGroup, "关于签到奖励：\r\n每日可随机领取0-500游戏币的奖励，奖励暂存在银行中。\r\n取钱方式：在群里发送“取钱”即可取出所有钱。\r\n回复“查询”可查询当前银行内余额。\r\n回复“抽奖”可花费100游戏币进行抽奖，中奖率为玄学");
                 }
-
                 if (msg == "抽奖")
                 {
                     string CoinStr = replay_get(2, fromQQ.ToString());
@@ -479,8 +478,6 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 }
             }  //糖拌管理群
 
-
-            var groupMember = CQ.GetGroupMemberInfo(fromGroup, fromQQ);
 
             //CQ.SendGroupMessage(fromGroup, String.Format("[{4}]{0} 你的群名片：{1}， 入群时间：{2}， 最后发言：{3}。", CQ.CQCode_At(fromQQ),
             //    groupMember.GroupCard, groupMember.JoinTime, groupMember.LastSpeakingTime, CQ.ProxyType));
@@ -836,6 +833,11 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             {
                 SendMinecraftMessage(115872123, groupMember.GroupCard + "(" + fromQQ + ")\r\n" + msg.Replace("跨群", "") + "\r\n消息来自某崩坏群，以“跨群”开头的消息可跨群发送");
             }
+
+            if (msg == "开车")
+            {
+                SendMinecraftMessage(fromGroup, "magnet:?xt=urn:btih:" + GetRandomString(40, true, false, false, false, "ABCDEF"));
+            }
         }
 
 
@@ -1034,6 +1036,32 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             return "";
         }
 
+        ///<summary>
+        ///生成随机字符串 
+        ///</summary>
+        ///<param name="length">目标字符串的长度</param>
+        ///<param name="useNum">是否包含数字，1=包含，默认为包含</param>
+        ///<param name="useLow">是否包含小写字母，1=包含，默认为包含</param>
+        ///<param name="useUpp">是否包含大写字母，1=包含，默认为包含</param>
+        ///<param name="useSpe">是否包含特殊字符，1=包含，默认为不包含</param>
+        ///<param name="custom">要包含的自定义字符，直接输入要包含的字符列表</param>
+        ///<returns>指定长度的随机字符串</returns>
+        public static string GetRandomString(int length, bool useNum, bool useLow, bool useUpp, bool useSpe, string custom)
+        {
+            byte[] b = new byte[4];
+            new System.Security.Cryptography.RNGCryptoServiceProvider().GetBytes(b);
+            Random r = new Random(BitConverter.ToInt32(b, 0));
+            string s = null, str = custom;
+            if (useNum == true) { str += "0123456789"; }
+            if (useLow == true) { str += "abcdefghijklmnopqrstuvwxyz"; }
+            if (useUpp == true) { str += "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; }
+            if (useSpe == true) { str += "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"; }
+            for (int i = 0; i < length; i++)
+            {
+                s += str.Substring(r.Next(0, str.Length - 1), 1);
+            }
+            return s;
+        }
 
         private static string[] lunch =
         {
