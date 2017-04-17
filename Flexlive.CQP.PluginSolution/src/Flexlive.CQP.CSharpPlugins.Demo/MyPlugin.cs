@@ -304,6 +304,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
 
             // 处理群消息。
             var groupMember = CQ.GetGroupMemberInfo(fromGroup, fromQQ);
+            var me = CQ.GetGroupMemberInfo(fromGroup, 751323264);
             if (fromGroup == 241464054)
             {
                 string reply = replay_get(1, fromQQ.ToString());
@@ -456,8 +457,9 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                             }
                             else if(RandKey > 50)
                             {
-                                CQ.SetGroupMemberGag(fromGroup, fromQQ, RandKey * 60);
-                                SendMinecraftMessage(fromGroup, "恭喜你抽中了禁言" + RandKey + "分钟！当前余额" + CoinsTemp + "游戏币");
+                                int fkt = ran.Next(1, 11);
+                                CQ.SetGroupMemberGag(fromGroup, fromQQ, fkt * 60);
+                                SendMinecraftMessage(fromGroup, "恭喜你抽中了禁言" + fkt + "分钟！当前余额" + CoinsTemp + "游戏币");
                                 del(2, fromQQ.ToString());
                                 insert(2, fromQQ.ToString(), CoinsTemp.ToString());
                             }
@@ -831,15 +833,19 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             }
             else if(msg == "抽奖" && fromGroup != 241464054)
             {
-                if(groupMember.Authority != "管理员")
+                if (me.Authority == "成员")
+                {
+                    SendMinecraftMessage(fromGroup, "我没有禁言权限，无法使用抽奖功能");
+                }
+                else if(groupMember.Authority != "管理员" && groupMember.Authority != "群主")
                 {
                     Random ran = new Random(System.DateTime.Now.Millisecond);
-                    int RandKey = ran.Next(0, 1000);
-                    if (RandKey > 500)
+                    int RandKey = ran.Next(1, 22);
+                    if (RandKey > 12)
                     {
                         SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n恭喜你！什么也没有抽中！");
                     }
-                    else if (RandKey < 400)
+                    else if (RandKey < 11)
                     {
                         CQ.SetGroupMemberGag(fromGroup, fromQQ, RandKey * 60);
                         SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n恭喜你抽中了禁言" + RandKey + "分钟！奖励已发放到你的QQ~");
@@ -871,7 +877,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 {
                     fk = int.Parse(fks);
                 }
-                SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n禁言卡可用于禁言他人，如果接待权限足够。\r\n使用方法：发送禁言加上qq即可\r\n禁言时长将为10分钟-30天随机\r\n你当前剩余的禁言卡数量：" + fk.ToString());
+                SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n禁言卡可用于禁言或解禁他人，如果接待权限足够。\r\n使用方法：发送禁言或解禁加上qq即可\r\n禁言时长将为1分钟-10分钟随机\r\n获取方式：抽奖时有十分之一的概率获得\r\n你当前剩余的禁言卡数量：" + fk.ToString());
             }
             else if (msg.IndexOf("禁言") == 0)
             {
@@ -883,30 +889,84 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 }
                 if (fk > 0)
                 {
-                    int qq = 0;
-                    string fkqq = msg.Replace("禁言", "");
-                    try
+                    if ((groupMember.Authority != "管理员" && groupMember.Authority != "群主") || me.Authority == "群主")
                     {
-                        qq = int.Parse(fkqq);
-                        var qqinfo = CQ.GetGroupMemberInfo(fromGroup, fromQQ);
-                        if (qqinfo.Authority != "管理员")
+                        long qq = 0;
+                        string fkqq = msg.Replace("禁言", "");
+                        try
                         {
-                            Random ran = new Random(System.DateTime.Now.Millisecond);
-                            int RandKey = ran.Next(600, 2592000);
-                            CQ.SetGroupMemberGag(fromGroup, qq, RandKey);
-                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n已将" + qq + "禁言" + RandKey / 60 + "分钟");
-                            fk--;
-                            del(10, fromQQ.ToString());
-                            insert(10, fromQQ.ToString(), fk.ToString());
+                            qq = long.Parse(fkqq);
+                            var qqinfo = CQ.GetGroupMemberInfo(fromGroup, qq);
+                            if (qqinfo.Authority != "管理员")
+                            {
+                                Random ran = new Random(System.DateTime.Now.Millisecond);
+                                int RandKey = ran.Next(60, 600);
+                                CQ.SetGroupMemberGag(fromGroup, qq, RandKey);
+                                SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n已将" + qq + "禁言" + RandKey / 60 + "分钟");
+                                fk--;
+                                del(10, fromQQ.ToString());
+                                insert(10, fromQQ.ToString(), fk.ToString());
+                            }
+                            else
+                            {
+                                SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n目标成员为管理员，我没法禁言那个辣鸡玩意儿");
+                            }
                         }
-                        else
+                        catch
                         {
-                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n目标成员为管理员，我没法禁言那个辣鸡玩意儿");
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n执行失败。");
                         }
                     }
-                    catch
+                    else
                     {
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n执行失败。");
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n你个管理员不会自己手动去禁言？智障？");
+                    }
+                }
+                else
+                {
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n你哪儿有禁言卡？");
+                }
+
+            }
+            else if (msg.IndexOf("解禁") == 0)
+            {
+                int fk = 0;
+                string fks = replay_get(10, fromQQ.ToString());
+                if (fks != "")
+                {
+                    fk = int.Parse(fks);
+                }
+                if (fk > 0)
+                {
+                    if ((groupMember.Authority != "管理员" && groupMember.Authority != "群主") || me.Authority == "群主")
+                    {
+                        long qq = 0;
+                        string fkqq = msg.Replace("解禁", "");
+                        try
+                        {
+                            qq = long.Parse(fkqq);
+                            var qqinfo = CQ.GetGroupMemberInfo(fromGroup, qq);
+                            if (qqinfo.Authority != "管理员")
+                            {
+                                CQ.SetGroupMemberGag(fromGroup, qq, 0);
+                                SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n已将" + qq + "解除禁言");
+                                fk--;
+                                del(10, fromQQ.ToString());
+                                insert(10, fromQQ.ToString(), fk.ToString());
+                            }
+                            else
+                            {
+                                SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n目标成员为管理员，我没法解禁那个辣鸡玩意儿");
+                            }
+                        }
+                        catch
+                        {
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n执行失败。");
+                        }
+                    }
+                    else
+                    {
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n你个管理员不会自己手动去解禁？智障？");
                     }
                 }
                 else
