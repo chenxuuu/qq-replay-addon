@@ -301,7 +301,8 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
         /// <param name="font">字体。</param>
         public override void GroupMessage(int subType, int sendTime, long fromGroup, long fromQQ, string fromAnonymous, string msg, int font)
         {
-
+            if (fromQQ == 80000000)
+                return;
             // 处理群消息。
             var groupMember = CQ.GetGroupMemberInfo(fromGroup, fromQQ);
             var me = CQ.GetGroupMemberInfo(fromGroup, 751323264);
