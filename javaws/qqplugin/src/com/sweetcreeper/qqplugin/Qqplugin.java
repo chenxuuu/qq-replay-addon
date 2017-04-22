@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,14 +17,20 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import net.milkbowl.vault.economy.Economy;
 
 
 public class Qqplugin extends JavaPlugin implements Listener
 {
 	public String player="none233";
 	public String msg="none233";
+    public boolean isEco = false;
+    public Economy economy;	
+	
 	
 	@Override//重写父类的方法
 	public void onEnable()
@@ -113,6 +120,132 @@ public class Qqplugin extends JavaPlugin implements Listener
 		                		{
 		                			player="ok";
 		                			msg="<提示>服务器当前在线人数为"+Bukkit.getOnlinePlayers().size()+"人，玩家列表："+result;
+		                		}
+		                	}
+		                	else if(sourceStrArray[i].indexOf("eco>")!=-1)
+		                	{
+		                		String result="",playername=sourceStrArray[i].replace("eco>", "");
+		                        isEco = setupEconomy();
+		                        if(isEco)
+		                        {
+		                        	@SuppressWarnings("deprecation")
+									OfflinePlayer p = Bukkit.getOfflinePlayer(playername);
+		                            //获取玩家金钱
+		                        	if(p!=null)
+		                        		result = "玩家"+ playername +"服务器余额为：" + economy.getBalance(p);
+		                        }
+		                        else
+		                        {
+		                            //valut没装或者ess经济没装
+		                        	result="玩家"+ playername +"服务器查询余额失败。";
+		                        }
+		                		if(player!="none233")
+		                		{
+		                			msg+="]][[<提示>"+result;
+		                		}
+		                		else
+		                		{
+		                			player="ok";
+		                			msg="<提示>"+result;
+		                		}
+		                	}
+		                	else if(sourceStrArray[i].indexOf("ecodel100>")!=-1)
+		                	{
+		                		String result="",playername=sourceStrArray[i].replace("ecodel100>", "");
+		                        isEco = setupEconomy();
+		                        if(isEco)
+		                        {
+		                        	@SuppressWarnings("deprecation")
+									OfflinePlayer p = Bukkit.getOfflinePlayer(playername);
+		                            if(economy.has(p,100) && p!=null)//判断玩家是否100元
+		                            {
+		                            	economy.withdrawPlayer(p,100);//扣除100元
+		                            	result = "<eco100>" + playername;
+		                            }
+		                            else
+		                            {
+		                            	result = playername + "你服务器里的钱不够100。";
+		                            }
+		                        }
+		                        else
+		                        {
+		                            //valut没装或者ess经济没装
+		                        	result="玩家"+ playername +"服务器查询余额失败。";
+		                        }
+		                		if(player!="none233")
+		                		{
+		                			msg+="]][["+result;
+		                		}
+		                		else
+		                		{
+		                			player="ok";
+		                			msg=result;
+		                		}
+		                	}
+		                	else if(sourceStrArray[i].indexOf("ecodel500>")!=-1)
+		                	{
+		                		String result="",playername=sourceStrArray[i].replace("ecodel500>", "");
+		                        isEco = setupEconomy();
+		                        if(isEco)
+		                        {
+		                        	@SuppressWarnings("deprecation")
+									OfflinePlayer p = Bukkit.getOfflinePlayer(playername);
+		                            if(economy.has(p,500) && p!=null)//判断玩家是否500元
+		                            {
+		                            	economy.withdrawPlayer(p,500);//扣除500元
+		                            	result = "<eco500>" + playername;
+		                            }
+		                            else
+		                            {
+		                            	result = playername + "你服务器里的钱不够500。";
+		                            }
+		                        }
+		                        else
+		                        {
+		                            //valut没装或者ess经济没装
+		                        	result="玩家"+ playername +"服务器查询余额失败。";
+		                        }
+		                		if(player!="none233")
+		                		{
+		                			msg+="]][["+result;
+		                		}
+		                		else
+		                		{
+		                			player="ok";
+		                			msg=result;
+		                		}
+		                	}
+		                	else if(sourceStrArray[i].indexOf("ecodel1000>")!=-1)
+		                	{
+		                		String result="",playername=sourceStrArray[i].replace("ecodel1000>", "");
+		                        isEco = setupEconomy();
+		                        if(isEco)
+		                        {
+		                        	@SuppressWarnings("deprecation")
+									OfflinePlayer p = Bukkit.getOfflinePlayer(playername);
+		                            if(economy.has(p,1000) && p!=null)//判断玩家是否1000元
+		                            {
+		                            	economy.withdrawPlayer(p,1000);//扣除1000元
+		                            	result = "<eco1000>" + playername;
+		                            }
+		                            else
+		                            {
+		                            	result = playername + "你服务器里的钱不够1000。";
+		                            }
+		                        }
+		                        else
+		                        {
+		                            //valut没装或者ess经济没装
+		                        	result="玩家"+ playername +"服务器查询余额失败。";
+		                        }
+		                		if(player!="none233")
+		                		{
+		                			msg+="]][["+result;
+		                		}
+		                		else
+		                		{
+		                			player="ok";
+		                			msg=result;
 		                		}
 		                	}
 		                }
@@ -205,6 +338,20 @@ public class Qqplugin extends JavaPlugin implements Listener
 		{
 			player="ok";
 			msg="<消息>" + i;
+		}
+	}
+	
+	
+    private boolean setupEconomy() {
+		if(Bukkit.getPluginManager().isPluginEnabled("Vault")){
+			RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager()
+					.getRegistration(net.milkbowl.vault.economy.Economy.class);
+			if (economyProvider != null) {
+				economy = economyProvider.getProvider();
+			}
+			return (economy != null);
+		}else{
+			return false;
 		}
 	}
 	/*

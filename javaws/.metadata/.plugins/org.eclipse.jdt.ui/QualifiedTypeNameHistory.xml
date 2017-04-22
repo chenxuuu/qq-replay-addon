@@ -16,4 +16,6 @@
 <fullyQualifiedTypeName name="org.bukkit.event.entity.PlayerDeathEvent"/>
 <fullyQualifiedTypeName name="org.bukkit.inventory.ItemStack"/>
 <fullyQualifiedTypeName name="org.bukkit.inventory.meta.ItemMeta"/>
+<fullyQualifiedTypeName name="org.bukkit.plugin.RegisteredServiceProvider"/>
+<fullyQualifiedTypeName name="net.milkbowl.vault.economy.Economy"/>
 </qualifiedTypeNameHistroy>

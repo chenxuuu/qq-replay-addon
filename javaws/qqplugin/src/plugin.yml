@@ -4,6 +4,7 @@ name: QQGroupMessagePlugin
 main: com.sweetcreeper.qqplugin.Qqplugin
 #version 这个是版本号
 version: 1.0
+depend: [Vault]
 #commands:
   # test:
   #   description: Test命令
