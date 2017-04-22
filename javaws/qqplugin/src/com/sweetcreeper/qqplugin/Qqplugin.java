@@ -12,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -28,6 +29,9 @@ public class Qqplugin extends JavaPlugin implements Listener
 	public void onEnable()
 	{
 		getLogger().info("QQGroupMessagePlugin is started successfully!");
+		
+		player="ok";
+		msg="<提示>服务器已重启完成。";
 		//注册监听
 		Bukkit.getPluginManager().registerEvents(this,this);
 		
@@ -131,6 +135,15 @@ public class Qqplugin extends JavaPlugin implements Listener
 	@Override
 	public void onDisable()
 	{
+		if(player!="none233")
+		{
+			msg+="<提示>服务器已关闭。";
+		}
+		else
+		{
+			player="ok";
+			msg="<提示>服务器已关闭。";
+		}
 		getLogger().info("QQGroupMessagePlugin is stoped successfully!");
 	}
 	
@@ -164,22 +177,6 @@ public class Qqplugin extends JavaPlugin implements Listener
 		}
 	}
 	
-	/*
-	@EventHandler
-	public void onPlayerKick(PlayerKickEvent event)
-	{
-		if(player!="none233")
-		{
-			msg+="]][[<消息>"+event.getPlayer().getName()+"被op踢出去了";
-		}
-		else
-		{
-			player="ok";
-			msg="<消息>"+event.getPlayer().getName()+"被op踢出去了";
-		}
-	}*/
-	
-	
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event)
 	{
@@ -191,6 +188,23 @@ public class Qqplugin extends JavaPlugin implements Listener
 		{
 			player="ok";
 			msg="<消息>"+event.getPlayer().getName()+"掉线了";
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerDeath(PlayerDeathEvent e)
+	{
+	    Player d = e.getEntity();
+	    Player k = e.getEntity().getKiller();
+	    String i =d.getDisplayName() + "被" + k.getDisplayName() + "杀死了。";
+		if(player!="none233")
+		{
+			msg+="]][[<消息>" + i;
+		}
+		else
+		{
+			player="ok";
+			msg="<消息>" + i;
 		}
 	}
 	/*

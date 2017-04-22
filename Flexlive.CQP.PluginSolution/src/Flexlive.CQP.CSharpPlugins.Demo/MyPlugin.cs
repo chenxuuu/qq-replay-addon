@@ -842,9 +842,38 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 {
                     Random ran = new Random(System.DateTime.Now.Millisecond);
                     int RandKey = ran.Next(1, 22);
+                    int RandKey2 = ran.Next(0, 10);
                     if (RandKey > 12)
                     {
                         SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n恭喜你！什么也没有抽中！");
+                    }
+                    else if (RandKey == 1 && RandKey2 != 0)
+                    {
+                        CQ.SetGroupMemberGag(fromGroup, fromQQ, RandKey * 3600 * 7 + 2333);
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n恭喜你抽中了超豪华禁言套餐，并附赠10张禁言卡！奖励已发放！");
+                        int fk = 0;
+                        string fks = replay_get(10, fromQQ.ToString());
+                        if (fks != "")
+                        {
+                            fk = int.Parse(fks);
+                        }
+                        fk += 10;
+                        del(10, fromQQ.ToString());
+                        insert(10, fromQQ.ToString(), fk.ToString());
+                    }
+                    else if (RandKey == 1 && RandKey2 == 0)
+                    {
+                        CQ.SetGroupMemberGag(fromGroup, fromQQ, RandKey * 3600 * 24 * 30);
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n恭喜你抽中了顶级豪华月卡禁言套餐，并附赠200张禁言卡！奖励已发放！");
+                        int fk = 0;
+                        string fks = replay_get(10, fromQQ.ToString());
+                        if (fks != "")
+                        {
+                            fk = int.Parse(fks);
+                        }
+                        fk += 200;
+                        del(10, fromQQ.ToString());
+                        insert(10, fromQQ.ToString(), fk.ToString());
                     }
                     else if (RandKey < 11)
                     {

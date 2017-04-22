@@ -13,4 +13,7 @@
 <fullyQualifiedTypeName name="java.net.UnknownHostException"/>
 <fullyQualifiedTypeName name="java.io.IOException"/>
 <fullyQualifiedTypeName name="org.bukkit.scheduler.BukkitRunnable"/>
+<fullyQualifiedTypeName name="org.bukkit.event.entity.PlayerDeathEvent"/>
+<fullyQualifiedTypeName name="org.bukkit.inventory.ItemStack"/>
+<fullyQualifiedTypeName name="org.bukkit.inventory.meta.ItemMeta"/>
 </qualifiedTypeNameHistroy>

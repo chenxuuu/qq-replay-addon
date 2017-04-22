@@ -1,7 +1,0 @@
-package com.sweetcreeper.qqplugin;
-
-import org.bukkit.event.Listener;
-
-public class Events implements Listener {
-
-}
