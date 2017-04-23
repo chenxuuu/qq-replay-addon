@@ -71,7 +71,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                 if( i.IndexOf("<eco100>") == 0)
                                 {
                                     long fromQQ = qq_get(i.Replace("<eco100>", ""));
-                                    string CoinStr = replay_get(2, fromQQ.ToString());
+                                    string CoinStr = xml_get(2, fromQQ.ToString());
                                     int CoinsTemp;
                                     if (CoinStr != "")
                                     {
@@ -82,14 +82,14 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                         CoinsTemp = 0;
                                     }
                                     CoinsTemp += 100;
-                                    SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + i.Replace("<eco100>", "") + "存入100游戏币！");
+                                    SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为你存入100游戏币！");
                                     del(2, fromQQ.ToString());
                                     insert(2, fromQQ.ToString(), CoinsTemp.ToString());
                                 }
                                 else if (i.IndexOf("<eco500>") == 0)
                                 {
                                     long fromQQ = qq_get(i.Replace("<eco500>", ""));
-                                    string CoinStr = replay_get(2, fromQQ.ToString());
+                                    string CoinStr = xml_get(2, fromQQ.ToString());
                                     int CoinsTemp;
                                     if (CoinStr != "")
                                     {
@@ -100,14 +100,14 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                         CoinsTemp = 0;
                                     }
                                     CoinsTemp += 500;
-                                    SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + i.Replace("<eco500>", "") + "存入500游戏币！");
+                                    SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为你存入500游戏币！");
                                     del(2, fromQQ.ToString());
                                     insert(2, fromQQ.ToString(), CoinsTemp.ToString());
                                 }
                                 else if (i.IndexOf("<eco1000>") == 0)
                                 {
                                     long fromQQ = qq_get(i.Replace("<eco1000>", ""));
-                                    string CoinStr = replay_get(2, fromQQ.ToString());
+                                    string CoinStr = xml_get(2, fromQQ.ToString());
                                     int CoinsTemp;
                                     if (CoinStr != "")
                                     {
@@ -118,7 +118,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                         CoinsTemp = 0;
                                     }
                                     CoinsTemp += 1000;
-                                    SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + i.Replace("<eco1000>", "") + "存入1000游戏币！");
+                                    SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为你存入1000游戏币！");
                                     del(2, fromQQ.ToString());
                                     insert(2, fromQQ.ToString(), CoinsTemp.ToString());
                                 }
@@ -136,7 +136,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                         if (replay.IndexOf("<eco100>") == 0)
                         {
                             long fromQQ = qq_get(replay.Replace("<eco100>", ""));
-                            string CoinStr = replay_get(2, fromQQ.ToString());
+                            string CoinStr = xml_get(2, fromQQ.ToString());
                             int CoinsTemp;
                             if (CoinStr != "")
                             {
@@ -154,7 +154,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                         else if (replay.IndexOf("<eco500>") == 0)
                         {
                             long fromQQ = qq_get(replay.Replace("<eco500>", ""));
-                            string CoinStr = replay_get(2, fromQQ.ToString());
+                            string CoinStr = xml_get(2, fromQQ.ToString());
                             int CoinsTemp;
                             if (CoinStr != "")
                             {
@@ -172,7 +172,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                         else if (replay.IndexOf("<eco1000>") == 0)
                         {
                             long fromQQ = qq_get(replay.Replace("<eco1000>", ""));
-                            string CoinStr = replay_get(2, fromQQ.ToString());
+                            string CoinStr = xml_get(2, fromQQ.ToString());
                             int CoinsTemp;
                             if (CoinStr != "")
                             {
@@ -442,6 +442,10 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 else if (reply != "")
                 {
                     mcmsg += "|||||[群消息]<" + reply + ">" + msg;
+                    if (groupMember.GroupCard.IndexOf(reply) == -1)
+                    {
+                        CQ.SetGroupNickName(fromGroup, fromQQ, reply);
+                    }
                 }
                 else if (fromQQ != 1000000)
                 {
@@ -467,7 +471,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     }
                     else
                     {
-                        string CoinStr = replay_get(2, fromQQ.ToString());
+                        string CoinStr = xml_get(2, fromQQ.ToString());
                         int CoinsTemp;
                         if (CoinStr!= "")
                         {
@@ -491,7 +495,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 }
                 if (msg == "取钱" || msg == "我要取钱")
                 {
-                    string CoinStr = replay_get(2, fromQQ.ToString());
+                    string CoinStr = xml_get(2, fromQQ.ToString());
                     int CoinsTemp;
                     if (CoinStr != "")
                     {
@@ -507,7 +511,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 }
                 if (msg == "查询" || msg == "查询余额")
                 {
-                    string CoinStr = replay_get(2, fromQQ.ToString());
+                    string CoinStr = xml_get(2, fromQQ.ToString());
                     int CoinsTemp;
                     if (CoinStr != "")
                     {
@@ -538,7 +542,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 }
                 if (msg == "抽奖")
                 {
-                    string CoinStr = replay_get(2, fromQQ.ToString());
+                    string CoinStr = xml_get(2, fromQQ.ToString());
                     string RanCount = replay_get(4, fromQQ.ToString());
                     int CoinsTemp, Counttemp;
                     if (CoinStr != "")
@@ -1246,6 +1250,23 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             }
 
             return ansqq;
+        }
+
+        public static string xml_get(long group, string msg)
+        {
+            dircheck(group);
+            XElement root = XElement.Load(path + group + ".xml");
+            string ansall = "";
+            foreach (XElement mm in root.Elements("msginfo"))
+            {
+                if (msg == mm.Element("msg").Value)
+                {
+                    ansall = mm.Element("ans").Value;
+                    break;
+                }
+            }
+
+            return ansall;
         }
 
         public static string list_get(long group, string msg)
