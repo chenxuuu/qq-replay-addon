@@ -82,7 +82,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                         CoinsTemp = 0;
                                     }
                                     CoinsTemp += 100;
-                                    SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为你存入100游戏币！");
+                                    SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco100>", "") + "存入100游戏币！");
                                     del(2, fromQQ.ToString());
                                     insert(2, fromQQ.ToString(), CoinsTemp.ToString());
                                 }
@@ -100,7 +100,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                         CoinsTemp = 0;
                                     }
                                     CoinsTemp += 500;
-                                    SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为你存入500游戏币！");
+                                    SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco500>", "") + "存入500游戏币！");
                                     del(2, fromQQ.ToString());
                                     insert(2, fromQQ.ToString(), CoinsTemp.ToString());
                                 }
@@ -118,7 +118,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                         CoinsTemp = 0;
                                     }
                                     CoinsTemp += 1000;
-                                    SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为你存入1000游戏币！");
+                                    SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco1000>", "") + "存入1000游戏币！");
                                     del(2, fromQQ.ToString());
                                     insert(2, fromQQ.ToString(), CoinsTemp.ToString());
                                 }
@@ -165,7 +165,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                 CoinsTemp = 0;
                             }
                             CoinsTemp += 500;
-                            SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco100>", "") + "存入500游戏币！");
+                            SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco500>", "") + "存入500游戏币！");
                             del(2, fromQQ.ToString());
                             insert(2, fromQQ.ToString(), CoinsTemp.ToString());
                         }
@@ -183,7 +183,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                 CoinsTemp = 0;
                             }
                             CoinsTemp += 1000;
-                            SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco100>", "") + "存入1000游戏币！");
+                            SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco1000>", "") + "存入1000游戏币！");
                             del(2, fromQQ.ToString());
                             insert(2, fromQQ.ToString(), CoinsTemp.ToString());
                         }
