@@ -364,13 +364,15 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 {
                     insert(5, fromQQ.ToString(), msg.Replace("绑定", ""));
                     CQ.SendPrivateMessage(fromQQ, "绑定id:" + msg.Replace("绑定", "") + "成功！" +
-                                                  "\r\n请耐心等待管理员审核白名单申请哟~");
+                                                  "\r\n请耐心等待管理员审核白名单申请哟~" +
+                                                  "\r\n如未申请请打开此链接：https://wj.qq.com/s/1308067/143c");
 
                     var groupMember = CQ.GetGroupMemberInfo(241464054, fromQQ);
                     CQ.SendGroupMessage(567145439, "接待喵糖拌管理：\r\n玩家id：" + msg.Replace("绑定", "") + "\r\n已成功绑定QQ：" + fromQQ.ToString() +
                                                     "\r\n群名片：" + groupMember.GroupCard +
                                                     "\r\n请及时检查该玩家是否已经提交白名单申请https://wj.qq.com/mine.html" +
-                                                    "\r\n如果符合要求，请回复“通过”+qq来给予白名单");
+                                                    "\r\n如果符合要求，请回复“通过”+qq来给予白名单" +
+                                                    "\r\n" + CQ.CQCode_At(1021479600) + CQ.CQCode_At(635309406) + CQ.CQCode_At(1928361196) + CQ.CQCode_At(1420355171) + CQ.CQCode_At(280585112) + CQ.CQCode_At(2561620740) + CQ.CQCode_At(2433380978) + CQ.CQCode_At(2679146075) + CQ.CQCode_At(961726194));
                 }
                 else if(!CheckID(msg.Replace("绑定", "")))
                 {
@@ -764,7 +766,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 }
                 else if (msg.IndexOf("通过") == 0)
                 {
-                    string reply = replay_get(5, fromQQ.ToString());
+                    string reply = replay_get(5, msg.Replace("通过", ""));
                     if(reply!="")
                     {
                         del(5, msg.Replace("通过", ""));
