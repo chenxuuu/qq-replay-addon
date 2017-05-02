@@ -360,12 +360,13 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             }
             else if (msg.IndexOf("绑定") == 0)
             {
-                if (replay_get(1, fromQQ.ToString()) == "" && qq_get(msg.Replace("绑定", "")) == 0 && CheckID(msg.Replace("绑定", "")))
+                if (replay_get(1, fromQQ.ToString()) == "" && replay_get(5, fromQQ.ToString()) == "" && qq_get(msg.Replace("绑定", "")) == 0 && CheckID(msg.Replace("绑定", "")))
                 {
                     insert(5, fromQQ.ToString(), msg.Replace("绑定", ""));
                     CQ.SendPrivateMessage(fromQQ, "绑定id:" + msg.Replace("绑定", "") + "成功！" +
                                                   "\r\n请耐心等待管理员审核白名单申请哟~" +
-                                                  "\r\n如未申请请打开此链接：https://wj.qq.com/s/1308067/143c");
+                                                  "\r\n如未申请请打开此链接：https://wj.qq.com/s/1308067/143c" +
+                                                  "\r\n如果过去24小时仍未被审核，请回复“催促审核”来进行催促");
 
                     var groupMember = CQ.GetGroupMemberInfo(241464054, fromQQ);
                     CQ.SendGroupMessage(567145439, "接待喵糖拌管理：\r\n玩家id：" + msg.Replace("绑定", "") + "\r\n已成功绑定QQ：" + fromQQ.ToString() +
@@ -442,6 +443,30 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 {
                     CQ.SendPrivateMessage(fromQQ, "出现未知错误");
                 }
+            }
+            else if(msg.IndexOf("催促审核") == 0)
+            {
+                string reply1 = replay_get(1, fromQQ.ToString());
+                string reply3 = replay_get(5, fromQQ.ToString());
+                if (reply1 != "")
+                {
+                    CQ.SendPrivateMessage(fromQQ, "你已经有白名单了");
+                    return;
+                }
+                else if (reply3 == "")
+                {
+                    CQ.SendPrivateMessage(fromQQ, "你还没有绑定id，请回复“绑定”加你的id来绑定");
+                    return;
+                }
+                CQ.SendGroupMessage(567145439, "接待喵糖拌管理：\r\n玩家id：" + reply3 + "\r\nQQ：" + fromQQ.ToString() +
+                                            "\r\n进行了催促审核的操作" +
+                                            "\r\n请及时检查该玩家是否已经提交白名单申请https://wj.qq.com/mine.html" +
+                                            "\r\n如果符合要求，请回复“通过”+qq来给予白名单" +
+                                            "\r\n" + CQ.CQCode_At(1021479600) + CQ.CQCode_At(635309406) + 
+                                            CQ.CQCode_At(1928361196) + CQ.CQCode_At(1420355171) + CQ.CQCode_At(280585112) + 
+                                            CQ.CQCode_At(2561620740) + CQ.CQCode_At(2433380978) + CQ.CQCode_At(2679146075) + 
+                                            CQ.CQCode_At(961726194));
+                CQ.SendPrivateMessage(fromQQ, "已成功催促管理员审核！请耐心等待！如果还没有被审核，你可以选择继续催促！");
             }
             else
             {
