@@ -1770,7 +1770,13 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
         public override void RequestAddGroup(int subType, int sendTime, long fromGroup, long fromQQ, string msg, string responseFlag)
         {
             // 处理请求-群添加。
-            //CQ.SetGroupAddRequest(responseFlag, CQRequestType.GroupAdd, CQReactType.Allow, "新群友");
+            if (fromGroup == 241464054)
+            {
+                CQ.SetGroupAddRequest(responseFlag, CQRequestType.GroupAdd, CQReactType.Allow, "新群友");
+                CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) +   "\r\n欢迎加入本群！请私聊我发送“绑定”+“你自己的id”来绑定（没空格），如：" +
+                                                                        "\r\n绑定notch" +
+                                                                        "\r\n未绑定id将不会进行白名单审核");
+            }
         }
     }
 }
