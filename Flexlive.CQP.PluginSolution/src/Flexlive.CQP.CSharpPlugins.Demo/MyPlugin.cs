@@ -358,116 +358,6 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 CQ.SendPrivateMessage(fromQQ, "已为你一次性点赞十次，每天只能十次哦");
                 //CQ.SendGroupMessage(fromGroup, "已为QQ" + fromQQ + "点赞十次");
             }
-            else if (msg.IndexOf("绑定") == 0)
-            {
-                if (replay_get(1, fromQQ.ToString()) == "" && replay_get(5, fromQQ.ToString()) == "" && qq_get(msg.Replace("绑定", "")) == 0 && CheckID(msg.Replace("绑定", "")))
-                {
-                    insert(5, fromQQ.ToString(), msg.Replace("绑定", ""));
-                    CQ.SendPrivateMessage(fromQQ, "绑定id:" + msg.Replace("绑定", "") + "成功！" +
-                                                  "\r\n请耐心等待管理员审核白名单申请哟~" +
-                                                  "\r\n如未申请请打开此链接：https://wj.qq.com/s/1308067/143c" +
-                                                  "\r\n如果过去24小时仍未被审核，请回复“催促审核”来进行催促");
-
-                    var groupMember = CQ.GetGroupMemberInfo(241464054, fromQQ);
-                    CQ.SendGroupMessage(567145439, "接待喵糖拌管理：\r\n玩家id：" + msg.Replace("绑定", "") + "\r\n已成功绑定QQ：" + fromQQ.ToString() +
-                                                    "\r\n群名片：" + groupMember.GroupCard +
-                                                    "\r\n请及时检查该玩家是否已经提交白名单申请https://wj.qq.com/mine.html" +
-                                                    "\r\n如果符合要求，请回复“通过”+qq来给予白名单" +
-                                                    "\r\n" + CQ.CQCode_At(1021479600) + CQ.CQCode_At(635309406) + CQ.CQCode_At(1928361196) + CQ.CQCode_At(1420355171) + CQ.CQCode_At(280585112) + CQ.CQCode_At(2561620740) + CQ.CQCode_At(2433380978) + CQ.CQCode_At(2679146075) + CQ.CQCode_At(961726194));
-                }
-                else if(!CheckID(msg.Replace("绑定", "")))
-                {
-                    CQ.SendPrivateMessage(fromQQ, "拜托你起个正常的名字好吗？");
-                }
-                else
-                {
-                    CQ.SendPrivateMessage(fromQQ, "你可能已经绑定过了，请私聊腐竹解绑。");
-                }
-            }
-            else if (msg.IndexOf("被邀请") == 0)
-            {
-                string reply1 = replay_get(1, fromQQ.ToString());
-                string reply3 = replay_get(6, fromQQ.ToString());
-                if (reply1 == "")
-                {
-                    CQ.SendPrivateMessage(fromQQ, "你还没有白名单呢！");
-                    return;
-                }
-                else if (reply3 != "")
-                {
-                    CQ.SendPrivateMessage(fromQQ, "已领取过该奖励，请勿再次领取");
-                    return;
-                }
-                long targetQQ=0;
-                try
-                {
-                    targetQQ = long.Parse(msg.Replace("被邀请", ""));
-                    if (fromQQ == targetQQ)
-                    {
-                        CQ.SendPrivateMessage(fromQQ, "。。。。");
-                        CQ.SendPrivateMessage(fromQQ, "不要这样子好吗。。。。");
-                        return;
-                    }
-                    string CoinStr1 = xml_get(2, targetQQ.ToString());
-                    int CoinsTemp1;
-                    if (CoinStr1 != "")
-                    {
-                        CoinsTemp1 = int.Parse(CoinStr1);
-                    }
-                    else
-                    {
-                        CoinsTemp1 = 0;
-                    }
-
-                    string CoinStr2 = xml_get(2, fromQQ.ToString());
-                    int CoinsTemp2;
-                    if (CoinStr2 != "")
-                    {
-                        CoinsTemp2 = int.Parse(CoinStr2);
-                    }
-                    else
-                    {
-                        CoinsTemp2 = 0;
-                    }
-
-                    CoinsTemp1 += 2000;
-                    CoinsTemp2 += 500;
-                    del(2, fromQQ.ToString());
-                    del(2, targetQQ.ToString());
-                    insert(2, fromQQ.ToString(), CoinsTemp2.ToString());
-                    insert(2, targetQQ.ToString(), CoinsTemp1.ToString());
-                    insert(6, fromQQ.ToString(), "推荐人：" + targetQQ.ToString());
-                    CQ.SendPrivateMessage(fromQQ, "推荐人2000游戏币，被推荐人500游戏币奖励已发放到群内银行~快去告诉你的小伙伴吧~");
-                }
-                catch
-                {
-                    CQ.SendPrivateMessage(fromQQ, "出现未知错误");
-                }
-            }
-            else if(msg.IndexOf("催促审核") == 0)
-            {
-                string reply1 = replay_get(1, fromQQ.ToString());
-                string reply3 = replay_get(5, fromQQ.ToString());
-                if (reply1 != "")
-                {
-                    CQ.SendPrivateMessage(fromQQ, "你已经有白名单了");
-                    return;
-                }
-                else if (reply3 == "")
-                {
-                    CQ.SendPrivateMessage(fromQQ, "你还没有绑定id，请回复“绑定”加你的id来绑定");
-                    return;
-                }
-                CQ.SendGroupMessage(567145439, "接待喵糖拌管理：\r\n玩家id：" + reply3 + "\r\nQQ：" + fromQQ.ToString() +
-                                            "\r\n进行了催促审核的操作" +
-                                            "\r\n请及时检查该玩家是否已经提交白名单申请https://wj.qq.com/mine.html" +
-                                            "\r\n如果符合要求，请回复“通过”+qq来给予白名单" +
-                                            "\r\n" + CQ.CQCode_At(1021479600) + CQ.CQCode_At(635309406) + 
-                                            CQ.CQCode_At(1928361196) + CQ.CQCode_At(1420355171) + CQ.CQCode_At(280585112) + 
-                                            CQ.CQCode_At(2561620740) + CQ.CQCode_At(2433380978) + CQ.CQCode_At(2679146075) + 
-                                            CQ.CQCode_At(961726194));
-                CQ.SendPrivateMessage(fromQQ, "已成功催促管理员审核！请耐心等待！如果还没有被审核，你可以选择继续催促！");
-            }
             else
             {
                 CQ.SendPrivateMessage(fromQQ, "人家不认识你了啦");
@@ -558,7 +448,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             // 处理群消息。
             var groupMember = CQ.GetGroupMemberInfo(fromGroup, fromQQ);
             var me = CQ.GetGroupMemberInfo(fromGroup, 751323264);
-            if (fromGroup == 241464054)
+            if (fromGroup == 241464054 && fromQQ != 1000000)
             {
                 string reply;
                 string reply1 = replay_get(1, fromQQ.ToString());
@@ -591,20 +481,60 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                         CQ.SetGroupNickName(fromGroup, fromQQ, reply);
                     //}
                 }
-                else if (fromQQ != 1000000)
+                else if (msg.IndexOf("绑定") == 0)
                 {
-                    if(msg.IndexOf("绑定") == 0)
+                    if (replay_get(1, fromQQ.ToString()) == "" && replay_get(5, fromQQ.ToString()) == "" && qq_get(msg.Replace("绑定", "")) == 0 && CheckID(msg.Replace("绑定", "")))
                     {
-                        CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n你眼瞎吗，我让你私聊我来绑定id");
+                        insert(5, fromQQ.ToString(), msg.Replace("绑定", ""));
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "绑定id:" + msg.Replace("绑定", "") + "成功！" +
+                                                      "\r\n请耐心等待管理员审核白名单申请哟~" +
+                                                      "\r\n如未申请请打开此链接：https://wj.qq.com/s/1308067/143c" +
+                                                      "\r\n如果过去24小时仍未被审核，请回复“催促审核”来进行催促");
+
+                        CQ.SendGroupMessage(567145439, "接待喵糖拌管理：\r\n玩家id：" + msg.Replace("绑定", "") + "\r\n已成功绑定QQ：" + fromQQ.ToString() +
+                                                        "\r\n群名片：" + groupMember.GroupCard +
+                                                        "\r\n请及时检查该玩家是否已经提交白名单申请https://wj.qq.com/mine.html" +
+                                                        "\r\n如果符合要求，请回复“通过”+qq来给予白名单" +
+                                                        "\r\n" + CQ.CQCode_At(1021479600) + CQ.CQCode_At(635309406) + CQ.CQCode_At(1928361196) + CQ.CQCode_At(1420355171) + CQ.CQCode_At(280585112) + CQ.CQCode_At(2561620740) + CQ.CQCode_At(2433380978) + CQ.CQCode_At(2679146075) + CQ.CQCode_At(961726194));
+                    }
+                    else if (!CheckID(msg.Replace("绑定", "")))
+                    {
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "拜托你起个正常的名字好吗？");
                     }
                     else
                     {
-                        CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n检测到你没有绑定服务器id，请私聊我发送“绑定”+“你自己的id”来绑定（没空格），如：\r\n绑定notch\r\n长时间未绑定你将会被移出本群");
-                        CQ.SendGroupMessage(567145439, "接待喵糖拌管理：\r\nQQ：" + fromQQ.ToString() +
-                                "\r\n群名片：" + groupMember.GroupCard +
-                                "\r\n没有绑定id\r\n如长时间没绑请将其移出群");
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你可能已经绑定过了，请私聊腐竹解绑。");
                     }
-
+                }
+                else if (msg == "催促审核")
+                {
+                    string reply3 = replay_get(5, fromQQ.ToString());
+                    if (reply1 != "")
+                    {
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你已经有白名单了");
+                        return;
+                    }
+                    else if (reply3 == "")
+                    {
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你还没有绑定id，请回复“绑定”加你的id来绑定");
+                        return;
+                    }
+                    CQ.SendGroupMessage(567145439, "接待喵糖拌管理：\r\n玩家id：" + reply3 + "\r\nQQ：" + fromQQ.ToString() +
+                                                "\r\n进行了催促审核的操作" +
+                                                "\r\n请及时检查该玩家是否已经提交白名单申请https://wj.qq.com/mine.html" +
+                                                "\r\n如果符合要求，请回复“通过”+qq来给予白名单" +
+                                                "\r\n" + CQ.CQCode_At(1021479600) + CQ.CQCode_At(635309406) +
+                                                CQ.CQCode_At(1928361196) + CQ.CQCode_At(1420355171) + CQ.CQCode_At(280585112) +
+                                                CQ.CQCode_At(2561620740) + CQ.CQCode_At(2433380978) + CQ.CQCode_At(2679146075) +
+                                                CQ.CQCode_At(961726194));
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "已成功催促管理员审核！请耐心等待！如果还没有被审核，你可以选择继续催促！");
+                }
+                else
+                {
+                    CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n检测到你没有绑定服务器id，请在群里发送“绑定”+“你自己的id”来绑定（没空格），如：\r\n绑定notch\r\n长时间未绑定你将会被移出本群");
+                    CQ.SendGroupMessage(567145439, "接待喵糖拌管理：\r\nQQ：" + fromQQ.ToString() +
+                                                "\r\n群名片：" + groupMember.GroupCard +
+                                                "\r\n没有绑定id\r\n如长时间没绑请将其移出群");
                 }
 
                 if (msg == "签到")
@@ -777,6 +707,65 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                         SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你没有通过白名单审核，无法激活账号");
                     }
                 }
+                if (msg.IndexOf("被邀请") == 0)
+                {
+                    string reply3 = replay_get(6, fromQQ.ToString());
+                    if (reply1 == "")
+                    {
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你还没有白名单呢！");
+                        return;
+                    }
+                    else if (reply3 != "")
+                    {
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "已领取过该奖励，请勿再次领取");
+                        return;
+                    }
+                    long targetQQ = 0;
+                    try
+                    {
+                        targetQQ = long.Parse(msg.Replace("被邀请", ""));
+                        if (fromQQ == targetQQ)
+                        {
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "。。。。");
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "不要这样子好吗。。。。哪有自己邀请自己的。。。");
+                            return;
+                        }
+                        string CoinStr1 = xml_get(2, targetQQ.ToString());
+                        int CoinsTemp1;
+                        if (CoinStr1 != "")
+                        {
+                            CoinsTemp1 = int.Parse(CoinStr1);
+                        }
+                        else
+                        {
+                            CoinsTemp1 = 0;
+                        }
+
+                        string CoinStr2 = xml_get(2, fromQQ.ToString());
+                        int CoinsTemp2;
+                        if (CoinStr2 != "")
+                        {
+                            CoinsTemp2 = int.Parse(CoinStr2);
+                        }
+                        else
+                        {
+                            CoinsTemp2 = 0;
+                        }
+
+                        CoinsTemp1 += 2000;
+                        CoinsTemp2 += 500;
+                        del(2, fromQQ.ToString());
+                        del(2, targetQQ.ToString());
+                        insert(2, fromQQ.ToString(), CoinsTemp2.ToString());
+                        insert(2, targetQQ.ToString(), CoinsTemp1.ToString());
+                        insert(6, fromQQ.ToString(), "推荐人：" + targetQQ.ToString());
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "游戏币奖励已发放到群内银行~快去告诉你的小伙伴吧~");
+                    }
+                    catch
+                    {
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "出现未知错误");
+                    }
+                }
             }  //糖拌群
             if (fromGroup == 567145439)
             {
@@ -797,7 +786,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                         del(5, msg.Replace("通过", ""));
                         insert(1, msg.Replace("通过", ""), reply);
                         SendMinecraftMessage(fromGroup, "已通过QQ：" + msg.Replace("通过", "") + "，id：" + reply + "的白名单申请");
-                        CQ.SendPrivateMessage(long.Parse(msg.Replace("通过", "")), "你的白名单申请已经通过了哟~"+
+                        SendMinecraftMessage(241464054, CQ.CQCode_At(long.Parse(msg.Replace("通过", ""))) + "你的白名单申请已经通过了哟~"+
                                                                                 "\r\n当游戏在线的时候在群里发送“激活”即可激活你的账号哦~"+
                                                                                 "\r\n你的id：" + reply +
                                                                                 "\r\n现在回复我“被邀请”加上邀请你进入服务器的人的qq号" +
@@ -1773,7 +1762,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             if (fromGroup == 241464054)
             {
                 CQ.SetGroupAddRequest(responseFlag, CQRequestType.GroupAdd, CQReactType.Allow, "新群友");
-                CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) +   "\r\n欢迎加入本群！请私聊我发送“绑定”+“你自己的id”来绑定（没空格），如：" +
+                CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) +   "\r\n欢迎加入本群！请在群里发送“绑定”+“你自己的id”来绑定（没空格），如：" +
                                                                         "\r\n绑定notch" +
                                                                         "\r\n未绑定id将不会进行白名单审核");
             }
