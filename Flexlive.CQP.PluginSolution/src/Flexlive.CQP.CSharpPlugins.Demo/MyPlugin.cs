@@ -707,7 +707,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                         SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你没有通过白名单审核，无法激活账号");
                     }
                 }
-                if (msg.IndexOf("被邀请") == 0)
+                if (msg.IndexOf("邀请人") == 0)
                 {
                     string reply3 = replay_get(6, fromQQ.ToString());
                     if (reply1 == "")
@@ -723,7 +723,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     long targetQQ = 0;
                     try
                     {
-                        targetQQ = long.Parse(msg.Replace("被邀请", ""));
+                        targetQQ = GetNumberLong(msg);
                         if (fromQQ == targetQQ)
                         {
                             SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "。。。。");
@@ -789,7 +789,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                         SendMinecraftMessage(241464054, CQ.CQCode_At(long.Parse(msg.Replace("通过", ""))) + "你的白名单申请已经通过了哟~"+
                                                                                 "\r\n当游戏在线的时候在群里发送“激活”即可激活你的账号哦~"+
                                                                                 "\r\n你的id：" + reply +
-                                                                                "\r\n现在回复我“被邀请”加上邀请你进入服务器的人的qq号" +
+                                                                                "\r\n现在回复我“邀请人”加上@邀请人" +
                                                                                 "\r\n可以让邀请者和被邀请者领取奖励哟~");
                     }
                     else
@@ -1204,7 +1204,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 {
                     fk = int.Parse(fks);
                 }
-                SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n禁言卡可用于禁言或解禁他人，如果接待权限足够。\r\n使用方法：发送禁言或解禁加上qq即可\r\n禁言时长将为1分钟-10分钟随机\r\n获取方式：抽奖时有十分之一的概率获得\r\n你当前剩余的禁言卡数量：" + fk.ToString());
+                SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n禁言卡可用于禁言或解禁他人，如果接待权限足够。\r\n使用方法：发送禁言或解禁加上@那个人\r\n禁言时长将为1分钟-10分钟随机\r\n获取方式：抽奖时有十分之一的概率获得\r\n你当前剩余的禁言卡数量：" + fk.ToString());
             }
             else if (msg.IndexOf("禁言") == 0)
             {
@@ -1218,11 +1218,9 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 {
                     if ((groupMember.Authority != "管理员" && groupMember.Authority != "群主") || me.Authority == "群主")
                     {
-                        long qq = 0;
-                        string fkqq = msg.Replace("禁言", "");
                         try
                         {
-                            qq = long.Parse(fkqq);
+                            long qq = GetNumberLong(msg);
                             var qqinfo = CQ.GetGroupMemberInfo(fromGroup, qq);
                             if (qqinfo.Authority != "管理员")
                             {
@@ -1267,11 +1265,9 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 {
                     if ((groupMember.Authority != "管理员" && groupMember.Authority != "群主") || me.Authority == "群主")
                     {
-                        long qq = 0;
-                        string fkqq = msg.Replace("解禁", "");
                         try
                         {
-                            qq = long.Parse(fkqq);
+                            long qq = GetNumberLong(msg);
                             var qqinfo = CQ.GetGroupMemberInfo(fromGroup, qq);
                             if (qqinfo.Authority != "管理员")
                             {
@@ -1547,6 +1543,26 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             return count;
         }
 
+        /// <summary>
+        /// 获取字符串中的数字
+        /// </summary>
+        /// <param name="str">字符串</param>
+        /// <returns>数字</returns>
+        public static long GetNumberLong(string str)
+        {
+            long result = 0;
+            if (str != null && str != string.Empty)
+            {
+                // 正则表达式剔除非数字字符（不包含小数点.）
+                str = Regex.Replace(str, @"[^\d.\d]", "");
+                // 如果是数字，则转换为decimal类型
+                if (Regex.IsMatch(str, @"^[+-]?\d*[.]?\d*$"))
+                {
+                    result = long.Parse(str);
+                }
+            }
+            return result;
+        }
 
         /// <summary>  
         /// GET 请求与获取结果  
