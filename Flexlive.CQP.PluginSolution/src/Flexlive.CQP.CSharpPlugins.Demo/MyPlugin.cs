@@ -602,13 +602,17 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 {
                     mcmsg += "|||||ecodel100>" + reply;
                 }
-                if (msg == "存钱500")
+                else if (msg == "存钱500")
                 {
                     mcmsg += "|||||ecodel500>" + reply;
                 }
-                if (msg == "存钱1000")
+                else if (msg == "存钱1000")
                 {
                     mcmsg += "|||||ecodel1000>" + reply;
+                }
+                else if (msg.IndexOf("存钱") == 0)
+                {
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "无效命令，回复帮助查看更多。");
                 }
                 if (msg == "帮助")
                 {
