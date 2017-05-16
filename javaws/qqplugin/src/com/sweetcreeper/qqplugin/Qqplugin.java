@@ -293,6 +293,19 @@ public class Qqplugin extends JavaPlugin implements Listener
 			player="ok";
 			msg="<"+event.getPlayer().getName()+">"+event.getMessage();
 		}
+		
+		if(event.getMessage().indexOf("Ç©µ½")!=-1)
+		{
+			if(player!="none233")
+			{
+				msg+="]][[<qd>"+event.getPlayer().getName();
+			}
+			else
+			{
+				player="ok";
+				msg="<qd>"+event.getPlayer().getName();
+			}
+		}
 		//Bukkit.broadcastMessage("player:"+event.getPlayer().getName()+",msg:"+event.getMessage());
 	}
 	

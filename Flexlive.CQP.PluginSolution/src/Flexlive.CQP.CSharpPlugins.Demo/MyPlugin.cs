@@ -122,6 +122,37 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                     del(2, fromQQ.ToString());
                                     insert(2, fromQQ.ToString(), CoinsTemp.ToString());
                                 }
+                                else if (i.IndexOf("<qd>") == 0)
+                                {
+                                    long fromQQ = qq_get(i.Replace("<qd>", ""));
+                                    if (replay_get(3, fromQQ.ToString()) == System.DateTime.Today.ToString())
+                                    {
+                                        SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "你今天已经签过到啦！");
+                                    }
+                                    else
+                                    {
+                                        string CoinStr = xml_get(2, fromQQ.ToString());
+                                        int CoinsTemp;
+                                        if (CoinStr != "")
+                                        {
+                                            CoinsTemp = int.Parse(CoinStr);
+                                        }
+                                        else
+                                        {
+                                            CoinsTemp = 0;
+                                        }
+                                        Random ran = new Random(System.DateTime.Now.Millisecond);
+                                        int RandKey = ran.Next(0, 501);
+                                        CoinsTemp += RandKey;
+                                        SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "\r\n签到成功！获得游戏币" + RandKey + "枚！\r\n银行内游戏币" + CoinsTemp + "枚\r\n抽奖次数已重置为五次！\r\n回复“帮助”查看如何取钱");
+                                        del(2, fromQQ.ToString());
+                                        del(3, fromQQ.ToString());
+                                        del(4, fromQQ.ToString());
+                                        insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                                        insert(3, fromQQ.ToString(), System.DateTime.Today.ToString());
+                                        insert(4, fromQQ.ToString(), "0");
+                                    }
+                                }
                                 else
                                 {
                                     CQ.SendGroupMessage(241464054, i);
@@ -539,33 +570,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
 
                 if (msg == "签到")
                 {
-                    if(replay_get(3,fromQQ.ToString()) == System.DateTime.Today.ToString())
-                    {
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你今天已经签过到啦！");
-                    }
-                    else
-                    {
-                        string CoinStr = xml_get(2, fromQQ.ToString());
-                        int CoinsTemp;
-                        if (CoinStr!= "")
-                        {
-                            CoinsTemp = int.Parse(CoinStr);
-                        }
-                        else
-                        {
-                            CoinsTemp = 0;
-                        }
-                        Random ran = new Random(System.DateTime.Now.Millisecond);
-                        int RandKey = ran.Next(0, 501);
-                        CoinsTemp += RandKey;
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n签到成功！获得游戏币"+ RandKey + "枚！\r\n银行内游戏币" + CoinsTemp + "枚\r\n回复“帮助”查看如何取钱");
-                        del(2, fromQQ.ToString());
-                        del(3, fromQQ.ToString());
-                        del(4, fromQQ.ToString());
-                        insert(2, fromQQ.ToString(), CoinsTemp.ToString());
-                        insert(3, fromQQ.ToString(), System.DateTime.Today.ToString());
-                        insert(4, fromQQ.ToString(), "0");
-                    }
+                    SendMinecraftMessage(fromGroup, "请在游戏中进行签到操作");
                 }
                 if (msg == "取钱" || msg == "我要取钱")
                 {
@@ -695,7 +700,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     }
                     else
                     {
-                        SendMinecraftMessage(fromGroup, "今日抽奖次数已用完！");
+                        SendMinecraftMessage(fromGroup, "抽奖次数已用完！请用签到补充次数");
                     }
 
                 }
