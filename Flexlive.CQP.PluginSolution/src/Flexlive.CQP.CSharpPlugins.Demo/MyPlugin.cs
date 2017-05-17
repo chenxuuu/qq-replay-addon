@@ -19,6 +19,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
         private static byte[] result = new byte[4096];
         private static int myProt = 2333;   // 端口  
         static Socket serverSocket;
+        
         /// <summary>
         /// 应用初始化，用来初始化应用的基本信息。
         /// </summary>
@@ -40,6 +41,12 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             // 通过 Clientsoket 发送数据  
             Thread myThread = new Thread(ListenClientConnect);
             myThread.Start();
+
+            System.Timers.Timer timer = new System.Timers.Timer();
+            timer.Enabled = true;
+            timer.Interval = 1000;// 执行间隔时间, 单位为毫秒  
+            timer.Start();
+            timer.Elapsed += new System.Timers.ElapsedEventHandler(Timer1_Elapsed);
         }
 
         /// <summary>  
@@ -298,6 +305,30 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
 
         public static int isOpenScan = 0;
         public static int scanCount = 0;
+
+        private void Timer1_Elapsed(object sender, System.Timers.ElapsedEventArgs e)  //定时程序
+        {
+
+            // 得到 hour minute second  如果等于某个值就开始执行某个程序。  
+            int intHour = e.SignalTime.Hour;
+            int intMinute = e.SignalTime.Minute;
+            int intSecond = e.SignalTime.Second;
+            // 定制时间
+            //int iHour = 10;
+            int iMinute = 00;
+            int iSecond = 00;
+
+            // 设置每个整点开始执行  
+            if (intMinute == iMinute && intSecond == iSecond)
+            {
+                SendMinecraftMessage(241464054, "整点发钱！");
+                Random ran = new Random(System.DateTime.Now.Millisecond);
+                mcmsg += "|||||command>eco give * " + ran.Next(0, 2001);
+            }
+
+        }
+
+
         /*
         public void theout(object source, System.Timers.ElapsedEventArgs e)
         {
