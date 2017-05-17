@@ -134,7 +134,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                     long fromQQ = qq_get(i.Replace("<qd>", ""));
                                     if (replay_get(3, fromQQ.ToString()) == System.DateTime.Today.ToString())
                                     {
-                                        SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "你今天已经签过到啦！");
+                                        //SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "你今天已经签过到啦！");
                                     }
                                     else
                                     {
@@ -323,7 +323,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             {
                 SendMinecraftMessage(241464054, "整点发钱！");
                 Random ran = new Random(System.DateTime.Now.Millisecond);
-                mcmsg += "|||||command>eco give * " + ran.Next(0, 2001);
+                mcmsg += "|||||command>eco give * " + ran.Next(0, 200);
             }
 
         }
@@ -601,7 +601,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
 
                 if (msg == "签到")
                 {
-                    SendMinecraftMessage(fromGroup, "请在游戏中进行签到操作");
+                    SendMinecraftMessage(fromGroup, "登陆游戏即可签到~");
                 }
                 if (msg == "取钱" || msg == "我要取钱")
                 {

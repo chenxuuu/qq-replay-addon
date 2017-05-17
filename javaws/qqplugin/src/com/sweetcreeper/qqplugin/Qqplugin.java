@@ -294,18 +294,6 @@ public class Qqplugin extends JavaPlugin implements Listener
 			msg="<"+event.getPlayer().getName()+">"+event.getMessage();
 		}
 		
-		if(event.getMessage().indexOf("签到")!=-1)
-		{
-			if(player!="none233")
-			{
-				msg+="]][[<qd>"+event.getPlayer().getName();
-			}
-			else
-			{
-				player="ok";
-				msg="<qd>"+event.getPlayer().getName();
-			}
-		}
 		//Bukkit.broadcastMessage("player:"+event.getPlayer().getName()+",msg:"+event.getMessage());
 	}
 	
@@ -320,6 +308,16 @@ public class Qqplugin extends JavaPlugin implements Listener
 		{
 			player="ok";
 			msg="<消息>"+event.getPlayer().getName()+"上线了";
+		}
+		
+		if(player!="none233")
+		{
+			msg+="]][[<qd>"+event.getPlayer().getName();
+		}
+		else
+		{
+			player="ok";
+			msg="<qd>"+event.getPlayer().getName();
 		}
 	}
 	
