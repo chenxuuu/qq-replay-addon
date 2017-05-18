@@ -132,33 +132,41 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                 else if (i.IndexOf("<qd>") == 0)
                                 {
                                     long fromQQ = qq_get(i.Replace("<qd>", ""));
-                                    if (replay_get(3, fromQQ.ToString()) == System.DateTime.Today.ToString())
+                                    if (fromQQ != 0)
                                     {
-                                        //SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "你今天已经签过到啦！");
-                                    }
-                                    else
-                                    {
-                                        string CoinStr = xml_get(2, fromQQ.ToString());
-                                        int CoinsTemp;
-                                        if (CoinStr != "")
+                                        if (xml_get(3, fromQQ.ToString()) == System.DateTime.Today.ToString())
                                         {
-                                            CoinsTemp = int.Parse(CoinStr);
+                                            //SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "你今天已经签过到啦！");
                                         }
                                         else
                                         {
-                                            CoinsTemp = 0;
+                                            string CoinStr = xml_get(2, fromQQ.ToString());
+                                            int CoinsTemp;
+                                            if (CoinStr != "")
+                                            {
+                                                CoinsTemp = int.Parse(CoinStr);
+                                            }
+                                            else
+                                            {
+                                                CoinsTemp = 0;
+                                            }
+                                            Random ran = new Random(System.DateTime.Now.Millisecond);
+                                            int RandKey = ran.Next(0, 501);
+                                            CoinsTemp += RandKey;
+                                            SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "\r\n签到成功！获得游戏币" + RandKey + "枚！\r\n银行内游戏币" + CoinsTemp + "枚\r\n抽奖次数已重置为五次！\r\n回复“帮助”查看如何取钱");
+                                            del(2, fromQQ.ToString());
+                                            del(3, fromQQ.ToString());
+                                            del(4, fromQQ.ToString());
+                                            insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                                            insert(3, fromQQ.ToString(), System.DateTime.Today.ToString());
+                                            insert(4, fromQQ.ToString(), "0");
                                         }
-                                        Random ran = new Random(System.DateTime.Now.Millisecond);
-                                        int RandKey = ran.Next(0, 501);
-                                        CoinsTemp += RandKey;
-                                        SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "\r\n签到成功！获得游戏币" + RandKey + "枚！\r\n银行内游戏币" + CoinsTemp + "枚\r\n抽奖次数已重置为五次！\r\n回复“帮助”查看如何取钱");
-                                        del(2, fromQQ.ToString());
-                                        del(3, fromQQ.ToString());
-                                        del(4, fromQQ.ToString());
-                                        insert(2, fromQQ.ToString(), CoinsTemp.ToString());
-                                        insert(3, fromQQ.ToString(), System.DateTime.Today.ToString());
-                                        insert(4, fromQQ.ToString(), "0");
                                     }
+                                    else
+                                    {
+                                        SendMinecraftMessage(241464054, "玩家" + i.Replace("<qd>", "") + "请到群241464054绑定自己的id！");
+                                    }
+                                    
                                 }
                                 else
                                 {
@@ -513,8 +521,8 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             if (fromGroup == 241464054 && fromQQ != 1000000)
             {
                 string reply;
-                string reply1 = replay_get(1, fromQQ.ToString());
-                string reply2 = replay_get(5, fromQQ.ToString());
+                string reply1 = xml_get(1, fromQQ.ToString());
+                string reply2 = xml_get(5, fromQQ.ToString());
                 if (reply1 != "")
                     reply = reply1;
                 else
@@ -545,7 +553,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 }
                 else if (msg.IndexOf("绑定") == 0)
                 {
-                    if (replay_get(1, fromQQ.ToString()) == "" && replay_get(5, fromQQ.ToString()) == "" && qq_get(msg.Replace("绑定", "")) == 0 && CheckID(msg.Replace("绑定", "")))
+                    if (xml_get(1, fromQQ.ToString()) == "" && xml_get(5, fromQQ.ToString()) == "" && qq_get(msg.Replace("绑定", "")) == 0 && CheckID(msg.Replace("绑定", "")))
                     {
                         insert(5, fromQQ.ToString(), msg.Replace("绑定", ""));
                         SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "绑定id:" + msg.Replace("绑定", "") + "成功！" +
@@ -570,7 +578,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 }
                 else if (msg == "催促审核")
                 {
-                    string reply3 = replay_get(5, fromQQ.ToString());
+                    string reply3 = xml_get(5, fromQQ.ToString());
                     if (reply1 != "")
                     {
                         SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你已经有白名单了");
@@ -657,7 +665,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 if (msg == "抽奖")
                 {
                     string CoinStr = xml_get(2, fromQQ.ToString());
-                    string RanCount = replay_get(4, fromQQ.ToString());
+                    string RanCount = xml_get(4, fromQQ.ToString());
                     int CoinsTemp, Counttemp;
                     if (CoinStr != "")
                     {
@@ -712,7 +720,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                             else
                             {
                                 int fk = 0;
-                                string fks = replay_get(10, fromQQ.ToString());
+                                string fks = xml_get(10, fromQQ.ToString());
                                 if(fks != "")
                                 {
                                     fk = int.Parse(fks);
@@ -749,7 +757,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 }
                 if (msg.IndexOf("邀请人") == 0)
                 {
-                    string reply3 = replay_get(6, fromQQ.ToString());
+                    string reply3 = xml_get(6, fromQQ.ToString());
                     if (reply1 == "")
                     {
                         SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你还没有白名单呢！");
@@ -820,7 +828,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 }
                 else if (msg.IndexOf("通过") == 0)
                 {
-                    string reply = replay_get(5, msg.Replace("通过", ""));
+                    string reply = xml_get(5, msg.Replace("通过", ""));
                     if(reply!="")
                     {
                         del(5, msg.Replace("通过", ""));
@@ -1189,7 +1197,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                         CQ.SetGroupMemberGag(fromGroup, fromQQ, RandKey * 3600 * 7 + 2333);
                         SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n恭喜你抽中了超豪华禁言套餐，并附赠10张禁言卡！奖励已发放！");
                         int fk = 0;
-                        string fks = replay_get(10, fromQQ.ToString());
+                        string fks = xml_get(10, fromQQ.ToString());
                         if (fks != "")
                         {
                             fk = int.Parse(fks);
@@ -1203,7 +1211,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                         CQ.SetGroupMemberGag(fromGroup, fromQQ, RandKey * 3600 * 24 * 30);
                         SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n恭喜你抽中了顶级豪华月卡禁言套餐，并附赠200张禁言卡！奖励已发放！");
                         int fk = 0;
-                        string fks = replay_get(10, fromQQ.ToString());
+                        string fks = xml_get(10, fromQQ.ToString());
                         if (fks != "")
                         {
                             fk = int.Parse(fks);
@@ -1220,7 +1228,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     else
                     {
                         int fk = 0;
-                        string fks = replay_get(10, fromQQ.ToString());
+                        string fks = xml_get(10, fromQQ.ToString());
                         if (fks != "")
                         {
                             fk = int.Parse(fks);
@@ -1239,7 +1247,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             else if(msg == "禁言卡")
             {
                 int fk = 0;
-                string fks = replay_get(10, fromQQ.ToString());
+                string fks = xml_get(10, fromQQ.ToString());
                 if (fks != "")
                 {
                     fk = int.Parse(fks);
@@ -1249,7 +1257,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             else if (msg.IndexOf("禁言") == 0)
             {
                 int fk = 0;
-                string fks = replay_get(10, fromQQ.ToString());
+                string fks = xml_get(10, fromQQ.ToString());
                 if (fks != "")
                 {
                     fk = int.Parse(fks);
@@ -1296,7 +1304,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             else if (msg.IndexOf("解禁") == 0)
             {
                 int fk = 0;
-                string fks = replay_get(10, fromQQ.ToString());
+                string fks = xml_get(10, fromQQ.ToString());
                 if (fks != "")
                 {
                     fk = int.Parse(fks);
