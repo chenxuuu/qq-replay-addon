@@ -132,6 +132,8 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                 else if (i.IndexOf("<qd>") == 0)
                                 {
                                     long fromQQ = qq_get(i.Replace("<qd>", ""));
+                                    if(fromQQ==0)
+                                        fromQQ = qq_get_unregister(i.Replace("<qd>", ""));
                                     if (fromQQ != 0)
                                     {
                                         if (xml_get(3, fromQQ.ToString()) == System.DateTime.Today.ToString())
@@ -1456,6 +1458,30 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             }
 
             if(ansall != "")
+            {
+                ansqq = long.Parse(ansall);
+            }
+
+            return ansqq;
+        }
+
+        public static long qq_get_unregister(string msg)
+        {
+            long group = 5;
+            dircheck(group);
+            XElement root = XElement.Load(path + group + ".xml");
+            string ansall = "";
+            long ansqq = 0;
+            foreach (XElement mm in root.Elements("msginfo"))
+            {
+                if (msg == mm.Element("ans").Value)
+                {
+                    ansall = mm.Element("msg").Value;
+                    break;
+                }
+            }
+
+            if (ansall != "")
             {
                 ansqq = long.Parse(ansall);
             }
