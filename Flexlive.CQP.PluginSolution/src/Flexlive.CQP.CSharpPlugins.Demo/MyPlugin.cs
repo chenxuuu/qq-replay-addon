@@ -166,7 +166,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                     }
                                     else
                                     {
-                                        SendMinecraftMessage(241464054, "玩家" + i.Replace("<qd>", "") + "请到群241464054绑定自己的id！");
+                                        //SendMinecraftMessage(241464054, "玩家" + i.Replace("<qd>", "") + "请到群241464054绑定自己的id！");
                                         mcmsg += "|||||command>kick " + i.Replace("<qd>", "") + " 请到群241464054绑定自己的id！";
                                     }
                                     
