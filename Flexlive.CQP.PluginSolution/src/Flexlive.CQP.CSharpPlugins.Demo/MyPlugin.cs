@@ -1372,6 +1372,8 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 string url = msg;
                 url = msg.Replace("找番号", "");
                 url = msg.Replace("查番号", "");
+                url = msg.Replace("查磁链", "");
+                url = msg.Replace("找磁链", "");
                 string html = HttpGet("http://www.cilisou.cn/s.php", "q=" + url.Replace(" ", "-"));
                 if (html == "")
                 {
