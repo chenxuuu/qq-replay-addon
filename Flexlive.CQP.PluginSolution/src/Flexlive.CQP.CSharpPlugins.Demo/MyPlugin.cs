@@ -1370,10 +1370,10 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             if (msg.IndexOf("找番号") == 0 || msg.IndexOf("查番号") == 0 || msg.IndexOf("查磁链") == 0 || msg.IndexOf("找磁链") == 0)
             {
                 string url = msg;
-                url = msg.Replace("找番号", "");
-                url = msg.Replace("查番号", "");
-                url = msg.Replace("查磁链", "");
-                url = msg.Replace("找磁链", "");
+                url = url.Replace("找番号", "");
+                url = url.Replace("查番号", "");
+                url = url.Replace("查磁链", "");
+                url = url.Replace("找磁链", "");
                 string html = HttpGet("http://www.cilisou.cn/s.php", "q=" + url.Replace(" ", "-"));
                 if (html == "")
                 {
@@ -1391,7 +1391,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                 magnets += "\r\n" + item.Value.Replace("magnet:\\?xt=urn:btih:", "").Replace("\" target=\"_blank\"", "");
                         }
                     }
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "为你找到以下磁链：" + magnets);
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "为你找到"+ url.Replace(" ", "-") + "的以下磁链：" + magnets);
                 }
             }
 
