@@ -1382,13 +1382,13 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 else
                 {
                     string magnets = "";
-                    Regex reg = new Regex("magnet:\\?xt=urn:btih:(.*)\" target=\"_blank\"", RegexOptions.IgnoreCase);
+                    Regex reg = new Regex("magnet:\\?xt=urn:btih:(.*)&dn=", RegexOptions.IgnoreCase);
                     MatchCollection matchs = reg.Matches(html);
                     foreach (Match item in matchs)
                     {
                         if (item.Success)
                         {
-                                magnets += "\r\n" + item.Value.Replace("magnet:\\?xt=urn:btih:", "").Replace("\" target=\"_blank\"", "");
+                                magnets += "\r\n" + item.Value.Replace("magnet:\\?xt=urn:btih:", "").Replace("&dn=", "");
                         }
                     }
                     SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "为你找到"+ url.Replace(" ", "-") + "的以下磁链：" + magnets);
