@@ -1367,6 +1367,32 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 SendMinecraftMessage(fromGroup, replay_common);
             }
 
+            if (msg.IndexOf("找番号") == 0 || msg.IndexOf("查番号") == 0 || msg.IndexOf("查磁链") == 0 || msg.IndexOf("找磁链") == 0)
+            {
+                string url = msg;
+                url = msg.Replace("找番号", "");
+                url = msg.Replace("查番号", "");
+                string html = HttpGet("http://www.cilisou.cn/s.php", "q=" + url.Replace(" ", "-"));
+                if (html == "")
+                {
+                    SendMinecraftMessage(fromGroup, "加载失败");
+                }
+                else
+                {
+                    string magnets = "";
+                    Regex reg = new Regex("magnet:\\?xt=urn:btih:(.*)\" target=\"_blank\"", RegexOptions.IgnoreCase);
+                    MatchCollection matchs = reg.Matches(html);
+                    foreach (Match item in matchs)
+                    {
+                        if (item.Success)
+                        {
+                                magnets += "\r\n" + item.Value.Replace("magnet:\\?xt=urn:btih:", "").Replace("\" target=\"_blank\"", "");
+                        }
+                    }
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "为你找到以下磁链：" + magnets);
+                }
+            }
+
             if(fromGroup== 115872123 && msg.IndexOf("跨群") == 0)
             {
                 SendMinecraftMessage(567477706, groupMember.GroupCard + "(" + fromQQ + ")\r\n" + msg.Replace("跨群", "") + "\r\n消息来自某里世界，以“跨群”开头的消息可跨群发送");
@@ -1378,7 +1404,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
 
             if (msg == "开车")
             {
-                SendMinecraftMessage(fromGroup, "magnet:?xt=urn:btih:" + GetRandomString(40, true, false, false, false, "ABCDEF"));
+                SendMinecraftMessage(fromGroup, "假车：magnet:?xt=urn:btih:" + GetRandomString(40, true, false, false, false, "ABCDEF"));
             }
         }
 
@@ -1644,15 +1670,16 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
         /// </summary>  
         public static string HttpGet(string Url, string postDataStr)
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Url + (postDataStr == "" ? "" : "?") + postDataStr);
-            request.Method = "GET";
-            request.ContentType = "text/html;charset=UTF-8";
-
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            Stream myResponseStream = response.GetResponseStream();
-            StreamReader myStreamReader = new StreamReader(myResponseStream, Encoding.UTF8);
             try
             {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Url + (postDataStr == "" ? "" : "?") + postDataStr);
+                request.Method = "GET";
+                request.ContentType = "text/html;charset=UTF-8";
+
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                Stream myResponseStream = response.GetResponseStream();
+                StreamReader myStreamReader = new StreamReader(myResponseStream, Encoding.UTF8);
+
                 string retString = myStreamReader.ReadToEnd();
                 myStreamReader.Close();
                 myResponseStream.Close();
