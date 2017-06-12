@@ -579,29 +579,6 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                         SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你可能已经绑定过了，请私聊腐竹解绑。");
                     }
                 }
-                else if (msg == "催促审核")
-                {
-                    string reply3 = xml_get(5, fromQQ.ToString());
-                    if (reply1 != "")
-                    {
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你已经有白名单了");
-                        return;
-                    }
-                    else if (reply3 == "")
-                    {
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你还没有绑定id，请回复“绑定”加你的id来绑定");
-                        return;
-                    }
-                    CQ.SendGroupMessage(567145439, "接待喵糖拌管理：\r\n玩家id：" + reply3 + "\r\nQQ：" + fromQQ.ToString() +
-                                                "\r\n进行了催促审核的操作" +
-                                                "\r\n请及时检查该玩家是否已经提交白名单申请https://wj.qq.com/mine.html" +
-                                                "\r\n如果符合要求，请回复“通过”+qq来给予白名单" +
-                                                "\r\n" + CQ.CQCode_At(1021479600) + CQ.CQCode_At(635309406) +
-                                                CQ.CQCode_At(1928361196) + CQ.CQCode_At(1420355171) + CQ.CQCode_At(280585112) +
-                                                CQ.CQCode_At(2561620740) + CQ.CQCode_At(2433380978) + CQ.CQCode_At(2679146075) +
-                                                CQ.CQCode_At(961726194));
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "已成功催促管理员审核！请耐心等待！如果还没有被审核，你可以选择继续催促！");
-                }
                 else
                 {
                     CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n检测到你没有绑定服务器id，请在群里发送“绑定”+“你自己的id”来绑定（没空格），如：\r\n绑定notch\r\n长时间未绑定你将会被移出本群");
@@ -814,8 +791,31 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     }
                     catch
                     {
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "出现未知错误");
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "命令错误！");
                     }
+                }
+                if (msg == "催促审核")
+                {
+                    string reply3 = xml_get(5, fromQQ.ToString());
+                    if (reply1 != "")
+                    {
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你已经有白名单了");
+                        return;
+                    }
+                    else if (reply3 == "")
+                    {
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你还没有绑定id，请回复“绑定”加你的id来绑定");
+                        return;
+                    }
+                    CQ.SendGroupMessage(567145439, "接待喵糖拌管理：\r\n玩家id：" + reply3 + "\r\nQQ：" + fromQQ.ToString() +
+                                                "\r\n进行了催促审核的操作" +
+                                                "\r\n请及时检查该玩家是否已经提交白名单申请https://wj.qq.com/mine.html" +
+                                                "\r\n如果符合要求，请回复“通过”+qq来给予白名单" +
+                                                "\r\n" + CQ.CQCode_At(1021479600) + CQ.CQCode_At(635309406) +
+                                                CQ.CQCode_At(1928361196) + CQ.CQCode_At(1420355171) + CQ.CQCode_At(280585112) +
+                                                CQ.CQCode_At(2561620740) + CQ.CQCode_At(2433380978) + CQ.CQCode_At(2679146075) +
+                                                CQ.CQCode_At(961726194));
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "已成功催促管理员审核！请耐心等待！如果还没有被审核，你可以选择继续催促！");
                 }
             }  //糖拌群
             if (fromGroup == 567145439)
@@ -1369,6 +1369,11 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
 
             if (msg.IndexOf("找番号") == 0 || msg.IndexOf("查番号") == 0 || msg.IndexOf("查磁链") == 0 || msg.IndexOf("找磁链") == 0)
             {
+                if (System.DateTime.Now.Hour > 5)
+                {
+                    SendMinecraftMessage(fromGroup, "开车时间为23:00-6:00");
+                    return;
+                }
                 string url = msg;
                 url = url.Replace("找番号", "");
                 url = url.Replace("查番号", "");
@@ -1388,10 +1393,10 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     {
                         if (item.Success)
                         {
-                                magnets += "\r\n" + item.Value.Replace("magnet:\\?xt=urn:btih:", "").Replace("&dn=", "");
+                                magnets += "\r\n" + item.Value.Replace("magnet:?xt=urn:btih:", "").Replace("&dn=", "");
                         }
                     }
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "为你找到"+ url.Replace(" ", "-") + "的以下磁链：" + magnets);
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n"+ url.Replace(" ", "-") + "的资源：" + magnets);
                 }
             }
 
