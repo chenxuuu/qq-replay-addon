@@ -1267,13 +1267,13 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 }
                 if (fk > 0)
                 {
-                    if ((groupMember.Authority != "管理员" && groupMember.Authority != "群主") || me.Authority == "群主")
+                    if ((groupMember.Authority != "管理员" && groupMember.Authority != "群主") || me.Authority == "群主" || fromGroup == 241464054)
                     {
                         try
                         {
                             long qq = GetNumberLong(msg);
                             var qqinfo = CQ.GetGroupMemberInfo(fromGroup, qq);
-                            if (qqinfo.Authority != "管理员")
+                            if (qqinfo.Authority != "管理员" || fromGroup == 241464054)
                             {
                                 Random ran = new Random(System.DateTime.Now.Millisecond);
                                 int RandKey = ran.Next(60, 600);
@@ -1314,13 +1314,13 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 }
                 if (fk > 0)
                 {
-                    if ((groupMember.Authority != "管理员" && groupMember.Authority != "群主") || me.Authority == "群主")
+                    if ((groupMember.Authority != "管理员" && groupMember.Authority != "群主") || me.Authority == "群主" || fromGroup == 241464054)
                     {
                         try
                         {
                             long qq = GetNumberLong(msg);
                             var qqinfo = CQ.GetGroupMemberInfo(fromGroup, qq);
-                            if (qqinfo.Authority != "管理员")
+                            if (qqinfo.Authority != "管理员" || fromGroup == 241464054)
                             {
                                 CQ.SetGroupMemberGag(fromGroup, qq, 0);
                                 SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n已将" + qq + "解除禁言");
@@ -1371,7 +1371,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             {
                 if (System.DateTime.Now.Hour > 5)
                 {
-                    SendMinecraftMessage(fromGroup, "开车时间为23:00-6:00");
+                    SendMinecraftMessage(fromGroup, "开车时间为00:00-6:00");
                     return;
                 }
                 string url = msg;
@@ -1770,7 +1770,8 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 Random ran = new Random(System.DateTime.Now.DayOfYear);
                 int lunch_key = ran.Next(0, 10);
                 int dinner_key = ran.Next(0, 12);
-                CQ.SendDiscussMessage(fromDiscuss, String.Format("今天推荐你吃：\r\n午饭：{0}\r\n晚饭：{1}\r\n今日日期：{2}", lunch[lunch_key], dinner[dinner_key], System.DateTime.Today.ToString().Replace(" 0:00:00", "")));
+                CQ.SendDiscussMessage(fromDiscuss, String.Format("今天推荐你吃：\r\n午饭：{0}\r\n晚饭：{1}\r\n今日日期：{2}", 
+                            lunch[lunch_key], dinner[dinner_key], System.DateTime.Today.ToString().Replace(" 0:00:00", "")));
             }
 
             /*
