@@ -48,7 +48,8 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             timer.Start();
             timer.Elapsed += new System.Timers.ElapsedEventHandler(Timer1_Elapsed);
         }
-
+        private static int broadcastNew = 0;
+        private static string broadcastNewID = "";
         /// <summary>  
         /// 监听客户端连接  
         /// </summary>  
@@ -64,6 +65,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 receiveNumber = myClientSocket.Receive(result);
                 //Console.WriteLine("接收客户端 {0} 消息{1}", myClientSocket.RemoteEndPoint.ToString(), Encoding.UTF8.GetString(result, 0, receiveNumber));
                 string replay = Encoding.UTF8.GetString(result, 0, receiveNumber);
+                replay = RemoveColorCode(replay);
                 if (replay.IndexOf("<") != -1)
                 {
                     
@@ -153,7 +155,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                                 CoinsTemp = 0;
                                             }
                                             Random ran = new Random(System.DateTime.Now.Millisecond);
-                                            int RandKey = ran.Next(0, 501);
+                                            int RandKey = ran.Next(100, 501);
                                             CoinsTemp += RandKey;
                                             SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "\r\n签到成功！获得游戏币" + RandKey + "枚！\r\n银行内游戏币" + CoinsTemp + "枚\r\n抽奖次数已重置为五次！\r\n回复“帮助”查看如何取钱");
                                             del(2, fromQQ.ToString());
@@ -167,11 +169,13 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                     else
                                     {
                                         //SendMinecraftMessage(241464054, "玩家" + i.Replace("<qd>", "") + "请到群241464054绑定自己的id！");
-                                        mcmsg += "|||||command>kick " + i.Replace("<qd>", "") + " 请到群241464054绑定自己的id！";
+                                        mcmsg += "|||||command>tm msg " + i.Replace("<qd>", "") + " 请打开sweetcreeper.com并加群！";
+                                        broadcastNew = 1;
+                                        broadcastNewID = i.Replace("<qd>", "");
                                     }
                                     
                                 }
-                                else
+                                else if(i.IndexOf("tm msg ") == -1)
                                 {
                                     CQ.SendGroupMessage(241464054, i);
                                     ReplayGroupStatic(241464054, i);
@@ -236,7 +240,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                             del(2, fromQQ.ToString());
                             insert(2, fromQQ.ToString(), CoinsTemp.ToString());
                         }
-                        else
+                        else if (replay.IndexOf("tm msg ") == -1)
                         {
                             CQ.SendGroupMessage(241464054, replay);
                             ReplayGroupStatic(241464054, replay);
@@ -335,6 +339,16 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 SendMinecraftMessage(241464054, "整点发钱！");
                 Random ran = new Random(System.DateTime.Now.Millisecond);
                 mcmsg += "|||||command>eco give * " + ran.Next(0, 200);
+            }
+
+            if(broadcastNew != 0)
+            {
+                mcmsg += "|||||command>tm msg " + broadcastNewID + " 请打开sweetcreeper.com并加群！";
+                broadcastNew++;
+            }
+            if(broadcastNew == 600)
+            {
+                broadcastNew = 0;
             }
 
         }
@@ -489,7 +503,29 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 return false;
             }
         }
-
+        public static string RemoveColorCode(string s)
+        {
+            s.Replace("§1", "");
+            s.Replace("§2", "");
+            s.Replace("§3", "");
+            s.Replace("§4", "");
+            s.Replace("§5", "");
+            s.Replace("§6", "");
+            s.Replace("§7", "");
+            s.Replace("§8", "");
+            s.Replace("§9", "");
+            s.Replace("§0", "");
+            s.Replace("§a", "");
+            s.Replace("§b", "");
+            s.Replace("§c", "");
+            s.Replace("§d", "");
+            s.Replace("§e", "");
+            s.Replace("§f", "");
+            s.Replace("§l", "");
+            s.Replace("§m", "");
+            s.Replace("§n", "");
+            return s;
+        }
 
         public static void SendMinecraftMessage(long fromGroup, string msg)
         {
@@ -541,10 +577,32 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                         CQ.SendGroupMessage(fromGroup, "封禁" + reply + "命令执行成功！");
                     }
                 }
-                else if(msg.IndexOf("人数") != -1 || msg.IndexOf("少人") != -1 || msg.IndexOf("谁在") != -1 || msg.IndexOf("有谁") != -1 || msg.IndexOf("在线") != -1)
+                else if(msg == "在线")
                 {
-                    mcmsg += "|||||sum>我要看人数";
-                    mcmsg += "|||||[群消息]<" + reply + ">" + msg;
+
+                    string CoinStr = xml_get(2, fromQQ.ToString());
+                    int CoinsTemp;
+                    if (CoinStr != "")
+                    {
+                        CoinsTemp = int.Parse(CoinStr);
+                    }
+                    else
+                    {
+                        CoinsTemp = 0;
+                    }
+                    if(CoinsTemp < 100)
+                    {
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n群银行游戏币不足100，无法查询在线人数");
+                    }
+                    else
+                    {
+                        CoinsTemp -= 100;
+                        mcmsg += "|||||sum>我要看人数";
+                        mcmsg += "|||||[群消息]<" + reply + ">" + msg;
+                        del(2, fromQQ.ToString());
+                        insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n已扣除100游戏币作为查询在线人数的服务费");
+                    }
                 }
                 else if (reply != "")
                 {
@@ -568,7 +626,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                                         "\r\n群名片：" + groupMember.GroupCard +
                                                         "\r\n请及时检查该玩家是否已经提交白名单申请https://wj.qq.com/mine.html" +
                                                         "\r\n如果符合要求，请回复“通过”+qq来给予白名单" +
-                                                        "\r\n" + CQ.CQCode_At(1021479600) + CQ.CQCode_At(635309406) + CQ.CQCode_At(1928361196) + CQ.CQCode_At(1420355171) + CQ.CQCode_At(280585112) + CQ.CQCode_At(2561620740) + CQ.CQCode_At(2433380978) + CQ.CQCode_At(2679146075) + CQ.CQCode_At(961726194));
+                                                        "\r\n如果不符合要求，请回复“不通过”+qq+空格+原因来给打回去重填");
                     }
                     else if (!CheckID(msg.Replace("绑定", "")))
                     {
@@ -589,7 +647,33 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
 
                 if (msg == "签到")
                 {
-                    SendMinecraftMessage(fromGroup, "登陆游戏即可签到~");
+                    if (xml_get(3, fromQQ.ToString()) == System.DateTime.Today.ToString())
+                    {
+                        SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "你今天已经签过到啦！");
+                    }
+                    else
+                    {
+                        string CoinStr = xml_get(2, fromQQ.ToString());
+                        int CoinsTemp;
+                        if (CoinStr != "")
+                        {
+                            CoinsTemp = int.Parse(CoinStr);
+                        }
+                        else
+                        {
+                            CoinsTemp = 0;
+                        }
+                        Random ran = new Random(System.DateTime.Now.Millisecond);
+                        int RandKey = ran.Next(0, 100);
+                        CoinsTemp += RandKey;
+                        SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "\r\n签到成功！获得游戏币" + RandKey + "枚！\r\n银行内游戏币" + CoinsTemp + "枚\r\n抽奖次数已重置为一次！\r\n回复“帮助”查看如何取钱\r\n如果登陆游戏进行签到的话可以获得五倍金币、五次抽奖机会哦~");
+                        del(2, fromQQ.ToString());
+                        del(3, fromQQ.ToString());
+                        del(4, fromQQ.ToString());
+                        insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                        insert(3, fromQQ.ToString(), System.DateTime.Today.ToString());
+                        insert(4, fromQQ.ToString(), "4");
+                    }
                 }
                 if (msg == "取钱" || msg == "我要取钱")
                 {
@@ -780,14 +864,14 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                             CoinsTemp2 = 0;
                         }
 
-                        CoinsTemp1 += 2000;
-                        CoinsTemp2 += 500;
+                        CoinsTemp1 += 3000;
+                        CoinsTemp2 += 1000;
                         del(2, fromQQ.ToString());
                         del(2, targetQQ.ToString());
                         insert(2, fromQQ.ToString(), CoinsTemp2.ToString());
                         insert(2, targetQQ.ToString(), CoinsTemp1.ToString());
                         insert(6, fromQQ.ToString(), "推荐人：" + targetQQ.ToString());
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "游戏币奖励已发放到群内银行~快去告诉你的小伙伴吧~");
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "游戏币奖励已发放到群内银行~给你1000，给你的小伙伴3000~快去告诉你的小伙伴吧~");
                     }
                     catch
                     {
@@ -811,10 +895,11 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                                 "\r\n进行了催促审核的操作" +
                                                 "\r\n请及时检查该玩家是否已经提交白名单申请https://wj.qq.com/mine.html" +
                                                 "\r\n如果符合要求，请回复“通过”+qq来给予白名单" +
+                                                "\r\n如果不符合要求，请回复“不通过”+qq+空格+原因来给打回去重填" +
                                                 "\r\n" + CQ.CQCode_At(1021479600) + CQ.CQCode_At(635309406) +
                                                 CQ.CQCode_At(1928361196) + CQ.CQCode_At(1420355171) + CQ.CQCode_At(280585112) +
                                                 CQ.CQCode_At(2561620740) + CQ.CQCode_At(2433380978) + CQ.CQCode_At(2679146075) +
-                                                CQ.CQCode_At(961726194));
+                                                CQ.CQCode_At(961726194) + CQ.CQCode_At(185939950));
                     SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "已成功催促管理员审核！请耐心等待！如果还没有被审核，你可以选择继续催促！");
                 }
             }  //糖拌群
@@ -848,6 +933,42 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                         SendMinecraftMessage(fromGroup, "参数不对或该玩家不在待审核玩家数据中");
                     }
                     
+                }
+                else if (msg.IndexOf("不通过") == 0)
+                {
+                    string reply = "";
+                    string reason = "";
+                    string qq_get = "";
+                    string[] str2;
+                    int count_temp = 0;
+                    str2 = msg.Replace("不通过","").Split(' ');
+                    foreach (string i in str2)
+                    {
+                        if (count_temp == 0)
+                        {
+                            reply = xml_get(5, i);
+                            qq_get = i;
+                            count_temp++;
+                        }
+                        else if (count_temp == 1)
+                        {
+                            reason += i + " ";
+                        }
+                    }
+                    
+                    if (reply != "")
+                    {
+                        SendMinecraftMessage(fromGroup, "已不通过QQ：" + qq_get + "，id：" + reply + "的白名单申请，原因：" + reason);
+                        SendMinecraftMessage(241464054, CQ.CQCode_At(long.Parse(qq_get)) + "你的白名单申请并没有通过。" +
+                                                                                "\r\n原因：" + reason +
+                                                                                "\r\n请按照原因重新填写白名单：https://wj.qq.com/s/1308067/143c" +
+                                                                                "\r\n你的id：" + reply);
+                    }
+                    else
+                    {
+                        SendMinecraftMessage(fromGroup, "参数不对或该玩家不在待审核玩家数据中");
+                    }
+
                 }
             }  //糖拌管理群
 
@@ -1369,7 +1490,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
 
             if (msg.IndexOf("找番号") == 0 || msg.IndexOf("查番号") == 0 || msg.IndexOf("查磁链") == 0 || msg.IndexOf("找磁链") == 0)
             {
-                if (System.DateTime.Now.Hour > 5)
+                if (System.DateTime.Now.Hour > 5 && fromGroup != 115872123)
                 {
                     SendMinecraftMessage(fromGroup, "开车时间为00:00-6:00");
                     return;
@@ -1830,7 +1951,17 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
         {
             // 处理群事件-群成员减少。
             //CQ.SendGroupMessage(fromGroup, String.Format("[{0}]群员{2}({1}){3}", CQ.ProxyType, beingOperateQQ, CQE.GetQQName(beingOperateQQ), subType == 1 ? "退群。" : String.Format("被{0}({1})踢除。", CQE.GetQQName(fromQQ), fromQQ)));
-            CQ.SendGroupMessage(fromGroup, String.Format("群员{2}({1}){3}", CQ.ProxyType, beingOperateQQ, CQE.GetQQName(beingOperateQQ), subType == 1 ? "因为精神失常离开了本群！" : String.Format("因为精神失常，被{0}({1})移出了本群！", CQE.GetQQName(fromQQ), fromQQ)));
+            string reply = xml_get(1, beingOperateQQ.ToString());
+            if (fromGroup == 241464054 && reply != "")
+            {
+                del(1, beingOperateQQ.ToString());
+                del(5, beingOperateQQ.ToString());
+                CQ.SendGroupMessage(fromGroup, $"玩家{reply}（{beingOperateQQ}）的白名单已被删除。");
+            }
+            else
+            {
+                CQ.SendGroupMessage(fromGroup, String.Format("群员{2}({1}){3}", CQ.ProxyType, beingOperateQQ, CQE.GetQQName(beingOperateQQ), subType == 1 ? "因为精神失常离开了本群！" : String.Format("因为精神失常，被{0}({1})移出了本群！", CQE.GetQQName(fromQQ), fromQQ)));
+            }
         }
 
         /// <summary>
@@ -1845,6 +1976,12 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
         {
             // 处理群事件-群成员增加。
             //CQ.SendGroupMessage(fromGroup, String.Format("[{0}]群里来了新人{2}({1})，管理员{3}({4}){5}", CQ.ProxyType, beingOperateQQ, CQE.GetQQName(beingOperateQQ), CQE.GetQQName(fromQQ), fromQQ, subType == 1 ? "同意。" : "邀请。"));
+            if (fromGroup == 241464054)
+            {
+                CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n欢迎加入本群！请在群里发送“绑定”+“你自己的id”来绑定（没空格），如：" +
+                                                                        "\r\n绑定notch" +
+                                                                        "\r\n未绑定id将不会进行白名单审核");
+            }
         }
 
         /// <summary>
@@ -1885,13 +2022,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
         public override void RequestAddGroup(int subType, int sendTime, long fromGroup, long fromQQ, string msg, string responseFlag)
         {
             // 处理请求-群添加。
-            if (fromGroup == 241464054)
-            {
-                CQ.SetGroupAddRequest(responseFlag, CQRequestType.GroupAdd, CQReactType.Allow, "新群友");
-                CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) +   "\r\n欢迎加入本群！请在群里发送“绑定”+“你自己的id”来绑定（没空格），如：" +
-                                                                        "\r\n绑定notch" +
-                                                                        "\r\n未绑定id将不会进行白名单审核");
-            }
+            //CQ.SetGroupAddRequest(responseFlag, CQRequestType.GroupAdd, CQReactType.Allow, "新群友");
         }
     }
 }

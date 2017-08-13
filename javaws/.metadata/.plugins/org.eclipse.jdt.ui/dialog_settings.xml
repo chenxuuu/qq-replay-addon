@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
-	<item value="E:\刘晨旭\作品\exe作品\qq-replay-addon\javaws\qqplugin" key="org.eclipse.jdt.ui.lastextjar"/>
+	<item value="E:\Desktop\server1.10\plugins" key="org.eclipse.jdt.ui.lastextjar"/>
 	<item value="2" key="org.eclipse.jdt.ui.last.selected.jre.kind2"/>
+	<section name="ProblemSeveritiesConfigurationBlock">
+		<item value="false" key="expanded2"/>
+		<item value="false" key="expanded1"/>
+		<item value="false" key="expanded4"/>
+		<item value="true" key="expanded3"/>
+		<item value="false" key="expanded6"/>
+		<item value="false" key="expanded5"/>
+		<item value="false" key="expanded7"/>
+		<item value="false" key="expanded0"/>
+	</section>
 	<section name="org.eclipse.jdt.internal.ui.packageview.PackageExplorerPart">
 		<item value="2" key="layout"/>
 		<item value="true" key="group_libraries"/>
@@ -9,9 +19,19 @@
 		<item value="1" key="rootMode"/>
 		<item value="false" key="linkWithEditor"/>
 	</section>
+	<section name="org.eclipse.jdt.internal.ui.wizards.buildpaths.NewVariableEntryDialog">
+		<item value="671" key="DIALOG_WIDTH"/>
+		<item value="1|Microsoft YaHei UI|9.0|0|WINDOWS|1|-15|0|0|0|400|0|0|0|1|0|0|0|0|Microsoft YaHei UI" key="DIALOG_FONT_NAME"/>
+		<item value="511" key="DIALOG_HEIGHT"/>
+		<item value="88" key="DIALOG_X_ORIGIN"/>
+		<item value="-26" key="DIALOG_Y_ORIGIN"/>
+	</section>
 	<section name="NewClassWizardPage">
 		<item value="false" key="create_constructor"/>
 		<item value="true" key="create_unimplemented"/>
+	</section>
+	<section name="ClasspathContainerSelectionPage">
+		<item value="0" key="index"/>
 	</section>
 	<section name="OptionalMessageDialog.hide.">
 		<item value="true" key="org.eclipse.jdt.ui.typecomment.deprecated"/>
@@ -23,7 +43,7 @@
 	<section name="quick_assist_proposal_size">
 	</section>
 	<section name="BuildPathsPropertyPage">
-		<item value="3" key="pageIndex"/>
+		<item value="2" key="pageIndex"/>
 	</section>
 	<section name="completion_proposal_size">
 	</section>
@@ -47,6 +67,9 @@
 		<item value="false" key="JarManifestWizardPage.SAVE_MANIFEST"/>
 		<item value="false" key="JarPackageWizardPage.EXPORT_OUTPUT_FOLDER"/>
 		<list key="JarPackageWizardPage.DESTINATION_NAMES_ID">
+			<item value="E:\Desktop\server1.10\plugins\test.jar"/>
+			<item value="E:\Desktop\atest.jar"/>
+			<item value="E:\Desktop\q.jar"/>
 			<item value="E:\Desktop\qqplugin.jar"/>
 			<item value="E:\Desktop\javaws\qqplugin.jar"/>
 			<item value="E:\Desktop\1.10server\plugins\qqplugin.jar"/>
