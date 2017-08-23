@@ -144,8 +144,10 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                         }
                                         else
                                         {
+                                            string last_time = xml_get(3, fromQQ.ToString());
+                                            string qdTimesStr = xml_get(7, fromQQ.ToString());
                                             string CoinStr = xml_get(2, fromQQ.ToString());
-                                            int CoinsTemp;
+                                            int CoinsTemp, qdTimesTemp;
                                             if (CoinStr != "")
                                             {
                                                 CoinsTemp = int.Parse(CoinStr);
@@ -154,14 +156,32 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                             {
                                                 CoinsTemp = 0;
                                             }
+                                            if (qdTimesStr != "")
+                                            {
+                                                qdTimesTemp = int.Parse(qdTimesStr);
+                                            }
+                                            else
+                                            {
+                                                qdTimesTemp = 1;
+                                            }
+                                            if (xml_get(3, fromQQ.ToString()) == System.DateTime.Today.AddDays(-1).ToString())
+                                            {
+                                                qdTimesTemp++;
+                                            }
+                                            else
+                                            {
+                                                qdTimesTemp = 1;
+                                            }
                                             Random ran = new Random(System.DateTime.Now.Millisecond);
                                             int RandKey = ran.Next(100, 501);
-                                            CoinsTemp += RandKey;
-                                            SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "\r\n签到成功！获得游戏币" + RandKey + "枚！\r\n银行内游戏币" + CoinsTemp + "枚\r\n抽奖次数已重置为五次！\r\n回复“帮助”查看如何取钱");
+                                            CoinsTemp += RandKey + qdTimesTemp * 5;
+                                            SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "\r\n签到成功！已连续签到" + qdTimesTemp.ToString() + "天\r\n获得游戏币" + RandKey + "+"+ qdTimesTemp.ToString() + "*5枚！\r\n银行内游戏币" + CoinsTemp + "枚\r\n抽奖次数已重置为五次！\r\n（可使用“五连抽指令”）\r\n回复“帮助”查看如何取钱");
                                             del(2, fromQQ.ToString());
                                             del(3, fromQQ.ToString());
                                             del(4, fromQQ.ToString());
+                                            del(7, fromQQ.ToString());
                                             insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                                            insert(7, fromQQ.ToString(), qdTimesTemp.ToString());
                                             insert(3, fromQQ.ToString(), System.DateTime.Today.ToString());
                                             insert(4, fromQQ.ToString(), "0");
                                         }
@@ -175,7 +195,12 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                     }
                                     
                                 }
-                                else if(i.IndexOf("tm msg ") == -1)
+                                else if(i.IndexOf("请打开sweetcreeper") == -1 &&
+                                        i.IndexOf("<提示>tm bc 整点发钱") == -1 &&
+                                        i.IndexOf("<提示>eco give *") == -1 &&
+                                        i.IndexOf("<提示>ban ") == -1 &&
+                                        i.IndexOf("<提示>unban ") == -1 &&
+                                        i.IndexOf("<提示>kick ") == -1)
                                 {
                                     CQ.SendGroupMessage(241464054, i);
                                     ReplayGroupStatic(241464054, i);
@@ -240,7 +265,12 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                             del(2, fromQQ.ToString());
                             insert(2, fromQQ.ToString(), CoinsTemp.ToString());
                         }
-                        else if (replay.IndexOf("tm msg ") == -1)
+                        else if (replay.IndexOf("请打开sweetcreeper") == -1 && 
+                                 replay.IndexOf("<提示>tm bc 整点发钱") == -1 &&
+                                 replay.IndexOf("<提示>eco give *") == -1 &&
+                                 replay.IndexOf("<提示>ban ") == -1 &&
+                                 replay.IndexOf("<提示>unban ") == -1 &&
+                                 replay.IndexOf("<提示>kick ") == -1)
                         {
                             CQ.SendGroupMessage(241464054, replay);
                             ReplayGroupStatic(241464054, replay);
@@ -338,6 +368,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             {
                 SendMinecraftMessage(241464054, "整点发钱！");
                 Random ran = new Random(System.DateTime.Now.Millisecond);
+                mcmsg += "|||||command>tm bc 整点发钱！";
                 mcmsg += "|||||command>eco give * " + ran.Next(0, 200);
             }
 
@@ -346,8 +377,9 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 mcmsg += "|||||command>tm msg " + broadcastNewID + " 请打开sweetcreeper.com并加群！";
                 broadcastNew++;
             }
-            if(broadcastNew == 600)
+            if(broadcastNew == 60)
             {
+                mcmsg += "|||||command>kick " + broadcastNewID + " 请打开sweetcreeper.com并加群！";
                 broadcastNew = 0;
             }
 
@@ -640,9 +672,10 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 else
                 {
                     CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n检测到你没有绑定服务器id，请在群里发送“绑定”+“你自己的id”来绑定（没空格），如：\r\n绑定notch\r\n长时间未绑定你将会被移出本群");
-                    CQ.SendGroupMessage(567145439, "接待喵糖拌管理：\r\nQQ：" + fromQQ.ToString() +
-                                                "\r\n群名片：" + groupMember.GroupCard +
-                                                "\r\n没有绑定id\r\n如长时间没绑请将其移出群");
+                    //CQ.SendGroupMessage(567145439, "接待喵糖拌管理：\r\nQQ：" + fromQQ.ToString() +
+                    //                            "\r\n群名片：" + groupMember.GroupCard +
+                    //                            "\r\n没有绑定id\r\n如长时间没绑请将其移出群");
+                    return;
                 }
 
                 if (msg == "签到")
@@ -653,8 +686,10 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     }
                     else
                     {
+                        string last_time = xml_get(3, fromQQ.ToString());
+                        string qdTimesStr = xml_get(7, fromQQ.ToString());
                         string CoinStr = xml_get(2, fromQQ.ToString());
-                        int CoinsTemp;
+                        int CoinsTemp, qdTimesTemp;
                         if (CoinStr != "")
                         {
                             CoinsTemp = int.Parse(CoinStr);
@@ -663,14 +698,32 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                         {
                             CoinsTemp = 0;
                         }
+                        if (qdTimesStr != "")
+                        {
+                            qdTimesTemp = int.Parse(qdTimesStr);
+                        }
+                        else
+                        {
+                            qdTimesTemp = 1;
+                        }
+                        if(xml_get(3, fromQQ.ToString()) == System.DateTime.Today.AddDays(-1).ToString())
+                        {
+                            qdTimesTemp++;
+                        }
+                        else
+                        {
+                            qdTimesTemp = 1;
+                        }
                         Random ran = new Random(System.DateTime.Now.Millisecond);
                         int RandKey = ran.Next(0, 100);
-                        CoinsTemp += RandKey;
-                        SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "\r\n签到成功！获得游戏币" + RandKey + "枚！\r\n银行内游戏币" + CoinsTemp + "枚\r\n抽奖次数已重置为一次！\r\n回复“帮助”查看如何取钱\r\n如果登陆游戏进行签到的话可以获得五倍金币、五次抽奖机会哦~");
+                        CoinsTemp += RandKey + qdTimesTemp;
+                        SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "\r\n签到成功！已连续签到"+ qdTimesTemp.ToString() + "天\r\n获得游戏币" + RandKey + "+"+ qdTimesTemp.ToString() + "枚！\r\n银行内游戏币" + CoinsTemp + "枚\r\n抽奖次数已重置为一次！\r\n回复“帮助”查看如何取钱\r\n如果登陆游戏进行签到的话可以获得五倍金币、五次抽奖机会哦~");
                         del(2, fromQQ.ToString());
                         del(3, fromQQ.ToString());
                         del(4, fromQQ.ToString());
+                        del(7, fromQQ.ToString());
                         insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                        insert(7, fromQQ.ToString(), qdTimesTemp.ToString());
                         insert(3, fromQQ.ToString(), System.DateTime.Today.ToString());
                         insert(4, fromQQ.ToString(), "4");
                     }
@@ -807,6 +860,346 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     }
 
                 }
+                if (msg == "5连抽" || msg == "五连抽")
+                {
+                    string CoinStr = xml_get(2, fromQQ.ToString());
+                    string RanCount = xml_get(4, fromQQ.ToString());
+                    int CoinsTemp, Counttemp;
+                    if (CoinStr != "")
+                    {
+                        CoinsTemp = int.Parse(CoinStr);
+                    }
+                    else
+                    {
+                        CoinsTemp = 0;
+                    }
+
+                    if (RanCount != "")
+                    {
+                        Counttemp = int.Parse(RanCount);
+                    }
+                    else
+                    {
+                        Counttemp = 0;
+                    }
+
+                    if (Counttemp < 1)
+                    {
+                        if (CoinsTemp < 500)
+                        {
+                            SendMinecraftMessage(fromGroup, "你只有" + CoinsTemp + "游戏币，你个穷逼还想五连抽？");
+                        }
+                        else
+                        {
+                            CoinsTemp -= 500;
+                            del(2, fromQQ.ToString());
+                            insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                            Random ran = new Random(System.DateTime.Now.Millisecond);
+                            string replay5all = "";
+                            int RandKey,jinyan = 0;
+                            for(int count_temp = 0;count_temp<5;count_temp++)
+                            {
+                                RandKey = ran.Next(0, 500);
+                                if (RandKey > 350)
+                                {
+                                    CoinsTemp += RandKey;
+                                    replay5all += "恭喜你抽中了" + RandKey + "游戏币，当前余额" + CoinsTemp + "游戏币\r\n";
+                                }
+                                else if (RandKey > 150)
+                                {
+                                    replay5all += "啊哦，你没有中奖。当前余额" + CoinsTemp + "游戏币\r\n";
+                                }
+                                else if (RandKey > 50)
+                                {
+                                    int fkt = ran.Next(1, 11);
+                                    jinyan += fkt;
+                                    replay5all += "恭喜你抽中了禁言" + fkt + "分钟！当前余额" + CoinsTemp + "游戏币\r\n";
+                                }
+                                else
+                                {
+                                    int fk = 0;
+                                    string fks = xml_get(10, fromQQ.ToString());
+                                    if (fks != "")
+                                    {
+                                        fk = int.Parse(fks);
+                                    }
+                                    fk++;
+                                    replay5all += "恭喜你抽中了一张禁言卡，回复“禁言卡”可以查看使用帮助。\r\n";
+                                    del(10, fromQQ.ToString());
+                                    insert(10, fromQQ.ToString(), fk.ToString());
+                                }
+                            }
+                            Counttemp+=5;
+                            del(4, fromQQ.ToString());
+                            insert(4, fromQQ.ToString(), Counttemp.ToString());
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + replay5all + "五连抽完毕");
+                            if (jinyan > 0)
+                            {
+                                CQ.SetGroupMemberGag(fromGroup, fromQQ, jinyan * 60);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        SendMinecraftMessage(fromGroup, "你今天只有"+ (5 - Counttemp).ToString() + "次抽奖机会了，无法进行五连抽");
+                    }
+
+                }
+                if (msg == "4连抽" || msg == "四连抽")
+                {
+                    string CoinStr = xml_get(2, fromQQ.ToString());
+                    string RanCount = xml_get(4, fromQQ.ToString());
+                    int CoinsTemp, Counttemp;
+                    if (CoinStr != "")
+                    {
+                        CoinsTemp = int.Parse(CoinStr);
+                    }
+                    else
+                    {
+                        CoinsTemp = 0;
+                    }
+
+                    if (RanCount != "")
+                    {
+                        Counttemp = int.Parse(RanCount);
+                    }
+                    else
+                    {
+                        Counttemp = 0;
+                    }
+
+                    if (Counttemp < 2)
+                    {
+                        if (CoinsTemp < 400)
+                        {
+                            SendMinecraftMessage(fromGroup, "你只有" + CoinsTemp + "游戏币，你个穷逼还想四连抽？");
+                        }
+                        else
+                        {
+                            CoinsTemp -= 400;
+                            del(2, fromQQ.ToString());
+                            insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                            Random ran = new Random(System.DateTime.Now.Millisecond);
+                            string replay5all = "";
+                            int RandKey, jinyan = 0;
+                            for (int count_temp = 0; count_temp < 4; count_temp++)
+                            {
+                                RandKey = ran.Next(0, 500);
+                                if (RandKey > 350)
+                                {
+                                    CoinsTemp += RandKey;
+                                    replay5all += "恭喜你抽中了" + RandKey + "游戏币，当前余额" + CoinsTemp + "游戏币\r\n";
+                                }
+                                else if (RandKey > 150)
+                                {
+                                    replay5all += "啊哦，你没有中奖。当前余额" + CoinsTemp + "游戏币\r\n";
+                                }
+                                else if (RandKey > 50)
+                                {
+                                    int fkt = ran.Next(1, 11);
+                                    jinyan += fkt;
+                                    replay5all += "恭喜你抽中了禁言" + fkt + "分钟！当前余额" + CoinsTemp + "游戏币\r\n";
+                                }
+                                else
+                                {
+                                    int fk = 0;
+                                    string fks = xml_get(10, fromQQ.ToString());
+                                    if (fks != "")
+                                    {
+                                        fk = int.Parse(fks);
+                                    }
+                                    fk++;
+                                    replay5all += "恭喜你抽中了一张禁言卡，回复“禁言卡”可以查看使用帮助。\r\n";
+                                    del(10, fromQQ.ToString());
+                                    insert(10, fromQQ.ToString(), fk.ToString());
+                                }
+                            }
+                            Counttemp += 4;
+                            del(4, fromQQ.ToString());
+                            insert(4, fromQQ.ToString(), Counttemp.ToString());
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + replay5all + "四连抽完毕");
+                            if (jinyan > 0)
+                            {
+                                CQ.SetGroupMemberGag(fromGroup, fromQQ, jinyan * 60);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        SendMinecraftMessage(fromGroup, "你今天只有" + (5 - Counttemp).ToString() + "次抽奖机会了，无法进行四连抽");
+                    }
+
+                }
+                if (msg == "3连抽" || msg == "三连抽")
+                {
+                    string CoinStr = xml_get(2, fromQQ.ToString());
+                    string RanCount = xml_get(4, fromQQ.ToString());
+                    int CoinsTemp, Counttemp;
+                    if (CoinStr != "")
+                    {
+                        CoinsTemp = int.Parse(CoinStr);
+                    }
+                    else
+                    {
+                        CoinsTemp = 0;
+                    }
+
+                    if (RanCount != "")
+                    {
+                        Counttemp = int.Parse(RanCount);
+                    }
+                    else
+                    {
+                        Counttemp = 0;
+                    }
+
+                    if (Counttemp < 3)
+                    {
+                        if (CoinsTemp < 300)
+                        {
+                            SendMinecraftMessage(fromGroup, "你只有" + CoinsTemp + "游戏币，你个穷逼还想三连抽？");
+                        }
+                        else
+                        {
+                            CoinsTemp -= 300;
+                            del(2, fromQQ.ToString());
+                            insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                            Random ran = new Random(System.DateTime.Now.Millisecond);
+                            string replay5all = "";
+                            int RandKey, jinyan = 0;
+                            for (int count_temp = 0; count_temp < 3; count_temp++)
+                            {
+                                RandKey = ran.Next(0, 500);
+                                if (RandKey > 350)
+                                {
+                                    CoinsTemp += RandKey;
+                                    replay5all += "恭喜你抽中了" + RandKey + "游戏币，当前余额" + CoinsTemp + "游戏币\r\n";
+                                }
+                                else if (RandKey > 150)
+                                {
+                                    replay5all += "啊哦，你没有中奖。当前余额" + CoinsTemp + "游戏币\r\n";
+                                }
+                                else if (RandKey > 50)
+                                {
+                                    int fkt = ran.Next(1, 11);
+                                    jinyan += fkt;
+                                    replay5all += "恭喜你抽中了禁言" + fkt + "分钟！当前余额" + CoinsTemp + "游戏币\r\n";
+                                }
+                                else
+                                {
+                                    int fk = 0;
+                                    string fks = xml_get(10, fromQQ.ToString());
+                                    if (fks != "")
+                                    {
+                                        fk = int.Parse(fks);
+                                    }
+                                    fk++;
+                                    replay5all += "恭喜你抽中了一张禁言卡，回复“禁言卡”可以查看使用帮助。\r\n";
+                                    del(10, fromQQ.ToString());
+                                    insert(10, fromQQ.ToString(), fk.ToString());
+                                }
+                            }
+                            Counttemp += 3;
+                            del(4, fromQQ.ToString());
+                            insert(4, fromQQ.ToString(), Counttemp.ToString());
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + replay5all + "三连抽完毕");
+                            if (jinyan > 0)
+                            {
+                                CQ.SetGroupMemberGag(fromGroup, fromQQ, jinyan * 60);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        SendMinecraftMessage(fromGroup, "你今天只有" + (5 - Counttemp).ToString() + "次抽奖机会了，无法进行三连抽");
+                    }
+
+                }
+                if (msg == "2连抽" || msg == "二连抽" || msg == "两连抽")
+                {
+                    string CoinStr = xml_get(2, fromQQ.ToString());
+                    string RanCount = xml_get(4, fromQQ.ToString());
+                    int CoinsTemp, Counttemp;
+                    if (CoinStr != "")
+                    {
+                        CoinsTemp = int.Parse(CoinStr);
+                    }
+                    else
+                    {
+                        CoinsTemp = 0;
+                    }
+
+                    if (RanCount != "")
+                    {
+                        Counttemp = int.Parse(RanCount);
+                    }
+                    else
+                    {
+                        Counttemp = 0;
+                    }
+
+                    if (Counttemp < 4)
+                    {
+                        if (CoinsTemp < 200)
+                        {
+                            SendMinecraftMessage(fromGroup, "你只有" + CoinsTemp + "游戏币，你个穷逼还想两连抽？");
+                        }
+                        else
+                        {
+                            CoinsTemp -= 200;
+                            del(2, fromQQ.ToString());
+                            insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                            Random ran = new Random(System.DateTime.Now.Millisecond);
+                            string replay5all = "";
+                            int RandKey, jinyan = 0;
+                            for (int count_temp = 0; count_temp < 2; count_temp++)
+                            {
+                                RandKey = ran.Next(0, 500);
+                                if (RandKey > 350)
+                                {
+                                    CoinsTemp += RandKey;
+                                    replay5all += "恭喜你抽中了" + RandKey + "游戏币，当前余额" + CoinsTemp + "游戏币\r\n";
+                                }
+                                else if (RandKey > 150)
+                                {
+                                    replay5all += "啊哦，你没有中奖。当前余额" + CoinsTemp + "游戏币\r\n";
+                                }
+                                else if (RandKey > 50)
+                                {
+                                    int fkt = ran.Next(1, 11);
+                                    jinyan += fkt;
+                                    replay5all += "恭喜你抽中了禁言" + fkt + "分钟！当前余额" + CoinsTemp + "游戏币\r\n";
+                                }
+                                else
+                                {
+                                    int fk = 0;
+                                    string fks = xml_get(10, fromQQ.ToString());
+                                    if (fks != "")
+                                    {
+                                        fk = int.Parse(fks);
+                                    }
+                                    fk++;
+                                    replay5all += "恭喜你抽中了一张禁言卡，回复“禁言卡”可以查看使用帮助。\r\n";
+                                    del(10, fromQQ.ToString());
+                                    insert(10, fromQQ.ToString(), fk.ToString());
+                                }
+                            }
+                            Counttemp += 2;
+                            del(4, fromQQ.ToString());
+                            insert(4, fromQQ.ToString(), Counttemp.ToString());
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + replay5all + "两连抽完毕");
+                            if (jinyan > 0)
+                            {
+                                CQ.SetGroupMemberGag(fromGroup, fromQQ, jinyan * 60);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        SendMinecraftMessage(fromGroup, "你今天只有" + (5 - Counttemp).ToString() + "次抽奖机会了，无法进行两连抽");
+                    }
+
+                }
                 if (msg == "激活")
                 {
                     if(reply1 != "")
@@ -936,6 +1329,11 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 }
                 else if (msg.IndexOf("不通过") == 0)
                 {
+                    if (msg.IndexOf("不通过 ") == 0)
+                    {
+                        SendMinecraftMessage(fromGroup, "命令关键字后不要加空格，直接加玩家id");
+                        return;
+                    }
                     string reply = "";
                     string reason = "";
                     string qq_get = "";
@@ -970,6 +1368,78 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     }
 
                 }
+                else if (msg.IndexOf("封禁") == 0)
+                {
+                    if (msg.IndexOf("封禁 ") == 0)
+                    {
+                        SendMinecraftMessage(fromGroup, "命令关键字后不要加空格，直接加玩家id");
+                        return;
+                    }
+                    string reason = "";
+                    string id_get = "";
+                    string[] str2;
+                    int count_temp = 0;
+                    str2 = msg.Replace("封禁", "").Split(' ');
+                    foreach (string i in str2)
+                    {
+                        if (count_temp == 0)
+                        {
+                            id_get = i;
+                            count_temp++;
+                        }
+                        else if (count_temp == 1)
+                        {
+                            reason += i + " ";
+                        }
+                    }
+
+                    SendMinecraftMessage(fromGroup, "已封禁id：" + id_get + "原因：" + reason);
+                    mcmsg += "|||||command>ban " + id_get + " " + reason;
+                    SendMinecraftMessage(241464054, "玩家" + id_get + "已被管理员封禁\r\n" + "封禁原因：" + reason + "\r\n如有误判请联系管理");
+                }
+                else if (msg.IndexOf("解封") == 0)
+                {
+                    if (msg.IndexOf("解封 ") == 0)
+                    {
+                        SendMinecraftMessage(fromGroup, "命令关键字后不要加空格，直接加玩家id");
+                        return;
+                    }
+                    string id_get = msg.Replace("解封", "");
+
+                    SendMinecraftMessage(fromGroup, "已解除玩家" + id_get + "的封禁");
+                    mcmsg += "|||||command>unban " + id_get;
+                    SendMinecraftMessage(241464054, "玩家" + id_get + "已被管理员解除封禁");
+                }
+                else if (msg.IndexOf("踢出") == 0)
+                {
+                    if (msg.IndexOf("踢出 ") == 0)
+                    {
+                        SendMinecraftMessage(fromGroup, "命令关键字后不要加空格，直接加玩家id");
+                        return;
+                    }
+                    string reason = "";
+                    string id_get = "";
+                    string[] str2;
+                    int count_temp = 0;
+                    str2 = msg.Replace("踢出", "").Split(' ');
+                    foreach (string i in str2)
+                    {
+                        if (count_temp == 0)
+                        {
+                            id_get = i;
+                            count_temp++;
+                        }
+                        else if (count_temp == 1)
+                        {
+                            reason += i + " ";
+                        }
+                    }
+
+                    SendMinecraftMessage(fromGroup, "已将玩家" + id_get + "踢出服务器\r\n原因：" + reason);
+                    mcmsg += "|||||command>kick " + id_get + " " + reason;
+                    SendMinecraftMessage(241464054, "玩家" + id_get + "已被管理员踢出服务器\r\n原因：" + reason);
+                }
+
             }  //糖拌管理群
 
 

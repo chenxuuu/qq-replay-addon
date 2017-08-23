@@ -21,3 +21,4 @@ E:\刘晨旭\作品\exe作品\qq-replay-addon\Flexlive.CQP.PluginSolution\src\Fl
 E:\刘晨旭\作品\exe作品\qq-replay-addon\Flexlive.CQP.PluginSolution\src\Flexlive.CQP.CSharpPlugins.Demo\obj\Release\Flexlive.CQP.CSharpPlugins.Demo.dll
 E:\刘晨旭\作品\exe作品\qq-replay-addon\Flexlive.CQP.PluginSolution\src\Flexlive.CQP.CSharpPlugins.Demo\obj\Release\Flexlive.CQP.CSharpPlugins.Demo.pdb
 E:\刘晨旭\作品\exe作品\qq-replay-addon\Flexlive.CQP.PluginSolution\src\Flexlive.CQP.CSharpPlugins.Demo\obj\Release\Flexlive.CQP.CSharpPlugins.Demo.csprojResolveAssemblyReference.cache
+E:\刘晨旭\作品\exe作品\qq-replay-addon\Flexlive.CQP.PluginSolution\src\Flexlive.CQP.CSharpPlugins.Demo\obj\Release\Flexlive.CQP.CSharpPlugins.Demo.csproj.CoreCompileInputs.cache
