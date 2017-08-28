@@ -1,5 +1,6 @@
 ﻿using Flexlive.CQP.Framework;
 using System;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -8,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml.Linq;
+
 
 namespace Flexlive.CQP.CSharpPlugins.Demo
 {
@@ -1187,6 +1189,38 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             }
         }
 
+        //qq群列表
+        private static long[] grouplist = new long[] {
+            115872123,
+            150761455,
+            185562383,
+            194918236,
+            195185733,
+            209051300,
+            215711032,
+            241464054,
+            26718371,
+            293292761,
+            327870533,
+            339837275,
+            372180029,
+            376390309,
+            383541727,
+            389949154,
+            431458615,
+            438514287,
+            456413726,
+            458890830,
+            464961621,
+            485100909,
+            523832787,
+            544426661,
+            567145439,
+            567477706,
+            582844145,
+            59994612,
+            83655291 };
+
         /// <summary>
         /// Type=2 群消息。
         /// </summary>
@@ -2068,7 +2102,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             if (msg.ToUpper() == "HELP")
             {
                 //CQ.SendGroupMessage(fromGroup, msg.ToUpper().IndexOf("help").ToString());
-                SendMinecraftMessage(fromGroup, "命令帮助：\r\n！add 词条：回答\r\n！del 词条：回答\r\n！list 词条\r\n所有符号均为全角符号\r\n词条中请勿包含冒号\r\n发送“点歌”+数字序号即可点歌（如点歌14，最大134）\r\n发送“坷垃金曲”+数字序号即可点金坷垃歌（如坷垃金曲21，最大71）\r\n私聊发送“赞我”可使接待给你点赞\r\n发送“今日运势”可以查看今日运势\r\n发送“淘宝”+关键词即可搜索淘宝优惠搜索结果\r\n发送“链接转换”或“淘宝返现”+网址可以将淘宝链接转成可返现的链接（买完之后找晨旭要钱）\r\n如有bug请反馈");
+                SendMinecraftMessage(fromGroup, "命令帮助：\r\n！add 词条：回答\r\n！del 词条：回答\r\n！list 词条\r\n所有符号均为全角符号\r\n词条中请勿包含冒号\r\n发送“点歌”+数字序号即可点歌（如点歌14，最大134）\r\n发送“坷垃金曲”+数字序号即可点金坷垃歌（如坷垃金曲21，最大71）\r\n私聊发送“赞我”可使接待给你点赞\r\n发送“今日运势”可以查看今日运势\r\n发送“淘宝”+关键词即可搜索淘宝优惠搜索结果（买后找晨旭要返现）\r\n发送“pixel”可以查看像素游戏图片\r\n如有bug请反馈");
             }
             else if (msg.IndexOf("点歌") == 0)
             {
@@ -2556,57 +2590,112 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 }
 
             }
-            else if ((msg.IndexOf("淘宝返现") == 0 || msg.IndexOf("链接转换") == 0) && msg.Length > 4)
-            {
-                
-
-                string html = HttpGetT("https://pub.alimama.com/urltrans/urltrans.json", "siteid=36160343&adzoneid=128936548&promotionURL=" + System.Web.HttpUtility.UrlEncode(msg.Replace("链接转换", "").Replace("淘宝返现","")) + "&t=1503890113748&pvid=52_120.194.185.235_9155_1503889333103&_tb_token_=LuINt31f7xq&_input_charset=utf-8");
-                //SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "debug:\r\n" + html);
-
-                if (html.IndexOf("不支持") != -1 || html.IndexOf("失败") != -1)
-                {
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "这件东西没法优惠，换一个店试试？");
-                    return;
-                }
-
-                string linkGet = "",code="",qr="";
-
-                Regex reg = new Regex("\"shortLinkUrl\":\"(.*)\"},\"i", RegexOptions.IgnoreCase);
-                MatchCollection matchs = reg.Matches(html);
-                foreach (Match item in matchs)
-                {
-                    if (item.Success)
-                    {
-                        linkGet = item.Value.Replace("\"shortLinkUrl\":\"", "").Replace("\"},\"i", "");
-                    }
-                }
-
-                Regex reg2 = new Regex("\"taoToken\":\"(.*)\",\"q", RegexOptions.IgnoreCase);
-                MatchCollection matchs2 = reg2.Matches(html);
-                foreach (Match item in matchs2)
-                {
-                    if (item.Success)
-                    {
-                        code = item.Value.Replace("\"taoToken\":\"", "").Replace("\",\"q", "");
-                    }
-                }
-
-                Regex reg3 = new Regex("\"qrCodeUrl\":\"(.*)\",\"s", RegexOptions.IgnoreCase);
-                MatchCollection matchs3 = reg3.Matches(html);
-                foreach (Match item in matchs3)
-                {
-                    if (item.Success)
-                    {
-                        qr = item.Value.Replace("\"qrCodeUrl\":\"", "").Replace("\",\"s", "");
-                    }
-                }
-
-                SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "链接转换成功！结果如下：" + "能返现的链接：" + linkGet + "\r\n淘口令：" + code + "\r\n二维码扫码：http:" + qr + "\r\n确认收货之后找晨旭要钱就好，一般返10%");
-            }
             else if (msg.IndexOf("淘宝") == 0 && msg.Length > 2)
             {
                 SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你搜索的" + msg.Replace("淘宝", "") + "的相关优惠结果如下：\r\nhttps://ai.taobao.com/search/index.htm?key=" + System.Web.HttpUtility.UrlEncode(msg.Replace("淘宝", "")) + "&pid=mm_96609811_10528667_128948010");
             }
+            else if(msg == "pixel")
+            {
+                int picCount;
+                try
+                {
+                    picCount = int.Parse(xml_get(20, "count"));
+                }
+                catch
+                {
+                    SendMinecraftMessage(fromGroup, "遇到致命性错误，请联系晨旭修复");
+                    return;
+                }
+                SendMinecraftMessage(fromGroup, "[CQ:image,file=pixel_game\\" + picCount + ".bmp]\r\n当前图片已被修改过" + picCount + "次。");
+            }
+            else if(msg.IndexOf("pixel") == 0 && (msg.Length - msg.Replace("/","").Length) == 2)
+            {
+                string fromqqtime_get = xml_get(20, fromQQ.ToString());
+                int fromqqtime = 0;
+                try
+                {
+                    fromqqtime = int.Parse(fromqqtime_get);
+                }
+                catch { }
+
+                if(ConvertDateTimeInt(DateTime.Now)-fromqqtime < 300)
+                {
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你需要再等" + (300 - ConvertDateTimeInt(DateTime.Now) + fromqqtime) + "秒才能继续放像素点");
+                    return;
+                }
+
+                string get_msg = msg.Replace("pixel", ""), getx = "", gety = "", getcolor = "";
+                int placex, placey;
+
+                string[] str2;
+                int count_temp = 0;
+                str2 = get_msg.Split('/');
+                foreach (string i in str2)
+                {
+                    if (count_temp == 0)
+                    {
+                        getx = i.ToString();
+                        count_temp++;
+                    }
+                    else if (count_temp == 1)
+                    {
+                        gety = i.ToString();
+                        count_temp++;
+                    }
+                    else if (count_temp == 2)
+                    {
+                        getcolor = i.ToString();
+                        count_temp++;
+                    }
+                }
+                try
+                {
+                    placex = int.Parse(getx) - 1;
+                    placey = int.Parse(gety) - 1;
+                    if (getcolor.IndexOf("#") == -1 || placex > 29 || placey > 29)
+                        throw new ArgumentNullException("fuck wrong color");
+                }
+                catch
+                {
+                    SendMinecraftMessage(fromGroup, "放置像素点时遇到未知错误，请检查颜色与坐标是否正确");
+                    return;
+                }
+                int picCount;
+                try
+                {
+                    picCount = int.Parse(xml_get(20, "count"));
+                }
+                catch
+                {
+                    SendMinecraftMessage(fromGroup, "遇到致命性错误，请联系晨旭修复");
+                    return;
+                }
+
+                try
+                {
+                    string picPath = @"C:\Users\Administrator\Desktop\kuqpro\data\image\pixel_game\" + picCount + ".bmp";
+                    Bitmap pic = ReadImageFile(picPath);
+                    pic = SetPoint(pic, ColorTranslator.FromHtml(getcolor), placex, placey);
+
+                    picCount++;
+                    picPath = @"C:\Users\Administrator\Desktop\kuqpro\data\image\pixel_game\" + picCount + ".bmp";
+                    pic.Save(picPath);
+                }
+                catch
+                {
+                    SendMinecraftMessage(fromGroup, "遭遇未知错误");
+                    return;
+                }
+
+
+                del(20, "count");
+                del(20, fromQQ.ToString());
+                insert(20, "count", picCount.ToString());
+                insert(20, fromQQ.ToString(), ConvertDateTimeInt(DateTime.Now).ToString());
+
+                SendMinecraftMessage(fromGroup, "[CQ:image,file=pixel_game\\" + picCount + ".bmp]\r\n图片修改完成！" + DateTime.Now.ToString() + CQ.CQCode_At(fromQQ));
+            }
+
             else if (replay_ok != "")
             {
                 if (replay_common != "")
@@ -2658,13 +2747,13 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 }
             }
 
-            if(fromGroup== 115872123 && msg.IndexOf("跨群") == 0)
+            if(msg.IndexOf("*") == 0 && fromQQ == 961726194)
             {
-                SendMinecraftMessage(567477706, groupMember.GroupCard + "(" + fromQQ + ")\r\n" + msg.Replace("跨群", "") + "\r\n消息来自某里世界，以“跨群”开头的消息可跨群发送");
-            }
-            if (fromGroup == 567477706 && msg.IndexOf("跨群") == 0)
-            {
-                SendMinecraftMessage(115872123, groupMember.GroupCard + "(" + fromQQ + ")\r\n" + msg.Replace("跨群", "") + "\r\n消息来自某崩坏群，以“跨群”开头的消息可跨群发送");
+                foreach(long i in grouplist)
+                {
+                    if(i != fromGroup)
+                        SendMinecraftMessage(i, "跨群通知：\r\n" + msg.Substring(1));
+                }
             }
 
             if (msg == "开车")
@@ -3020,6 +3109,64 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 s += str.Substring(r.Next(0, str.Length - 1), 1);
             }
             return s;
+        }
+
+        /// <summary>
+        /// 改图片颜色
+        /// </summary>
+        /// <param name="Pict">图片</param>
+        /// <param name="color">颜色</param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="w"></param>
+        /// <param name="h"></param>
+        /// <returns></returns>
+        //x,y限制0-29
+        private static Bitmap SetPoint(Bitmap Pict, Color color, int x, int y)
+        {
+            return SetPels(Pict, color, x * 17, y * 17, 17, 17);
+        }
+
+        public static Bitmap SetPels(Bitmap Pict, Color color, int x, int y, int w, int h)
+        {
+            //遍历矩形框内的各象素点
+            for (int i = x; i < x + w; i++)
+            {
+                for (int j = y; j < y + h; j++)
+                {
+                    Pict.SetPixel(i, j, color);//设置当前象素点的颜色
+                }
+            }
+            return Pict;
+        }
+
+        /// <summary>  
+        /// DateTime时间格式转换为Unix时间戳格式  
+        /// </summary>  
+        /// <param name="time"> DateTime时间格式</param>  
+        /// <returns>Unix时间戳格式</returns>  
+        public static int ConvertDateTimeInt(System.DateTime time)
+        {
+            System.DateTime startTime = TimeZone.CurrentTimeZone.ToLocalTime(new System.DateTime(1970, 1, 1));
+            return (int)(time - startTime).TotalSeconds;
+        }
+
+        /// <summary>
+        /// 通过FileStream 来打开文件，这样就可以实现不锁定Image文件，到时可以让多用户同时访问Image文件
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static Bitmap ReadImageFile(string path)
+        {
+            FileStream fs = File.OpenRead(path); //OpenRead
+            int filelength = 0;
+            filelength = (int)fs.Length; //获得文件长度 
+            Byte[] image = new Byte[filelength]; //建立一个字节数组 
+            fs.Read(image, 0, filelength); //按字节流读取 
+            System.Drawing.Image result = System.Drawing.Image.FromStream(fs);
+            fs.Close();
+            Bitmap bit = new Bitmap(result);
+            return bit;
         }
 
         private static string[] lunch =
