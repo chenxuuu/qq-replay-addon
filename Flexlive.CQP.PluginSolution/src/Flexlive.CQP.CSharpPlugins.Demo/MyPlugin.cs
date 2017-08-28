@@ -2068,7 +2068,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             if (msg.ToUpper() == "HELP")
             {
                 //CQ.SendGroupMessage(fromGroup, msg.ToUpper().IndexOf("help").ToString());
-                SendMinecraftMessage(fromGroup, "命令帮助：\r\n！add 词条：回答\r\n！del 词条：回答\r\n！list 词条\r\n所有符号均为全角符号\r\n词条中请勿包含冒号\r\n发送“点歌”+数字序号即可点歌（如点歌14，最大134）\r\n发送“坷垃金曲”+数字序号即可点金坷垃歌（如坷垃金曲21，最大71）\r\n私聊发送“赞我”可使接待给你点赞\r\n发送“今日运势”可以查看今日运势\r\n如有bug请反馈");
+                SendMinecraftMessage(fromGroup, "命令帮助：\r\n！add 词条：回答\r\n！del 词条：回答\r\n！list 词条\r\n所有符号均为全角符号\r\n词条中请勿包含冒号\r\n发送“点歌”+数字序号即可点歌（如点歌14，最大134）\r\n发送“坷垃金曲”+数字序号即可点金坷垃歌（如坷垃金曲21，最大71）\r\n私聊发送“赞我”可使接待给你点赞\r\n发送“今日运势”可以查看今日运势\r\n发送“淘宝”+关键词即可搜索淘宝优惠搜索结果\r\n发送“链接转换”或“淘宝返现”+网址可以将淘宝链接转成可返现的链接（买完之后找晨旭要钱）\r\n如有bug请反馈");
             }
             else if (msg.IndexOf("点歌") == 0)
             {
@@ -2556,6 +2556,57 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 }
 
             }
+            else if ((msg.IndexOf("淘宝返现") == 0 || msg.IndexOf("链接转换") == 0) && msg.Length > 4)
+            {
+                
+
+                string html = HttpGetT("https://pub.alimama.com/urltrans/urltrans.json", "siteid=36160343&adzoneid=128936548&promotionURL=" + System.Web.HttpUtility.UrlEncode(msg.Replace("链接转换", "").Replace("淘宝返现","")) + "&t=1503890113748&pvid=52_120.194.185.235_9155_1503889333103&_tb_token_=LuINt31f7xq&_input_charset=utf-8");
+                //SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "debug:\r\n" + html);
+
+                if (html.IndexOf("不支持") != -1 || html.IndexOf("失败") != -1)
+                {
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "这件东西没法优惠，换一个店试试？");
+                    return;
+                }
+
+                string linkGet = "",code="",qr="";
+
+                Regex reg = new Regex("\"shortLinkUrl\":\"(.*)\"},\"i", RegexOptions.IgnoreCase);
+                MatchCollection matchs = reg.Matches(html);
+                foreach (Match item in matchs)
+                {
+                    if (item.Success)
+                    {
+                        linkGet = item.Value.Replace("\"shortLinkUrl\":\"", "").Replace("\"},\"i", "");
+                    }
+                }
+
+                Regex reg2 = new Regex("\"taoToken\":\"(.*)\",\"q", RegexOptions.IgnoreCase);
+                MatchCollection matchs2 = reg2.Matches(html);
+                foreach (Match item in matchs2)
+                {
+                    if (item.Success)
+                    {
+                        code = item.Value.Replace("\"taoToken\":\"", "").Replace("\",\"q", "");
+                    }
+                }
+
+                Regex reg3 = new Regex("\"qrCodeUrl\":\"(.*)\",\"s", RegexOptions.IgnoreCase);
+                MatchCollection matchs3 = reg3.Matches(html);
+                foreach (Match item in matchs3)
+                {
+                    if (item.Success)
+                    {
+                        qr = item.Value.Replace("\"qrCodeUrl\":\"", "").Replace("\",\"s", "");
+                    }
+                }
+
+                SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "链接转换成功！结果如下：" + "能返现的链接：" + linkGet + "\r\n淘口令：" + code + "\r\n二维码扫码：http:" + qr + "\r\n确认收货之后找晨旭要钱就好，一般返10%");
+            }
+            else if (msg.IndexOf("淘宝") == 0 && msg.Length > 2)
+            {
+                SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你搜索的" + msg.Replace("淘宝", "") + "的相关优惠结果如下：\r\nhttps://ai.taobao.com/search/index.htm?key=" + System.Web.HttpUtility.UrlEncode(msg.Replace("淘宝", "")) + "&pid=mm_96609811_10528667_128948010");
+            }
             else if (replay_ok != "")
             {
                 if (replay_common != "")
@@ -2901,6 +2952,46 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 return retString;
             }
             catch { }
+            return "";
+        }
+
+        /// <summary>  
+        /// GET 请求与获取结果（淘宝登陆） 
+        /// </summary>  
+        public static string HttpGetT(string Url, string postDataStr)
+        {
+            try
+            {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Url + (postDataStr == "" ? "" : "?") + postDataStr);
+                request.Method = "GET";
+                request.ContentType = "text/html;charset=UTF-8";
+                request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8";
+                //request.Headers.Add(":authority", "pub.alimama.com");
+                //request.Headers.Add(":method", "GET");
+                //request.Headers.Add(":path", (Url+"?"+postDataStr).Replace("https://pub.alimama.com",""));
+                //request.Headers.Add(":scheme", "https");
+                //request.Headers.Add("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
+                //request.Headers.Add("accept-language", "zh-CN,zh;q=0.8");
+                //request.Headers.Add("cache-control", "max-age=0");
+                request.Headers.Add("cookie", "t=73e5197b98069f33d6d4aad72b7a5346; cookie2=c4a9cdd990c418ed7a056a021ce6598c; v=0; _tb_token_=95PNEsOU8xq; cna=AxvTDzwMcFMCAduB7eMaxYyv; cookie32=b5e75e608a6d71a419548c89f962a775; cookie31=OTY2MDk4MTEsJUU2JTk5JUE4JUU2JTk3JUFEcTk2MTcyNjE5NCxsaXVjeDFAcXEuY29tLFRC; alimamapwag=TW96aWxsYS81LjAgKFdpbmRvd3MgTlQgNi4xOyBXT1c2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzU5LjAuMzA3MS4xMTUgU2FmYXJpLzUzNy4zNiBPUFIvNDYuMC4yNTk3LjU3; login=VT5L2FSpMGV7TQ%3D%3D; alimamapw=QHVXFSNxEidWEXZQQAwHVwVQUwZdBGgHAgdSAlFWBgVTUwVbV1QCAAIEAFBVVgFWAFMFV1YHBw%3D%3D; isg=Ai4udYVY-7qpiQ9eGGmryq_3b4Qwh5asb2XYvVj3mjHsO86VwL9COdQ7h5kr");
+                //request.Headers.Add("dnt", "1");
+                //request.Headers.Add("upgrade-insecure-requests", "1");
+                request.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36 OPR/46.0.2597.57";
+
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                Stream myResponseStream = response.GetResponseStream();
+                StreamReader myStreamReader = new StreamReader(myResponseStream, Encoding.UTF8);
+
+                string retString = myStreamReader.ReadToEnd();
+                myStreamReader.Close();
+                myResponseStream.Close();
+
+                return retString;
+            }
+            catch (Exception e)
+            {
+                return e.ToString();
+            }
             return "";
         }
 
