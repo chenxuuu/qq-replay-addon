@@ -2606,7 +2606,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     SendMinecraftMessage(fromGroup, "遇到致命性错误，请联系晨旭修复");
                     return;
                 }
-                SendMinecraftMessage(fromGroup, "[CQ:image,file=pixel_game\\" + picCount + ".bmp]\r\n当前图片已被修改过" + picCount + "次。");
+                SendMinecraftMessage(fromGroup, "[CQ:image,file=pixel_game\\" + picCount + ".png]\r\n当前图片已被修改过" + picCount + "次。");
             }
             else if(msg.IndexOf("pixel") == 0 && (msg.Length - msg.Replace("/","").Length) == 2)
             {
@@ -2618,9 +2618,9 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 }
                 catch { }
 
-                if(ConvertDateTimeInt(DateTime.Now)-fromqqtime < 300)
+                if(ConvertDateTimeInt(DateTime.Now)-fromqqtime < 60)
                 {
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你需要再等" + (300 - ConvertDateTimeInt(DateTime.Now) + fromqqtime) + "秒才能继续放像素点");
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你需要再等" + (60 - ConvertDateTimeInt(DateTime.Now) + fromqqtime) + "秒才能继续放像素点");
                     return;
                 }
 
@@ -2652,7 +2652,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 {
                     placex = int.Parse(getx) - 1;
                     placey = int.Parse(gety) - 1;
-                    if (getcolor.IndexOf("#") == -1 || placex > 29 || placey > 29)
+                    if (getcolor.IndexOf("#") == -1 || placex > 99 || placey > 99)
                         throw new ArgumentNullException("fuck wrong color");
                 }
                 catch
@@ -2673,12 +2673,12 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
 
                 try
                 {
-                    string picPath = @"C:\Users\Administrator\Desktop\kuqpro\data\image\pixel_game\" + picCount + ".bmp";
+                    string picPath = @"C:\Users\Administrator\Desktop\kuqpro\data\image\pixel_game\" + picCount + ".png";
                     Bitmap pic = ReadImageFile(picPath);
                     pic = SetPoint(pic, ColorTranslator.FromHtml(getcolor), placex, placey);
 
                     picCount++;
-                    picPath = @"C:\Users\Administrator\Desktop\kuqpro\data\image\pixel_game\" + picCount + ".bmp";
+                    picPath = @"C:\Users\Administrator\Desktop\kuqpro\data\image\pixel_game\" + picCount + ".png";
                     pic.Save(picPath);
                 }
                 catch
@@ -2693,7 +2693,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 insert(20, "count", picCount.ToString());
                 insert(20, fromQQ.ToString(), ConvertDateTimeInt(DateTime.Now).ToString());
 
-                SendMinecraftMessage(fromGroup, "[CQ:image,file=pixel_game\\" + picCount + ".bmp]\r\n图片修改完成！" + DateTime.Now.ToString() + CQ.CQCode_At(fromQQ));
+                SendMinecraftMessage(fromGroup, "[CQ:image,file=pixel_game\\" + picCount + ".png]\r\n图片修改完成！" + DateTime.Now.ToString() + CQ.CQCode_At(fromQQ));
             }
 
             else if (replay_ok != "")
