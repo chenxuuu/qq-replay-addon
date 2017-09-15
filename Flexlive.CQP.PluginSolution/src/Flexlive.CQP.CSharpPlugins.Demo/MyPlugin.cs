@@ -186,6 +186,17 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                             insert(7, fromQQ.ToString(), qdTimesTemp.ToString());
                                             insert(3, fromQQ.ToString(), System.DateTime.Today.ToString());
                                             insert(4, fromQQ.ToString(), "0");
+
+                                            string qd_get = xml_get(8, "qd");  //签到数
+                                            int qd = 0;
+                                            try
+                                            {
+                                                qd = int.Parse(qd_get);
+                                            }
+                                            catch { }
+                                            qd++;
+                                            del(8, "qd");
+                                            insert(8, "qd", qd.ToString());
                                         }
                                     }
                                     else
@@ -983,13 +994,28 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             // 设置每个整点开始执行  
             if (intMinute == iMinute && intSecond == iSecond)
             {
-                SendMinecraftMessage(241464054, "整点发钱！");
+                //SendMinecraftMessage(241464054, "整点发钱！");
                 Random ran = new Random(System.DateTime.Now.Millisecond);
                 mcmsg += "|||||command>tm bc 整点发钱！";
                 mcmsg += "|||||command>eco give * " + ran.Next(0, 200);
             }
 
-            if(broadcastNew != 0)
+            // 十二点执行
+            if (intMinute == 0 && intSecond == 10 && intHour == 0)
+            {
+                string qd_get = xml_get(8, "qd");
+                int qd = 0;
+                try
+                {
+                    qd = int.Parse(qd_get);
+                }
+                catch { }
+                del(8, "qd");
+                Random ran = new Random();
+                SendMinecraftMessage(241464054, "新的一天已经到来了哦，现在时间是\r\n" + DateTime.Now.ToString() + "\r\n昨日一共有" + qd + "人签到哦\r\n" + "今日吉言：" + itsays[ran.Next(0, 613)]);
+            }
+
+            if (broadcastNew != 0)
             {
                 mcmsg += "|||||command>tm msg " + broadcastNewID + " 请打开sweetcreeper.com并加群！";
                 broadcastNew++;
@@ -1056,43 +1082,112 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
         {
             // 处理私聊消息。
             //CQ.SendPrivateMessage(fromQQ, String.Format("[{0}]你发的私聊消息是：{1}", CQ.ProxyType, msg));
-            /*
-            if(msg == "启动")
-            {
-                CQ.SendPrivateMessage(961726194, "扫描监考安排任务已启动，扫描每十秒执行一次，输入“结束”停止扫描，发送“查看”获取实时情况");
-                CQ.SendPrivateMessage(1371773817, "扫描监考安排任务已启动，扫描每十秒执行一次，输入“结束”停止扫描，发送“查看”获取实时情况");
-                isOpenScan = 1;
-            }
-            else if (msg == "结束")
-            {
-                CQ.SendPrivateMessage(961726194, "扫描监考安排任务已停止，输入“启动”启动扫描扫描每十秒执行一次，发送“查看”获取实时情况");
-                CQ.SendPrivateMessage(1371773817, "扫描监考安排任务已停止，输入“启动”启动扫描，发送“查看”获取实时情况");
-                isOpenScan = 0;
-            }
-            else if (msg == "查看")
-            {
-                string httpresult = HttpGet("http://wfstc.hpu.edu.cn/list.aspx?id=56", "");
-                if (httpresult.IndexOf("第十五周考试监考安排") >= 0)
-                {
-                    CQ.SendPrivateMessage(961726194, "第十五周考试监考安排已发布，请尽快查看：http://wfstc.hpu.edu.cn/list.aspx?id=56\r\n当前任务开启状态：" + isOpenScan.ToString() );
-                    CQ.SendPrivateMessage(1371773817, "第十五周考试监考安排已发布，请尽快查看：http://wfstc.hpu.edu.cn/list.aspx?id=56\r\n当前任务开启状态：" + isOpenScan.ToString() );
-                }
-                else if(httpresult == "")
-                {
-                    CQ.SendPrivateMessage(961726194, "加载失败鸟~~\r\n当前任务开启状态：" + isOpenScan.ToString());
-                    CQ.SendPrivateMessage(1371773817, "加载失败鸟~~\r\n当前任务开启状态：" + isOpenScan.ToString());
-                }
-                else
-                {
-                    CQ.SendPrivateMessage(961726194, "第十五周考试监考安排还没发布\r\n当前任务开启状态：" + isOpenScan.ToString() );
-                    CQ.SendPrivateMessage(1371773817, "第十五周考试监考安排还没发布\r\n当前任务开启状态：" + isOpenScan.ToString() );
-                }
-            }
-            else */if (msg.ToUpper() == "赞我")
+            if (msg.ToUpper() == "赞我")
             {
                 CQ.SendPraise(fromQQ, 10);
                 CQ.SendPrivateMessage(fromQQ, "已为你一次性点赞十次，每天只能十次哦");
                 //CQ.SendGroupMessage(fromGroup, "已为QQ" + fromQQ + "点赞十次");
+            }
+            else if (msg == "pixel")
+            {
+                int picCount;
+                try
+                {
+                    picCount = int.Parse(xml_get(20, "count"));
+                }
+                catch
+                {
+                    CQ.SendPrivateMessage(fromQQ, "遇到致命性错误，请联系晨旭修复");
+                    return;
+                }
+                CQ.SendPrivateMessage(fromQQ, "[CQ:image,file=pixel_game\\" + picCount + ".png]\r\n当前图片已被修改过" + picCount + "次。");
+            }
+            else if (msg.IndexOf("pixel") == 0 && (msg.Length - msg.Replace("/", "").Length) == 2)
+            {
+                string fromqqtime_get = xml_get(20, fromQQ.ToString());
+                int fromqqtime = 0;
+                try
+                {
+                    fromqqtime = int.Parse(fromqqtime_get);
+                }
+                catch { }
+
+                if (ConvertDateTimeInt(DateTime.Now) - fromqqtime < 60)
+                {
+                    CQ.SendPrivateMessage(fromQQ, "你需要再等" + (60 - ConvertDateTimeInt(DateTime.Now) + fromqqtime) + "秒才能继续放像素点");
+                    return;
+                }
+
+                string get_msg = msg.Replace("pixel", ""), getx = "", gety = "", getcolor = "";
+                int placex, placey;
+
+                string[] str2;
+                int count_temp = 0;
+                str2 = get_msg.Split('/');
+                foreach (string i in str2)
+                {
+                    if (count_temp == 0)
+                    {
+                        getx = i.ToString();
+                        count_temp++;
+                    }
+                    else if (count_temp == 1)
+                    {
+                        gety = i.ToString();
+                        count_temp++;
+                    }
+                    else if (count_temp == 2)
+                    {
+                        getcolor = i.ToString();
+                        count_temp++;
+                    }
+                }
+                try
+                {
+                    placex = int.Parse(getx) - 1;
+                    placey = int.Parse(gety) - 1;
+                    if (getcolor.IndexOf("#") == -1 || placex > 99 || placey > 99)
+                        throw new ArgumentNullException("fuck wrong color");
+                }
+                catch
+                {
+                    CQ.SendPrivateMessage(fromQQ, "放置像素点时遇到未知错误，请检查颜色与坐标是否正确");
+                    return;
+                }
+                int picCount;
+                try
+                {
+                    picCount = int.Parse(xml_get(20, "count"));
+                }
+                catch
+                {
+                    CQ.SendPrivateMessage(fromQQ, "遇到致命性错误，请联系晨旭修复");
+                    return;
+                }
+
+                try
+                {
+                    string picPath = @"C:\Users\Administrator\Desktop\kuqpro\data\image\pixel_game\" + picCount + ".png";
+                    Bitmap pic = ReadImageFile(picPath);
+                    pic = SetPoint(pic, ColorTranslator.FromHtml(getcolor), placex, placey);
+
+                    picCount++;
+                    picPath = @"C:\Users\Administrator\Desktop\kuqpro\data\image\pixel_game\" + picCount + ".png";
+                    pic.Save(picPath);
+                }
+                catch
+                {
+                    CQ.SendPrivateMessage(fromQQ, "遭遇未知错误");
+                    return;
+                }
+
+
+                del(20, "count");
+                del(20, fromQQ.ToString());
+                insert(20, "count", picCount.ToString());
+                insert(20, fromQQ.ToString(), ConvertDateTimeInt(DateTime.Now).ToString());
+
+                CQ.SendPrivateMessage(fromQQ, "图片修改完成！使用命令pixel查看");
             }
             else
             {
@@ -1240,6 +1335,10 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             var me = CQ.GetGroupMemberInfo(fromGroup, 751323264);
             if (fromGroup == 241464054 && fromQQ != 1000000)
             {
+                if(msg.IndexOf("刘晨旭") != -1 || msg.IndexOf("污旭") != -1 || msg.IndexOf("艹") != -1 || msg.IndexOf("你妈") != -1)
+                {
+                    CQ.SetGroupMemberGag(fromGroup, fromQQ, 60*60);
+                }
                 string reply;
                 string reply1 = xml_get(1, fromQQ.ToString());
                 string reply2 = xml_get(5, fromQQ.ToString());
@@ -1288,10 +1387,10 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 else if (reply != "")
                 {
                     mcmsg += "|||||[群消息]<" + reply + ">" + msg;
-                    //if (groupMember.GroupCard.IndexOf(reply) == -1)
-                    //{
+                    if (groupMember.GroupCard.IndexOf(reply) == -1)
+                    {
                         CQ.SetGroupNickName(fromGroup, fromQQ, reply);
-                    //}
+                    }
                 }
                 else if (msg.IndexOf("绑定") == 0)
                 {
@@ -1375,6 +1474,17 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                         insert(7, fromQQ.ToString(), qdTimesTemp.ToString());
                         insert(3, fromQQ.ToString(), System.DateTime.Today.ToString());
                         insert(4, fromQQ.ToString(), "4");
+
+                        string qd_get = xml_get(8, "qd");  //签到数
+                        int qd = 0;
+                        try
+                        {
+                            qd = int.Parse(qd_get);
+                        }
+                        catch { }
+                        qd++;
+                        del(8, "qd");
+                        insert(8, "qd", qd.ToString());
                     }
                 }
                 if (msg == "取钱" || msg == "我要取钱")
@@ -1580,7 +1690,9 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                             }
                             Counttemp+=5;
                             del(4, fromQQ.ToString());
+                            del(2, fromQQ.ToString());
                             insert(4, fromQQ.ToString(), Counttemp.ToString());
+                            insert(2, fromQQ.ToString(), CoinsTemp.ToString());
                             SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + replay5all + "五连抽完毕");
                             if (jinyan > 0)
                             {
@@ -1665,7 +1777,9 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                             }
                             Counttemp += 4;
                             del(4, fromQQ.ToString());
+                            del(2, fromQQ.ToString());
                             insert(4, fromQQ.ToString(), Counttemp.ToString());
+                            insert(2, fromQQ.ToString(), CoinsTemp.ToString());
                             SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + replay5all + "四连抽完毕");
                             if (jinyan > 0)
                             {
@@ -1750,7 +1864,9 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                             }
                             Counttemp += 3;
                             del(4, fromQQ.ToString());
+                            del(2, fromQQ.ToString());
                             insert(4, fromQQ.ToString(), Counttemp.ToString());
+                            insert(2, fromQQ.ToString(), CoinsTemp.ToString());
                             SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + replay5all + "三连抽完毕");
                             if (jinyan > 0)
                             {
@@ -1835,7 +1951,9 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                             }
                             Counttemp += 2;
                             del(4, fromQQ.ToString());
+                            del(2, fromQQ.ToString());
                             insert(4, fromQQ.ToString(), Counttemp.ToString());
+                            insert(2, fromQQ.ToString(), CoinsTemp.ToString());
                             SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + replay5all + "两连抽完毕");
                             if (jinyan > 0)
                             {
@@ -2693,7 +2811,8 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 insert(20, "count", picCount.ToString());
                 insert(20, fromQQ.ToString(), ConvertDateTimeInt(DateTime.Now).ToString());
 
-                SendMinecraftMessage(fromGroup, "[CQ:image,file=pixel_game\\" + picCount + ".png]\r\n图片修改完成！" + DateTime.Now.ToString() + CQ.CQCode_At(fromQQ));
+                //SendMinecraftMessage(fromGroup, "[CQ:image,file=pixel_game\\" + picCount + ".png]\r\n图片修改完成！" + DateTime.Now.ToString() + CQ.CQCode_At(fromQQ));
+                SendMinecraftMessage(fromGroup, "图片修改完成！使用命令pixel查看" + CQ.CQCode_At(fromQQ));
             }
 
             else if (replay_ok != "")
