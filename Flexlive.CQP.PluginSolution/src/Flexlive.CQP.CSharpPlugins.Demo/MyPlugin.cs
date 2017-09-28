@@ -1,4 +1,6 @@
 ﻿using Flexlive.CQP.Framework;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Drawing;
 using System.IO;
@@ -1335,7 +1337,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             var me = CQ.GetGroupMemberInfo(fromGroup, 751323264);
             if (fromGroup == 241464054 && fromQQ != 1000000)
             {
-                if(msg.IndexOf("刘晨旭") != -1 || msg.IndexOf("污旭") != -1 || msg.IndexOf("艹") != -1 || msg.IndexOf("你妈") != -1)
+                if(msg.IndexOf("刘晨旭") != -1 || msg.IndexOf("艹") != -1 || msg.IndexOf("你妈") != -1)
                 {
                     CQ.SetGroupMemberGag(fromGroup, fromQQ, 60*60);
                 }
@@ -2220,7 +2222,15 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             if (msg.ToUpper() == "HELP")
             {
                 //CQ.SendGroupMessage(fromGroup, msg.ToUpper().IndexOf("help").ToString());
-                SendMinecraftMessage(fromGroup, "命令帮助：\r\n！add 词条：回答\r\n！del 词条：回答\r\n！list 词条\r\n所有符号均为全角符号\r\n词条中请勿包含冒号\r\n发送“点歌”+数字序号即可点歌（如点歌14，最大134）\r\n发送“坷垃金曲”+数字序号即可点金坷垃歌（如坷垃金曲21，最大71）\r\n私聊发送“赞我”可使接待给你点赞\r\n发送“今日运势”可以查看今日运势\r\n发送“淘宝”+关键词即可搜索淘宝优惠搜索结果（买后找晨旭要返现）\r\n发送“pixel”可以查看像素游戏图片\r\n如有bug请反馈");
+                SendMinecraftMessage(fromGroup, "命令帮助：\r\n！add 词条：回答\r\n！del 词条：回答\r\n！list 词条\r\n" +
+                    "所有符号均为全角符号\r\n词条中请勿包含冒号\r\n" +
+                    "发送“点歌”+数字序号即可点歌（如点歌14，最大134）\r\n" +
+                    "发送“坷垃金曲”+数字序号即可点金坷垃歌（如坷垃金曲21，最大71）\r\n" +
+                    "私聊发送“赞我”可使接待给你点赞\r\n发送“今日运势”可以查看今日运势\r\n" +
+                    "发送“淘宝”+关键词即可搜索淘宝优惠搜索结果（买后找晨旭要返现）\r\n" +
+                    "发送“pixel”可以查看像素游戏图片\r\n" +
+                    "发送“查快递”和单号即可搜索快递物流信息\r\n" +
+                    "如有bug请反馈");
             }
             else if (msg.IndexOf("点歌") == 0)
             {
@@ -2556,7 +2566,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     }
                     else if (RandKey == 1 && RandKey2 != 0)
                     {
-                        CQ.SetGroupMemberGag(fromGroup, fromQQ, RandKey * 3600 * 7 + 2333);
+                        CQ.SetGroupMemberGag(fromGroup, fromQQ, RandKey * 3600 * 24 + 2333);
                         SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n恭喜你抽中了超豪华禁言套餐，并附赠10张禁言卡！奖励已发放！");
                         int fk = 0;
                         string fks = xml_get(10, fromQQ.ToString());
@@ -2584,8 +2594,8 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     }
                     else if (RandKey < 11)
                     {
-                        CQ.SetGroupMemberGag(fromGroup, fromQQ, RandKey * 60);
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n恭喜你抽中了禁言" + RandKey + "分钟！奖励已发放到你的QQ~");
+                        CQ.SetGroupMemberGag(fromGroup, fromQQ, RandKey * 3600);
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n恭喜你抽中了禁言" + RandKey + "小时！奖励已发放到你的QQ~");
                     }
                     else
                     {
@@ -2814,6 +2824,38 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 //SendMinecraftMessage(fromGroup, "[CQ:image,file=pixel_game\\" + picCount + ".png]\r\n图片修改完成！" + DateTime.Now.ToString() + CQ.CQCode_At(fromQQ));
                 SendMinecraftMessage(fromGroup, "图片修改完成！使用命令pixel查看" + CQ.CQCode_At(fromQQ));
             }
+            else if(msg.IndexOf("查快递") == 0 && msg.Length > 3)
+            {
+                string result_msg = "";
+                try
+                {
+                    string html = HttpGet("https://www.kuaidi100.com/autonumber/autoComNum", "text=" + msg.Replace("查快递", ""));
+                    JObject jo = (JObject)JsonConvert.DeserializeObject(html);
+                    string comCode = jo["auto"][0]["comCode"].ToString();
+
+                    html = HttpGet("https://www.kuaidi100.com/query", "type=" + comCode + "&postid=" + msg.Replace("查快递", ""));
+                    jo = (JObject)JsonConvert.DeserializeObject(html);
+                    foreach (var i in jo["data"])
+                    {
+                        result_msg += i["time"].ToString() + " ";
+                        result_msg += i["context"].ToString() + " 地点：";
+                        result_msg += i["location"].ToString() + "\n";
+                    }
+                }
+                catch
+                {
+
+                }
+                if(result_msg=="")
+                {
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "无此单号的数据");
+                }
+                else
+                {
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + result_msg);
+                }
+            }
+            
 
             else if (replay_ok != "")
             {
