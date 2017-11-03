@@ -2566,7 +2566,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     }
                     else if (RandKey == 1 && RandKey2 != 0)
                     {
-                        CQ.SetGroupMemberGag(fromGroup, fromQQ, RandKey * 3600 * 24 + 2333);
+                        CQ.SetGroupMemberGag(fromGroup, fromQQ, RandKey * 3600 * 24 * 20);
                         SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n恭喜你抽中了超豪华禁言套餐，并附赠10张禁言卡！奖励已发放！");
                         int fk = 0;
                         string fks = xml_get(10, fromQQ.ToString());
@@ -2594,8 +2594,8 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     }
                     else if (RandKey < 11)
                     {
-                        CQ.SetGroupMemberGag(fromGroup, fromQQ, RandKey * 3600);
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n恭喜你抽中了禁言" + RandKey + "小时！奖励已发放到你的QQ~");
+                        CQ.SetGroupMemberGag(fromGroup, fromQQ, RandKey * 3600 * 24);
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n恭喜你抽中了禁言" + RandKey + "天！奖励已发放到你的QQ~");
                     }
                     else
                     {
@@ -2824,22 +2824,44 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 //SendMinecraftMessage(fromGroup, "[CQ:image,file=pixel_game\\" + picCount + ".png]\r\n图片修改完成！" + DateTime.Now.ToString() + CQ.CQCode_At(fromQQ));
                 SendMinecraftMessage(fromGroup, "图片修改完成！使用命令pixel查看" + CQ.CQCode_At(fromQQ));
             }
-            else if(msg.IndexOf("查快递") == 0 && msg.Length > 3)
+            else if(msg.IndexOf("查快递") == 0)
             {
+                string kdcode = msg.Replace("查快递", "");
+
+                if (msg== "查快递")
+                {
+                    kdcode = xml_get(9, fromQQ.ToString());
+                    if(kdcode == "")
+                    {
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你没有查询过任何快递，请输入要查询的单号");
+                        return;
+                    }
+                }
+                else
+                {
+                    del(9, fromQQ.ToString());
+                    insert(9, fromQQ.ToString(), kdcode);
+                }
+
                 string result_msg = "";
                 try
                 {
-                    string html = HttpGet("https://www.kuaidi100.com/autonumber/autoComNum", "text=" + msg.Replace("查快递", ""));
+                    string html = HttpGet("https://www.kuaidi100.com/autonumber/autoComNum", "text=" + kdcode);
                     JObject jo = (JObject)JsonConvert.DeserializeObject(html);
                     string comCode = jo["auto"][0]["comCode"].ToString();
+                    result_msg = comCode + "\r\n";
 
-                    html = HttpGet("https://www.kuaidi100.com/query", "type=" + comCode + "&postid=" + msg.Replace("查快递", ""));
+                    html = HttpGet("https://www.kuaidi100.com/query", "type=" + comCode + "&postid=" + kdcode);
                     jo = (JObject)JsonConvert.DeserializeObject(html);
                     foreach (var i in jo["data"])
                     {
                         result_msg += i["time"].ToString() + " ";
                         result_msg += i["context"].ToString() + " 地点：";
-                        result_msg += i["location"].ToString() + "\n";
+                        result_msg += i["location"].ToString() + "\r\n";
+                    }
+                    if(result_msg == comCode + "\r\n")
+                    {
+                        result_msg = "";
                     }
                 }
                 catch
@@ -2848,14 +2870,40 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 }
                 if(result_msg=="")
                 {
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "无此单号的数据");
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "无此单号的数据" + "\r\n下次查询该快递可直接发送“查快递”命令，无需在输入单号");
                 }
                 else
                 {
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + result_msg);
+                    SendMinecraftMessage(fromGroup, result_msg + "下次查询该快递可直接发送“查快递”命令，无需在输入单号\r\n" + CQ.CQCode_At(fromQQ));
                 }
             }
-            
+            else if(msg.IndexOf("下载图片") == 0)
+            {
+                bool Value = false;
+                WebResponse response = null;
+                Stream stream = null;
+
+                string FileName = GetRandomString(10, true, false, false, false, "ABCDEF");
+
+                try
+                {
+                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(msg.Replace("下载图片",""));
+
+                    response = request.GetResponse();
+                    stream = response.GetResponseStream();
+
+                    if (!response.ContentType.ToLower().StartsWith("text/"))
+                    {
+                        Value = SaveBinaryFile(response, @"C:\Users\Administrator\Desktop\kuqpro\data\image\download\" + FileName);
+                    }
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "图片下载完成：\r\n[CQ:image,file=download\\" + FileName + "]");
+                }
+                catch (Exception err)
+                {
+                    string aa = err.Message.ToString();
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n机器人爆炸了，原因：" + aa);
+                }
+            }
 
             else if (replay_ok != "")
             {
@@ -2877,7 +2925,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
 
             if (msg.IndexOf("找番号") == 0 || msg.IndexOf("查番号") == 0 || msg.IndexOf("查磁链") == 0 || msg.IndexOf("找磁链") == 0)
             {
-                if (System.DateTime.Now.Hour > 5 && fromGroup != 115872123)
+                if (System.DateTime.Now.Hour > 5 && fromGroup != 115872123 && fromQQ != 961726194)
                 {
                     SendMinecraftMessage(fromGroup, "开车时间为00:00-6:00");
                     return;
@@ -3329,6 +3377,44 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             Bitmap bit = new Bitmap(result);
             return bit;
         }
+
+
+        /// <summary>
+        /// Save a binary file to disk.
+        /// </summary>
+        /// <param name="response">The response used to save the file</param>
+        // 将二进制文件保存到磁盘
+        private static bool SaveBinaryFile(WebResponse response, string FileName)
+        {
+            bool Value = true;
+            byte[] buffer = new byte[1024];
+
+            try
+            {
+                if (File.Exists(FileName))
+                    File.Delete(FileName);
+                Stream outStream = System.IO.File.Create(FileName);
+                Stream inStream = response.GetResponseStream();
+
+                int l;
+                do
+                {
+                    l = inStream.Read(buffer, 0, buffer.Length);
+                    if (l > 0)
+                        outStream.Write(buffer, 0, l);
+                }
+                while (l > 0);
+
+                outStream.Close();
+                inStream.Close();
+            }
+            catch
+            {
+                Value = false;
+            }
+            return Value;
+        }
+
 
         private static string[] lunch =
         {
