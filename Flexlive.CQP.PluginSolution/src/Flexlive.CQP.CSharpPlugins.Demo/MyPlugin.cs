@@ -2911,7 +2911,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 WebResponse response = null;
                 Stream stream = null;
 
-                string FileName = GetRandomString(10, true, false, false, false, "ABCDEF") + ".mp3";
+                string FileName = msg.Replace("网易云", "") + ".mp3";
 
                 string url = HttpGet("https://www.chenxublog.com/163music/", "id=" + msg.Replace("网易云", ""));
 
