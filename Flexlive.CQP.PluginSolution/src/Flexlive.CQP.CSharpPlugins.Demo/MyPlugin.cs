@@ -2230,6 +2230,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     "发送“淘宝”+关键词即可搜索淘宝优惠搜索结果（买后找晨旭要返现）\r\n" +
                     "发送“pixel”可以查看像素游戏图片\r\n" +
                     "发送“查快递”和单号即可搜索快递物流信息\r\n" +
+                    "发送“网易云”和歌曲id号即可定向点歌\r\n" +
                     "如有bug请反馈");
             }
             else if (msg.IndexOf("点歌") == 0)
@@ -2897,6 +2898,36 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                         Value = SaveBinaryFile(response, @"C:\Users\Administrator\Desktop\kuqpro\data\image\download\" + FileName);
                     }
                     SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "图片下载完成：\r\n[CQ:image,file=download\\" + FileName + "]");
+                }
+                catch (Exception err)
+                {
+                    string aa = err.Message.ToString();
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n机器人爆炸了，原因：" + aa);
+                }
+            }
+            else if(msg.IndexOf("网易云") == 0)
+            {
+                bool Value = false;
+                WebResponse response = null;
+                Stream stream = null;
+
+                string FileName = GetRandomString(10, true, false, false, false, "ABCDEF") + ".mp3";
+
+                string url = HttpGet("https://www.chenxublog.com/163music/", "id=" + msg.Replace("网易云", ""));
+
+                try
+                {
+                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+
+                    response = request.GetResponse();
+                    stream = response.GetResponseStream();
+
+                    if (!response.ContentType.ToLower().StartsWith("text/"))
+                    {
+                        Value = SaveBinaryFile(response, @"C:\Users\Administrator\Desktop\kuqpro\data\record\download\" + FileName);
+                    }
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "音乐加载完成，正在发送音乐，请稍后~");
+                    SendMinecraftMessage(fromGroup, "[CQ:record,file=download\\" + FileName + "]");
                 }
                 catch (Exception err)
                 {
