@@ -2230,7 +2230,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     "发送“淘宝”+关键词即可搜索淘宝优惠搜索结果（买后找晨旭要返现）\r\n" +
                     "发送“pixel”可以查看像素游戏图片\r\n" +
                     "发送“查快递”和单号即可搜索快递物流信息\r\n" +
-                    "发送“网易云”和歌曲id号即可定向点歌\r\n" +
+                    "发送“网易云”和歌曲id号/歌曲名即可定向点歌\r\n" +
                     "如有bug请反馈");
             }
             else if (msg.IndexOf("点歌") == 0)
@@ -2907,13 +2907,35 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             }
             else if(msg.IndexOf("网易云") == 0)
             {
+                int songID = 0;
+                try
+                {
+                    songID = int.Parse(msg.Replace("网易云", ""));
+                }
+                catch
+                {
+                    try
+                    {
+                        string html = HttpGet("http://s.music.163.com/search/get/", "type=1&s=" + msg.Replace("网易云", ""));
+                        JObject jo = (JObject)JsonConvert.DeserializeObject(html);
+                        string idGet = jo["result"]["songs"][0]["id"].ToString();
+                        songID = int.Parse(idGet);
+                    }
+                    catch(Exception err)
+                    {
+                        string aa = err.Message.ToString();
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n机器人爆炸了，原因：" + aa);
+                    }
+                    
+                }
+
                 bool Value = false;
                 WebResponse response = null;
                 Stream stream = null;
 
                 string FileName = msg.Replace("网易云", "") + ".mp3";
 
-                string url = HttpGet("https://www.chenxublog.com/163music/", "id=" + msg.Replace("网易云", ""));
+                string url = HttpGet("https://www.chenxublog.com/163music/", "id=" + songID);
 
                 try
                 {
