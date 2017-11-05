@@ -2921,10 +2921,10 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                         string idGet = jo["result"]["songs"][0]["id"].ToString();
                         songID = int.Parse(idGet);
                     }
-                    catch(Exception err)
+                    catch
                     {
-                        string aa = err.Message.ToString();
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n机器人爆炸了，原因：" + aa);
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n机器人爆炸了，原因：根本没这首歌");
+                        return;
                     }
                     
                 }
