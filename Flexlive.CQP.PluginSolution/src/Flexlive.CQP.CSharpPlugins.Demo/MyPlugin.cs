@@ -3663,6 +3663,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 del(1, beingOperateQQ.ToString());
                 del(5, beingOperateQQ.ToString());
                 CQ.SendGroupMessage(fromGroup, $"玩家{reply}（{beingOperateQQ}）的白名单已被删除。");
+                mcmsg += "|||||command>manudel " + reply;
             }
             else
             {
