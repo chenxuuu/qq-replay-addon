@@ -3070,22 +3070,61 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 url = url.Replace("查番号", "");
                 url = url.Replace("查磁链", "");
                 url = url.Replace("找磁链", "");
-                string html = HttpGet("http://www.cilisou.cn/s.php", "q=" + url.Replace(" ", "-"));
+
+                string html = HttpGet("http://torrentkitty.uno/tk/" + url + "/1-0-0.html", "?q=1");
+                //Console.WriteLine(html);
                 if (html == "")
                 {
-                    SendMinecraftMessage(fromGroup, "加载失败");
+                    Console.WriteLine("加载失败");
                 }
                 else
                 {
                     string magnets = "";
-                    Regex reg = new Regex("magnet:\\?xt=urn:btih:(.*)&dn=", RegexOptions.IgnoreCase);
-                    MatchCollection matchs = reg.Matches(html);
+                    int i = 0, j = 0, k = 0;
+                    MatchCollection matchs = Reg_solve(html, "<span>\\[(?<type>.*?)\\]&nbsp;</span><a href=(.*?)target=\"_blank\">(?<name>.*?)</a>");
+                    string[] type = new string[matchs.Count];
+                    string[] name = new string[matchs.Count];
+                    MatchCollection check;
                     foreach (Match item in matchs)
                     {
                         if (item.Success)
                         {
-                                magnets += "\r\n" + item.Value.Replace("magnet:?xt=urn:btih:", "").Replace("&dn=", "");
+                            string check_str = "";
+                            check = Reg_solve(item.Groups["name"].Value.Replace("<b>", "").Replace("</b>", ""), "<span class=\"__cf_email__\" data-cfemail=\"(.*?)\">\\[email&#160;protected\\]</span>");
+                            foreach (Match check_item in check)
+                            {
+                                check_str = check_item.Value;
+                            }
+                            type[i++] = item.Groups["type"].Value;
+                            if (check_str != "")
+                                name[j++] = item.Groups["name"].Value.Replace("<b>", "").Replace("</b>", "").Replace(check_str, "");
+                            else
+                                name[j++] = item.Groups["name"].Value.Replace("<b>", "").Replace("</b>", "");
                         }
+                    }
+                    MatchCollection link_matchs = Reg_solve(html, " href='magnet:\\?xt=urn:btih:(?<magnet>.*?)&dn=(.*?)' >磁力链接(.*?)<b>(?<filenum>\\d*?)个文件(.*?)共<b>(?<size>.*?)</b>");
+                    i = 0;
+                    j = 0;
+                    string[] magnet = new string[link_matchs.Count];
+                    string[] filenum = new string[link_matchs.Count];
+                    string[] size = new string[link_matchs.Count];
+                    foreach (Match item in link_matchs)
+                    {
+                        if (item.Success)
+                        {
+                            magnet[i++] = item.Groups["magnet"].Value;
+                            filenum[j++] = item.Groups["filenum"].Value;
+                            size[k++] = item.Groups["size"].Value;
+                        }
+                    }
+
+                    for (i = 0; i < link_matchs.Count; i++)
+                    {
+                        try
+                        {
+                            magnets += "\r\n[" + type[i] + "]" + name[i] + "," + size[i] + "," + filenum[i] + "个文件\r\n" + magnet[i];
+                        }
+                        catch { }
                     }
                     SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n"+ url.Replace(" ", "-") + "的资源：" + magnets);
                 }
@@ -3104,6 +3143,12 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             {
                 SendMinecraftMessage(fromGroup, "假车：magnet:?xt=urn:btih:" + GetRandomString(40, true, false, false, false, "ABCDEF"));
             }
+        }
+
+        public static MatchCollection Reg_solve(string str, string regstr)
+        {
+            Regex reg = new Regex(regstr, RegexOptions.IgnoreCase);
+            return reg.Matches(str);
         }
 
 
