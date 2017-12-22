@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
-	<item value="E:\Desktop\server1.10\plugins" key="org.eclipse.jdt.ui.lastextjar"/>
+	<item value="E:\Desktop" key="org.eclipse.jdt.ui.lastextjar"/>
 	<item value="2" key="org.eclipse.jdt.ui.last.selected.jre.kind2"/>
 	<section name="ProblemSeveritiesConfigurationBlock">
 		<item value="false" key="expanded2"/>
@@ -67,10 +67,12 @@
 		<item value="false" key="JarManifestWizardPage.SAVE_MANIFEST"/>
 		<item value="false" key="JarPackageWizardPage.EXPORT_OUTPUT_FOLDER"/>
 		<list key="JarPackageWizardPage.DESTINATION_NAMES_ID">
+			<item value="E:\Desktop\p.jar"/>
+			<item value="E:\Desktop\qqplugin.jar"/>
+			<item value="E:\Desktop\test.jar"/>
 			<item value="E:\Desktop\server1.10\plugins\test.jar"/>
 			<item value="E:\Desktop\atest.jar"/>
 			<item value="E:\Desktop\q.jar"/>
-			<item value="E:\Desktop\qqplugin.jar"/>
 			<item value="E:\Desktop\javaws\qqplugin.jar"/>
 			<item value="E:\Desktop\1.10server\plugins\qqplugin.jar"/>
 		</list>

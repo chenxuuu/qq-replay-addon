@@ -164,7 +164,7 @@ public class Qqplugin extends JavaPlugin implements Listener
 		                            }
 		                            else
 		                            {
-		                            	result = playername + "你服务器里的钱不够100。";
+		                            	result = "<提示>"+playername + "你服务器里的钱不够100。";
 		                            }
 		                        }
 		                        else
@@ -197,7 +197,7 @@ public class Qqplugin extends JavaPlugin implements Listener
 		                            }
 		                            else
 		                            {
-		                            	result = playername + "你服务器里的钱不够500。";
+		                            	result = "<提示>"+playername + "你服务器里的钱不够500。";
 		                            }
 		                        }
 		                        else
@@ -230,7 +230,73 @@ public class Qqplugin extends JavaPlugin implements Listener
 		                            }
 		                            else
 		                            {
-		                            	result = playername + "你服务器里的钱不够1000。";
+		                            	result = "<提示>"+playername + "你服务器里的钱不够1000。";
+		                            }
+		                        }
+		                        else
+		                        {
+		                            //valut没装或者ess经济没装
+		                        	result="玩家"+ playername +"服务器查询余额失败。";
+		                        }
+		                		if(player!="none233")
+		                		{
+		                			msg+="]][["+result;
+		                		}
+		                		else
+		                		{
+		                			player="ok";
+		                			msg=result;
+		                		}
+		                	}
+		                	else if(sourceStrArray[i].indexOf("ecodel5000>")!=-1)
+		                	{
+		                		String result="",playername=sourceStrArray[i].replace("ecodel5000>", "");
+		                        isEco = setupEconomy();
+		                        if(isEco)
+		                        {
+		                        	@SuppressWarnings("deprecation")
+									OfflinePlayer p = Bukkit.getOfflinePlayer(playername);
+		                            if(economy.has(p,5000) && p!=null)//判断玩家是否5000元
+		                            {
+		                            	economy.withdrawPlayer(p,5000);//扣除5000元
+		                            	result = "<eco5000>" + playername;
+		                            }
+		                            else
+		                            {
+		                            	result = "<提示>"+playername + "你服务器里的钱不够5000。";
+		                            }
+		                        }
+		                        else
+		                        {
+		                            //valut没装或者ess经济没装
+		                        	result="玩家"+ playername +"服务器查询余额失败。";
+		                        }
+		                		if(player!="none233")
+		                		{
+		                			msg+="]][["+result;
+		                		}
+		                		else
+		                		{
+		                			player="ok";
+		                			msg=result;
+		                		}
+		                	}
+		                	else if(sourceStrArray[i].indexOf("ecodel10000>")!=-1)
+		                	{
+		                		String result="",playername=sourceStrArray[i].replace("ecodel10000>", "");
+		                        isEco = setupEconomy();
+		                        if(isEco)
+		                        {
+		                        	@SuppressWarnings("deprecation")
+									OfflinePlayer p = Bukkit.getOfflinePlayer(playername);
+		                            if(economy.has(p,10000) && p!=null)//判断玩家是否5000元
+		                            {
+		                            	economy.withdrawPlayer(p,10000);//扣除5000元
+		                            	result = "<eco10000>" + playername;
+		                            }
+		                            else
+		                            {
+		                            	result = "<提示>"+playername + "你服务器里的钱不够10000。";
 		                            }
 		                        }
 		                        else

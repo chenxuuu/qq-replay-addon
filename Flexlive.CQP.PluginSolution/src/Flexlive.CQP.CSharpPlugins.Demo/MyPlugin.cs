@@ -135,6 +135,42 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                     del(2, fromQQ.ToString());
                                     insert(2, fromQQ.ToString(), CoinsTemp.ToString());
                                 }
+                                else if (i.IndexOf("<eco5000>") == 0)
+                                {
+                                    long fromQQ = qq_get(i.Replace("<eco5000>", ""));
+                                    string CoinStr = xml_get(2, fromQQ.ToString());
+                                    int CoinsTemp;
+                                    if (CoinStr != "")
+                                    {
+                                        CoinsTemp = int.Parse(CoinStr);
+                                    }
+                                    else
+                                    {
+                                        CoinsTemp = 0;
+                                    }
+                                    CoinsTemp += 5000;
+                                    SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco5000>", "") + "存入5000游戏币！");
+                                    del(2, fromQQ.ToString());
+                                    insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                                }
+                                else if (i.IndexOf("<eco10000>") == 0)
+                                {
+                                    long fromQQ = qq_get(i.Replace("<eco10000>", ""));
+                                    string CoinStr = xml_get(2, fromQQ.ToString());
+                                    int CoinsTemp;
+                                    if (CoinStr != "")
+                                    {
+                                        CoinsTemp = int.Parse(CoinStr);
+                                    }
+                                    else
+                                    {
+                                        CoinsTemp = 0;
+                                    }
+                                    CoinsTemp += 10000;
+                                    SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco10000>", "") + "存入10000游戏币！");
+                                    del(2, fromQQ.ToString());
+                                    insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                                }
                                 else if (i.IndexOf("<qd>") == 0)
                                 {
                                     long fromQQ = qq_get(i.Replace("<qd>", ""));
@@ -277,6 +313,42 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                             }
                             CoinsTemp += 1000;
                             SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco1000>", "") + "存入1000游戏币！");
+                            del(2, fromQQ.ToString());
+                            insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                        }
+                        else if (replay.IndexOf("<eco5000>") == 0)
+                        {
+                            long fromQQ = qq_get(replay.Replace("<eco5000>", ""));
+                            string CoinStr = xml_get(2, fromQQ.ToString());
+                            int CoinsTemp;
+                            if (CoinStr != "")
+                            {
+                                CoinsTemp = int.Parse(CoinStr);
+                            }
+                            else
+                            {
+                                CoinsTemp = 0;
+                            }
+                            CoinsTemp += 5000;
+                            SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco5000>", "") + "存入5000游戏币！");
+                            del(2, fromQQ.ToString());
+                            insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                        }
+                        else if (replay.IndexOf("<eco10000>") == 0)
+                        {
+                            long fromQQ = qq_get(replay.Replace("<eco10000>", ""));
+                            string CoinStr = xml_get(2, fromQQ.ToString());
+                            int CoinsTemp;
+                            if (CoinStr != "")
+                            {
+                                CoinsTemp = int.Parse(CoinStr);
+                            }
+                            else
+                            {
+                                CoinsTemp = 0;
+                            }
+                            CoinsTemp += 10000;
+                            SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco10000>", "") + "存入10000游戏币！");
                             del(2, fromQQ.ToString());
                             insert(2, fromQQ.ToString(), CoinsTemp.ToString());
                         }
@@ -1017,16 +1089,16 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 SendMinecraftMessage(241464054, "新的一天已经到来了哦，现在时间是\r\n" + DateTime.Now.ToString() + "\r\n昨日一共有" + qd + "人签到哦\r\n" + "今日吉言：" + itsays[ran.Next(0, 613)]);
             }
 
-            if (broadcastNew != 0)
-            {
-                mcmsg += "|||||command>tm msg " + broadcastNewID + " 请打开sweetcreeper.com并加群！";
-                broadcastNew++;
-            }
-            if(broadcastNew == 60)
-            {
-                mcmsg += "|||||command>kick " + broadcastNewID + " 请打开sweetcreeper.com并加群！";
-                broadcastNew = 0;
-            }
+            //if (broadcastNew%3== 0)
+            //{
+            //    mcmsg += "|||||command>say " + broadcastNewID + " 请打开sweetcreeper.com并加群！";
+            //    broadcastNew++;
+            //}
+            //if(broadcastNew == 20)
+            //{
+            //    mcmsg += "|||||command>kick " + broadcastNewID + " 请打开sweetcreeper.com并加群！";
+            //    broadcastNew = 0;
+            //}
 
         }
 
@@ -1532,13 +1604,21 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 {
                     mcmsg += "|||||ecodel1000>" + reply;
                 }
+                else if (msg == "存钱5000")
+                {
+                    mcmsg += "|||||ecodel5000>" + reply;
+                }
+                else if (msg == "存钱10000")
+                {
+                    mcmsg += "|||||ecodel10000>" + reply;
+                }
                 else if (msg.IndexOf("存钱") == 0)
                 {
                     SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "无效命令，回复帮助查看更多。");
                 }
                 if (msg == "帮助")
                 {
-                    SendMinecraftMessage(fromGroup, "关于签到奖励：\r\n每日可随机领取0-500游戏币的奖励，奖励暂存在银行中。\r\n取钱方式：在群里发送“取钱”即可取出所有钱。\r\n回复存钱+金额可将服务器钱存入银行\r\n目前仅限“存钱100”、“存钱500”、“存钱1000”三个命令\r\n回复“查询”可查询当前银行内余额。\r\n回复“抽奖”可花费100游戏币进行抽奖，中奖率为玄学");
+                    SendMinecraftMessage(fromGroup, "关于签到奖励：\r\n每日可随机领取0-500游戏币的奖励，奖励暂存在银行中。\r\n取钱方式：在群里发送“取钱”即可取出所有钱。\r\n回复存钱+金额可将服务器钱存入银行\r\n每次仅限100、500、1000、5000、10000这几个额度\r\n回复“查询”可查询当前银行内余额。\r\n回复“抽奖”可花费100游戏币进行抽奖，中奖率为玄学");
                 }
                 if (msg == "抽奖")
                 {
@@ -2880,6 +2960,8 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             }
             else if(msg.IndexOf("下载图片") == 0)
             {
+                SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n下你mb");
+                return;
                 bool Value = false;
                 WebResponse response = null;
                 Stream stream = null;
