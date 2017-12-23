@@ -3132,31 +3132,41 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
 
                 if (get_msg.IndexOf("\n") >= 1 && get_msg.IndexOf("\n") != get_msg.Length - 1)
                 {
-                    string[] str2;
-                    int count_temp = 0;
-                    str2 = get_msg.Split('\n');
-                    foreach (string i in str2)
-                    {
-                        if (count_temp == 0)
-                        {
-                            text = i.ToString();
-                            count_temp++;
-                        }
-                        else if (count_temp == 1)
-                        {
-                            reg = i.ToString();
-                            break;
-                        }
-                    }
                     string result_msg = "匹配如下：";
-                    MatchCollection matchs = Reg_solve(text, reg);
-                    foreach (Match item in matchs)
+                    try
                     {
-                        if (item.Success)
+                        string[] str2;
+                        int count_temp = 0;
+                        str2 = get_msg.Split('\n');
+                        foreach (string i in str2)
                         {
-                            result_msg += "\r\n" + item.Value;
+                            if (count_temp == 0)
+                            {
+                                text = i.ToString();
+                                count_temp++;
+                            }
+                            else if (count_temp == 1)
+                            {
+                                reg = i.ToString();
+                                break;
+                            }
+                        }
+
+                        MatchCollection matchs = Reg_solve(text, reg);
+                        foreach (Match item in matchs)
+                        {
+                            if (item.Success)
+                            {
+                                result_msg += "\r\n" + item.Value;
+                            }
                         }
                     }
+                    catch (Exception err)
+                    {
+                        string aa = err.Message.ToString();
+                        result_msg = "\r\n机器人爆炸了，原因：" + aa;
+                    }
+
                     SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + result_msg);
                 }
                 else
