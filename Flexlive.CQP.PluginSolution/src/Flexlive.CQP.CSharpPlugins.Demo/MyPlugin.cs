@@ -2304,13 +2304,14 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 //CQ.SendGroupMessage(fromGroup, msg.ToUpper().IndexOf("help").ToString());
                 SendMinecraftMessage(fromGroup, "命令帮助：\r\n！add 词条：回答\r\n！del 词条：回答\r\n！list 词条\r\n" +
                     "所有符号均为全角符号\r\n词条中请勿包含冒号\r\n" +
-                    "发送“点歌”+数字序号即可点歌（如点歌14，最大134）\r\n" +
                     "发送“坷垃金曲”+数字序号即可点金坷垃歌（如坷垃金曲21，最大71）\r\n" +
-                    "私聊发送“赞我”可使接待给你点赞\r\n发送“今日运势”可以查看今日运势\r\n" +
-                    "发送“淘宝”+关键词即可搜索淘宝优惠搜索结果（买后找晨旭要返现）\r\n" +
+                    "私聊发送“赞我”可使接待给你点赞\r\n" +
+                    "发送“今日运势”可以查看今日运势\r\n" +
+                    "发送“淘宝”+关键词即可搜索淘宝优惠搜索结果\r\n" +
                     "发送“pixel”可以查看像素游戏图片\r\n" +
                     "发送“查快递”和单号即可搜索快递物流信息\r\n" +
                     "发送“网易云”和歌曲id号/歌曲名即可定向点歌\r\n" +
+                    "发送“正则”+字符串+“换行”+正则表达式，可查询C#正则\r\n" +
                     "如有bug请反馈");
             }
             else if (msg.IndexOf("点歌") == 0)
@@ -2960,8 +2961,11 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             }
             else if(msg.IndexOf("下载图片") == 0)
             {
-                SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n下你mb");
-                return;
+                if(fromQQ != 961726194)
+                {
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n下你mb");
+                    return;
+                }
                 bool Value = false;
                 WebResponse response = null;
                 Stream stream = null;
@@ -3039,26 +3043,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n机器人爆炸了，原因：" + aa);
                 }
             }
-
-            else if (replay_ok != "")
-            {
-                if (replay_common != "")
-                {
-                    Random ran = new Random(System.DateTime.Now.Millisecond);
-                    int RandKey = ran.Next(0, 2);
-                    if (RandKey == 0) { SendMinecraftMessage(fromGroup, replay_ok); } else { SendMinecraftMessage(fromGroup, replay_common); }
-                }
-                else
-                {
-                    SendMinecraftMessage(fromGroup, replay_ok);
-                }
-            }
-            else if (replay_common != "")
-            {
-                SendMinecraftMessage(fromGroup, replay_common);
-            }
-
-            if (msg.IndexOf("找番号") == 0 || msg.IndexOf("查番号") == 0 || msg.IndexOf("查磁链") == 0 || msg.IndexOf("找磁链") == 0)
+            else if (msg.IndexOf("找番号") == 0 || msg.IndexOf("查番号") == 0 || msg.IndexOf("查磁链") == 0 || msg.IndexOf("找磁链") == 0)
             {
                 if (System.DateTime.Now.Hour > 5 && fromGroup != 115872123 && fromQQ != 961726194)
                 {
@@ -3075,7 +3060,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 //Console.WriteLine(html);
                 if (html == "")
                 {
-                    Console.WriteLine("加载失败");
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "加载失败");
                 }
                 else
                 {
@@ -3129,8 +3114,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n"+ url.Replace(" ", "-") + "的资源：" + magnets);
                 }
             }
-
-            if(msg.IndexOf("*") == 0 && fromQQ == 961726194)
+            else if(msg.IndexOf("*") == 0 && fromQQ == 961726194)
             {
                 foreach(long i in grouplist)
                 {
@@ -3138,10 +3122,65 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                         SendMinecraftMessage(i, "跨群通知：\r\n" + msg.Substring(1));
                 }
             }
-
-            if (msg == "开车")
+            else if (msg == "开车")
             {
                 SendMinecraftMessage(fromGroup, "假车：magnet:?xt=urn:btih:" + GetRandomString(40, true, false, false, false, "ABCDEF"));
+            }
+            else if(msg.IndexOf("正则") == 0)
+            {
+                string get_msg = msg.Replace("正则", "").Replace("\r",""), text = "", reg = "";
+
+                if (get_msg.IndexOf("\n") >= 1 && get_msg.IndexOf("\n") != get_msg.Length - 1)
+                {
+                    string[] str2;
+                    int count_temp = 0;
+                    str2 = get_msg.Split('\n');
+                    foreach (string i in str2)
+                    {
+                        if (count_temp == 0)
+                        {
+                            text = i.ToString();
+                            count_temp++;
+                        }
+                        else if (count_temp == 1)
+                        {
+                            reg = i.ToString();
+                            break;
+                        }
+                    }
+                    string result_msg = "匹配如下：";
+                    MatchCollection matchs = Reg_solve(text, reg);
+                    foreach (Match item in matchs)
+                    {
+                        if (item.Success)
+                        {
+                            result_msg += "\r\n" + item.Value;
+                        }
+                    }
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + result_msg);
+                }
+                else
+                {
+                    SendMinecraftMessage(fromGroup, "格式错误！");
+                }
+
+            }
+            else if (replay_ok != "")
+            {
+                if (replay_common != "")
+                {
+                    Random ran = new Random(System.DateTime.Now.Millisecond);
+                    int RandKey = ran.Next(0, 2);
+                    if (RandKey == 0) { SendMinecraftMessage(fromGroup, replay_ok); } else { SendMinecraftMessage(fromGroup, replay_common); }
+                }
+                else
+                {
+                    SendMinecraftMessage(fromGroup, replay_ok);
+                }
+            }
+            else if (replay_common != "")
+            {
+                SendMinecraftMessage(fromGroup, replay_common);
             }
         }
 
