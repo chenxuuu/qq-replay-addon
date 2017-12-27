@@ -2432,6 +2432,26 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     SendMinecraftMessage(fromGroup, "你没有权限调教接待喵");
                 }
             }
+            else if (msg.IndexOf("！delall ") == 0)
+            {
+                if (AdminCheck(fromQQ) == 1)
+                {
+                    string get_msg = msg.Replace("！delall ", "");
+                    if (get_msg.Length > 0)
+                    {
+                        del(fromGroup, get_msg);
+                        SendMinecraftMessage(fromGroup, "删除完成！\r\n触发词：" + get_msg);
+                    }
+                    else
+                    {
+                        SendMinecraftMessage(fromGroup, "格式错误！");
+                    }
+                }
+                else
+                {
+                    SendMinecraftMessage(fromGroup, "你没有权限调教接待喵");
+                }
+            }
             else if(msg == "今日黄历" || msg == "今日运势")
             {
                 if (fromQQ == 1262897311 || fromQQ == 66831919)
@@ -3353,10 +3373,13 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                           select ee;
             if (element.Count() > 0)
             {
-                element.First().Remove();
+                //element.First().Remove();
+                element.Remove();
             }
             root.Save(path + group + ".xml");
         }
+
+
 
         public static void remove(long group, string msg, string ans)
         {
