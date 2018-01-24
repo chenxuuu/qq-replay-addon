@@ -3231,14 +3231,17 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                         "token=737aa093c7d9c16b7c6fdc1b70af2fb02bf01e11");
                     JObject jo = (JObject)JsonConvert.DeserializeObject(html);
                     string result = "";
+                    string from = "";
                     try { result += "\r\npm2.5：" + (float)jo["data"]["iaqi"]["pm25"]["v"]; } catch { }
                     try { result += "\r\npm10：" + (float)jo["data"]["iaqi"]["pm10"]["v"]; } catch { }
                     try { result += "\r\nco：" + (float)jo["data"]["iaqi"]["co"]["v"]; } catch { }
                     try { result += "\r\nno2：" + (float)jo["data"]["iaqi"]["no2"]["v"]; } catch { }
                     try { result += "\r\no3：" + (float)jo["data"]["iaqi"]["o3"]["v"]; } catch { }
                     try { result += "\r\nso2：" + (float)jo["data"]["iaqi"]["so2"]["v"]; } catch { }
+                    try { from = (string)jo["data"]["attributions"][0]["name"]; } catch { }
                     SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) +
                         "\r\n" + station + "的空气质量如下：" + result +
+                        "\r\n数据来源：" + from +
                         "\r\n数据更新时间："+(string)jo["data"]["time"]["s"]
                         );
                 }
