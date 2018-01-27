@@ -4007,7 +4007,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             //CQ.SendGroupMessage(fromGroup, String.Format("[{0}]群里来了新人{2}({1})，管理员{3}({4}){5}", CQ.ProxyType, beingOperateQQ, CQE.GetQQName(beingOperateQQ), CQE.GetQQName(fromQQ), fromQQ, subType == 1 ? "同意。" : "邀请。"));
             if (fromGroup == 241464054)
             {
-                CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n欢迎加入本群！请在群里发送“绑定”+“你自己的id”来绑定（没空格），如：" +
+                CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(beingOperateQQ) + "\r\n欢迎加入本群！请在群里发送“绑定”+“你自己的id”来绑定（没空格），如：" +
                                                                         "\r\n绑定notch" +
                                                                         "\r\n未绑定id将不会进行白名单审核");
             }
