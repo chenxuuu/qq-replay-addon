@@ -3232,6 +3232,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     JObject jo = (JObject)JsonConvert.DeserializeObject(html);
                     string result = "";
                     string from = "";
+                    try { result += "\r\n空气质量指数：" + (int)jo["data"]["aqi"]; } catch { }
                     try { result += "\r\npm2.5：" + (float)jo["data"]["iaqi"]["pm25"]["v"]; } catch { }
                     try { result += "\r\npm10：" + (float)jo["data"]["iaqi"]["pm10"]["v"]; } catch { }
                     try { result += "\r\nco：" + (float)jo["data"]["iaqi"]["co"]["v"]; } catch { }
