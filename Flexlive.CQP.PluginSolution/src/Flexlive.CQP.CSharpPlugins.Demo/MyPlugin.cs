@@ -1087,6 +1087,12 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 del(8, "qd");
                 Random ran = new Random();
                 SendMinecraftMessage(241464054, "新的一天已经到来了哦，现在时间是\r\n" + DateTime.Now.ToString() + "\r\n昨日一共有" + qd + "人签到哦\r\n" + "今日吉言：" + itsays[ran.Next(0, 613)]);
+
+                if(GetHardDiskFreeSpace("E") < 1024 * 4)
+                {
+                    SendMinecraftMessage(567145439, CQ.CQCode_At(961726194)+"警告：服务器备份盘可用空间仅剩余" +
+                        ((float)GetHardDiskFreeSpace("E")/1024).ToString(".00") + "G！请及时清理多于文件！");
+                }
             }
 
             //if (broadcastNew%3== 0)
@@ -2287,6 +2293,12 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     SendMinecraftMessage(fromGroup, "已将玩家" + id_get + "踢出服务器\r\n原因：" + reason);
                     mcmsg += "|||||command>kick " + id_get + " " + reason;
                     SendMinecraftMessage(241464054, "玩家" + id_get + "已被管理员踢出服务器\r\n原因：" + reason);
+                }
+                else if(msg == "空间")
+                {
+                    SendMinecraftMessage(fromGroup,
+                        "服务器盘剩余空间：" + ((float)GetHardDiskFreeSpace("D") / 1024).ToString(".00") + "GB\r\n" +
+                        "备份盘剩余空间：" + ((float)GetHardDiskFreeSpace("E")/1024).ToString(".00") + "GB");
                 }
 
             }  //糖拌管理群
@@ -3857,6 +3869,26 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             return pyString;
         }
 
+
+        ///  <summary> 
+        /// 获取指定驱动器的剩余空间总大小(单位为MB) 
+        ///  </summary> 
+        ///  <param name="str_HardDiskName">只需输入代表驱动器的字母即可 </param> 
+        ///  <returns> </returns> 
+        public static long GetHardDiskFreeSpace(string str_HardDiskName)
+        {
+            long freeSpace = new long();
+            str_HardDiskName = str_HardDiskName + ":\\";
+            System.IO.DriveInfo[] drives = System.IO.DriveInfo.GetDrives();
+            foreach (System.IO.DriveInfo drive in drives)
+            {
+                if (drive.Name == str_HardDiskName)
+                {
+                    freeSpace = drive.TotalFreeSpace / (1024 * 1024);
+                }
+            }
+            return freeSpace;
+        }
 
         private static string[] lunch =
         {
