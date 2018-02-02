@@ -3219,51 +3219,67 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 string city = PinyinConvert(msg.Replace("空气质量", ""));
                 string html;
                 int city_code = 0;
-                string station;
                 try
                 {
-                    html = HttpGet("http://api.waqi.info/search/",
-                        "keyword=" + city + "&token=737aa093c7d9c16b7c6fdc1b70af2fb02bf01e11");
-                    JObject jo = (JObject)JsonConvert.DeserializeObject(html);
-                    city_code = (int)jo["data"][0]["uid"];
-                    station = (string)jo["data"][0]["station"]["name"];
+                    city_code = int.Parse(PinyinConvert(msg.Replace("空气质量", "")));
+                    try
+                    {
+                        html = HttpGet("http://api.waqi.info/feed/@" + city_code + "/",
+                            "token=737aa093c7d9c16b7c6fdc1b70af2fb02bf01e11");
+                        JObject jo = (JObject)JsonConvert.DeserializeObject(html);
+
+                        string station = (string)jo["data"]["city"]["name"];
+                        string result = "";
+                        string from = "";
+                        try { result += "\r\n空气质量指数：" + (int)jo["data"]["aqi"]; } catch { }
+                        try { result += "\r\npm2.5：" + (float)jo["data"]["iaqi"]["pm25"]["v"]; } catch { }
+                        try { result += "\r\npm10：" + (float)jo["data"]["iaqi"]["pm10"]["v"]; } catch { }
+                        try { result += "\r\nco：" + (float)jo["data"]["iaqi"]["co"]["v"]; } catch { }
+                        try { result += "\r\nno2：" + (float)jo["data"]["iaqi"]["no2"]["v"]; } catch { }
+                        try { result += "\r\no3：" + (float)jo["data"]["iaqi"]["o3"]["v"]; } catch { }
+                        try { result += "\r\nso2：" + (float)jo["data"]["iaqi"]["so2"]["v"]; } catch { }
+                        try { from = (string)jo["data"]["attributions"][0]["name"]; } catch { }
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) +
+                            "\r\n" + station + "的空气质量如下：" + result +
+                            "\r\n数据来源：" + from +
+                            "\r\n数据更新时间：" + (string)jo["data"]["time"]["s"]
+                            );
+                    }
+                    catch (Exception err)
+                    {
+                        string aa = err.Message.ToString();
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) +
+                            "\r\n机器人在查询数据时爆炸了，原因：" + aa);
+                        return;
+                    }
                 }
-                catch(Exception err)
+                catch
                 {
-                    string aa = err.Message.ToString();
-                    //SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) +
-                    //    "\r\n第一步时机器人爆炸了，原因：" + aa);
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) +
-                        "\r\n没找到这个城市");
-                    return;
-                }
-                try
-                {
-                    html = HttpGet("http://api.waqi.info/feed/@" + city_code + "/",
-                        "token=737aa093c7d9c16b7c6fdc1b70af2fb02bf01e11");
-                    JObject jo = (JObject)JsonConvert.DeserializeObject(html);
-                    string result = "";
-                    string from = "";
-                    try { result += "\r\n空气质量指数：" + (int)jo["data"]["aqi"]; } catch { }
-                    try { result += "\r\npm2.5：" + (float)jo["data"]["iaqi"]["pm25"]["v"]; } catch { }
-                    try { result += "\r\npm10：" + (float)jo["data"]["iaqi"]["pm10"]["v"]; } catch { }
-                    try { result += "\r\nco：" + (float)jo["data"]["iaqi"]["co"]["v"]; } catch { }
-                    try { result += "\r\nno2：" + (float)jo["data"]["iaqi"]["no2"]["v"]; } catch { }
-                    try { result += "\r\no3：" + (float)jo["data"]["iaqi"]["o3"]["v"]; } catch { }
-                    try { result += "\r\nso2：" + (float)jo["data"]["iaqi"]["so2"]["v"]; } catch { }
-                    try { from = (string)jo["data"]["attributions"][0]["name"]; } catch { }
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) +
-                        "\r\n" + station + "的空气质量如下：" + result +
-                        "\r\n数据来源：" + from +
-                        "\r\n数据更新时间："+(string)jo["data"]["time"]["s"]
-                        );
-                }
-                catch (Exception err)
-                {
-                    string aa = err.Message.ToString();
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) +
-                        "\r\n第二步时机器人爆炸了，原因：" + aa);
-                    return;
+                    try
+                    {
+                        int station_count = 0;
+                        string result = "";
+                        html = HttpGet("http://api.waqi.info/search/",
+                            "keyword=" + city + "&token=737aa093c7d9c16b7c6fdc1b70af2fb02bf01e11");
+                        JObject jo = (JObject)JsonConvert.DeserializeObject(html);
+                        foreach (var i in jo["data"])
+                        {
+                            result += (int)i["uid"] + "：" + (string)i["station"]["name"] + "\r\n";
+                            station_count++;
+                        }
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) +
+                            "\r\n共找到" + station_count + "个监测站：" +
+                            "\r\n" + result +
+                            "\r\n使用指令“空气质量”加监测站编号查看数据"
+                            );
+                    }
+                    catch (Exception err)
+                    {
+                        string aa = err.Message.ToString();
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) +
+                            "\r\n机器人在查找监测站时爆炸了，原因：" + aa);
+                        return;
+                    }
                 }
             }
             else if (replay_ok != "")
@@ -4024,7 +4040,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             //CQ.SendGroupMessage(fromGroup, String.Format("[{0}]群里来了新人{2}({1})，管理员{3}({4}){5}", CQ.ProxyType, beingOperateQQ, CQE.GetQQName(beingOperateQQ), CQE.GetQQName(fromQQ), fromQQ, subType == 1 ? "同意。" : "邀请。"));
             if (fromGroup == 241464054)
             {
-                CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n欢迎加入本群！请在群里发送“绑定”+“你自己的id”来绑定（没空格），如：" +
+                CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(beingOperateQQ) + "\r\n欢迎加入本群！请在群里发送“绑定”+“你自己的id”来绑定（没空格），如：" +
                                                                         "\r\n绑定notch" +
                                                                         "\r\n未绑定id将不会进行白名单审核");
             }
