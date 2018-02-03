@@ -1101,7 +1101,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 SendMinecraftMessage(567145439, "服务器备份肯定已经结束了，硬盘可用空间：\r\n" +
                         "服务器盘剩余空间：" + ((float)GetHardDiskFreeSpace("D") / 1024).ToString(".00") + "GB\r\n" +
                         "备份盘剩余空间：" + ((float)GetHardDiskFreeSpace("E") / 1024).ToString(".00") + "GB");
-                if (GetHardDiskFreeSpace("E") < 1024 * 5)
+                if (GetHardDiskFreeSpace("E") < 1024 * 10)
                 {
                     SendMinecraftMessage(567145439, CQ.CQCode_At(961726194) + "警告：服务器备份盘可用空间仅剩余" +
                         ((float)GetHardDiskFreeSpace("E") / 1024).ToString(".00") + "G！请及时清理多于文件！");
