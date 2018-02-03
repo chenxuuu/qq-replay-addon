@@ -247,7 +247,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                     
                                 }
                                 else if(i.IndexOf("请打开sweetcreeper") == -1 &&
-                                        i.IndexOf("<提示>tm bc 整点发钱") == -1 &&
+                                        i.IndexOf("<提示>tm bc ") == -1 &&
                                         i.IndexOf("<提示>eco give *") == -1 &&
                                         i.IndexOf("<提示>ban ") == -1 &&
                                         i.IndexOf("<提示>unban ") == -1 &&
@@ -353,7 +353,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                             insert(2, fromQQ.ToString(), CoinsTemp.ToString());
                         }
                         else if (replay.IndexOf("请打开sweetcreeper") == -1 && 
-                                 replay.IndexOf("<提示>tm bc 整点发钱") == -1 &&
+                                 replay.IndexOf("<提示>tm bc ") == -1 &&
                                  replay.IndexOf("<提示>eco give *") == -1 &&
                                  replay.IndexOf("<提示>ban ") == -1 &&
                                  replay.IndexOf("<提示>unban ") == -1 &&
@@ -1052,6 +1052,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
 
         public static int isOpenScan = 0;
         public static int scanCount = 0;
+        public static int count_bc = -1;
 
         private void Timer1_Elapsed(object sender, System.Timers.ElapsedEventArgs e)  //定时程序
         {
@@ -1087,6 +1088,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 del(8, "qd");
                 Random ran = new Random();
                 SendMinecraftMessage(241464054, "新的一天已经到来了哦，现在时间是\r\n" + DateTime.Now.ToString() + "\r\n昨日一共有" + qd + "人签到哦\r\n" + "今日吉言：" + itsays[ran.Next(0, 613)]);
+                SendMinecraftMessage(567145439, DateTime.Now.ToString() + "\r\n今天一共有" + qd + "人签到哦");
             }
 
             if (intMinute == 0 && intSecond == 10 && intHour == 3)
@@ -1106,6 +1108,17 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     SendMinecraftMessage(567145439, CQ.CQCode_At(961726194) + "警告：服务器备份盘可用空间仅剩余" +
                         ((float)GetHardDiskFreeSpace("E") / 1024).ToString(".00") + "G！请及时清理多于文件！");
                 }
+            }
+
+            if(count_bc > 0)
+            {
+                mcmsg += "|||||command>tm bc 倒计时" + count_bc + "秒";
+                count_bc--;
+            }
+            if (count_bc == 0)
+            {
+                mcmsg += "|||||command>tm bc 开始！";
+                count_bc--;
             }
             //if (broadcastNew%3== 0)
             //{
@@ -2316,6 +2329,16 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 {
                     SendMinecraftMessage(fromGroup, "任务已开始");  //567145439
                     System.Diagnostics.Process.Start(@"D:\backup.bat");
+                }
+                else if (msg.IndexOf("倒计时") == 0)
+                {
+                    count_bc = -1;
+                    try
+                    {
+                        count_bc = int.Parse(msg.Replace("倒计时", ""));
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ)+"已启动显示倒计时"+ msg.Replace("倒计时", "")+"秒");
+                    }
+                    catch { }
                 }
             }  //糖拌管理群
 
