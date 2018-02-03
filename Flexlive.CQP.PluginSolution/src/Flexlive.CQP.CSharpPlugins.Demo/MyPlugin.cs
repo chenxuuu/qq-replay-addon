@@ -1087,14 +1087,26 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 del(8, "qd");
                 Random ran = new Random();
                 SendMinecraftMessage(241464054, "新的一天已经到来了哦，现在时间是\r\n" + DateTime.Now.ToString() + "\r\n昨日一共有" + qd + "人签到哦\r\n" + "今日吉言：" + itsays[ran.Next(0, 613)]);
-
-                if(GetHardDiskFreeSpace("E") < 1024 * 4)
-                {
-                    SendMinecraftMessage(567145439, CQ.CQCode_At(961726194)+"警告：服务器备份盘可用空间仅剩余" +
-                        ((float)GetHardDiskFreeSpace("E")/1024).ToString(".00") + "G！请及时清理多于文件！");
-                }
             }
 
+            if (intMinute == 0 && intSecond == 10 && intHour == 3)
+            {
+                SendMinecraftMessage(567145439, "服务器备份已开始，硬盘可用空间：\r\n"+
+                        "服务器盘剩余空间：" + ((float)GetHardDiskFreeSpace("D") / 1024).ToString(".00") + "GB\r\n" +
+                        "备份盘剩余空间：" + ((float)GetHardDiskFreeSpace("E") / 1024).ToString(".00") + "GB");
+                System.Diagnostics.Process.Start(@"D:\backup.bat");
+            }
+            if (intMinute == 0 && intSecond == 10 && intHour == 4)
+            {
+                SendMinecraftMessage(567145439, "服务器备份肯定已经结束了，硬盘可用空间：\r\n" +
+                        "服务器盘剩余空间：" + ((float)GetHardDiskFreeSpace("D") / 1024).ToString(".00") + "GB\r\n" +
+                        "备份盘剩余空间：" + ((float)GetHardDiskFreeSpace("E") / 1024).ToString(".00") + "GB");
+                if (GetHardDiskFreeSpace("E") < 1024 * 5)
+                {
+                    SendMinecraftMessage(567145439, CQ.CQCode_At(961726194) + "警告：服务器备份盘可用空间仅剩余" +
+                        ((float)GetHardDiskFreeSpace("E") / 1024).ToString(".00") + "G！请及时清理多于文件！");
+                }
+            }
             //if (broadcastNew%3== 0)
             //{
             //    mcmsg += "|||||command>say " + broadcastNewID + " 请打开sweetcreeper.com并加群！";
@@ -2300,7 +2312,11 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                         "服务器盘剩余空间：" + ((float)GetHardDiskFreeSpace("D") / 1024).ToString(".00") + "GB\r\n" +
                         "备份盘剩余空间：" + ((float)GetHardDiskFreeSpace("E")/1024).ToString(".00") + "GB");
                 }
-
+                else if(msg == "即时备份" && fromQQ == 961726194)
+                {
+                    SendMinecraftMessage(fromGroup, "任务已开始");  //567145439
+                    System.Diagnostics.Process.Start(@"D:\backup.bat");
+                }
             }  //糖拌管理群
 
 
