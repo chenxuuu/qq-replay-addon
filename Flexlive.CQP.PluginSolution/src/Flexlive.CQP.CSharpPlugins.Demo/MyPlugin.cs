@@ -1115,7 +1115,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 mcmsg += "|||||command>tm bc 倒计时" + count_bc + "秒";
                 count_bc--;
             }
-            if (count_bc == 0)
+            else if (count_bc == 0)
             {
                 mcmsg += "|||||command>tm bc 开始！";
                 count_bc--;
