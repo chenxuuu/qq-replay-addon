@@ -1091,6 +1091,17 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 SendMinecraftMessage(567145439, DateTime.Now.ToString() + "\r\n今天一共有" + qd + "人签到哦");
             }
 
+            if (intMinute == 0 && intSecond == 10 && intHour == 4)
+            {
+                mcmsg += "|||||command>tm bc 服务器将在10秒后例行重启！";
+                SendMinecraftMessage(241464054, "服务器将在10秒后进行例行重启！");
+            }
+            if (intMinute == 0 && intSecond == 20 && intHour == 4)
+            {
+                mcmsg += "|||||command>stop";
+            }
+
+
             if (intMinute == 0 && intSecond == 10 && intHour == 3)
             {
                 SendMinecraftMessage(567145439, "服务器备份已开始，硬盘可用空间：\r\n"+
@@ -1438,6 +1449,16 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             // 处理群消息。
             var groupMember = CQ.GetGroupMemberInfo(fromGroup, fromQQ);
             var me = CQ.GetGroupMemberInfo(fromGroup, 751323264);
+
+            if(fromQQ == 961726194 && msg == "停止运行")
+            {
+                CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "已停止运行，可以重启机器人了");
+                while(true)
+                {
+                    Thread.Sleep(1000);
+                }
+            }
+
             if (fromGroup == 241464054 && fromQQ != 1000000)
             {
                 if(msg.IndexOf("刘晨旭") != -1 || msg.IndexOf("艹") != -1 || msg.IndexOf("你妈") != -1)
@@ -2172,7 +2193,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                                                 "\r\n" + CQ.CQCode_At(1021479600) + CQ.CQCode_At(635309406) +
                                                 CQ.CQCode_At(1928361196) + CQ.CQCode_At(1420355171) + CQ.CQCode_At(280585112) +
                                                 CQ.CQCode_At(2561620740) + CQ.CQCode_At(2433380978) + CQ.CQCode_At(2679146075) +
-                                                CQ.CQCode_At(961726194) + CQ.CQCode_At(185939950));
+                                                CQ.CQCode_At(961726194) + CQ.CQCode_At(185939950) + CQ.CQCode_At(2522468269));
                     SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "已成功催促管理员审核！请耐心等待！如果还没有被审核，你可以选择继续催促！");
                 }
             }  //糖拌群

@@ -26,11 +26,11 @@ import net.milkbowl.vault.economy.Economy;
 
 public class Qqplugin extends JavaPlugin implements Listener
 {
-	public String player="none233";
-	public String msg="none233";
-    public boolean isEco = false;
-    public Economy economy;	
-	
+	public static String player="none233";
+	public static String msg="none233";
+    public static boolean isEco = false;
+    public static Economy economy;	
+    public static boolean isRev = false;
 	
 	@Override//重写父类的方法
 	public void onEnable()
@@ -46,7 +46,7 @@ public class Qqplugin extends JavaPlugin implements Listener
 		    int s = 0;//设置定10秒后执行某段代码
 		    @Override    
 		    public void run(){
-		    	if(s>=60)
+		    	if(s>=60/5)
 		    	{
 		    		Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "tm abc 发钱啦！");
 		    		Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "eco give * 1");
@@ -56,12 +56,18 @@ public class Qqplugin extends JavaPlugin implements Listener
 		    	{
 		    		s++;
 		    	}
+		    	
+		    	if(isRev)
+		    	{
+		    		return;
+		    	}
 		        //s--;//迭代递减,我看官方的教程是没这个的,我没试过,你也可以删除试试
 		        //if(s==0){
 		            //这个写10秒后执行的代码(假如定义的定时器每次是1秒)
 		        //    cancel();//cancel用来取消定时器
 		        //}else{
 		            //这里可以写每次触发定时器执行的代码
+		    	isRev = true;
 		            try 
 		            {
 		                //1.创建客户端Socket，指定服务器地址和端口
@@ -328,8 +334,9 @@ public class Qqplugin extends JavaPlugin implements Listener
 		                //e.printStackTrace();
 		            }
 		        //}
+		        isRev = false;
 		    } 
-		}.runTaskTimer(this, 0L, 20L);//参数是,主类、延迟、多少秒运行一次,比如5秒那就是5*20L
+		}.runTaskTimer(this, 0L, 5*20L);//参数是,主类、延迟、多少秒运行一次,比如5秒那就是5*20L
 	}
 	@Override
 	public void onDisable()
@@ -404,9 +411,10 @@ public class Qqplugin extends JavaPlugin implements Listener
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e)
 	{
-	    Player d = e.getEntity();
-	    Player k = e.getEntity().getKiller();
-	    String i =d.getDisplayName() + "被" + k.getDisplayName() + "杀死了。";
+	    //Player d = e.getEntity();
+	    //Player k = e.getEntity().getKiller();
+	    //String i =d.getDisplayName() + "被" + k.getDisplayName() + "杀死了。";
+		String i = e.getDeathMessage();
 		if(player!="none233")
 		{
 			msg+="]][[<消息>" + i;
