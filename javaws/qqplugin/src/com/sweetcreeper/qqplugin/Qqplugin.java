@@ -31,6 +31,7 @@ public class Qqplugin extends JavaPlugin implements Listener
     public static boolean isEco = false;
     public static Economy economy;	
     public static boolean isRev = false;
+    public static String[] sourceStrArray;
 	
 	@Override//重写父类的方法
 	public void onEnable()
@@ -46,7 +47,7 @@ public class Qqplugin extends JavaPlugin implements Listener
 		    int s = 0;//设置定10秒后执行某段代码
 		    @Override    
 		    public void run(){
-		    	if(s>=60/5)
+		    	if(s>=60*20)
 		    	{
 		    		Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "tm abc 发钱啦！");
 		    		Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "eco give * 1");
@@ -59,7 +60,12 @@ public class Qqplugin extends JavaPlugin implements Listener
 		    	
 		    	if(isRev)
 		    	{
+		    		Bukkit.broadcastMessage("这是测试"+s+"计数,遇到阻碍");
 		    		return;
+		    	}
+		    	else
+		    	{
+		    		//Bukkit.broadcastMessage("这是测试"+s+"计数,执行正常");
 		    	}
 		        //s--;//迭代递减,我看官方的教程是没这个的,我没试过,你也可以删除试试
 		        //if(s==0){
@@ -91,12 +97,20 @@ public class Qqplugin extends JavaPlugin implements Listener
 		                BufferedReader br=new BufferedReader(new InputStreamReader(is));
 		                String info=null;
 		                info=br.readLine();
-		                String[] sourceStrArray=info.split("\\|\\|\\|\\|\\|");
+		                //4.关闭资源
+		                br.close();
+		                is.close();
+		                pw.close();
+		                os.close();
+		                socket.close();
+		                
+		                sourceStrArray=info.split("\\|\\|\\|\\|\\|");
 		                for(int i=0;i<sourceStrArray.length;i++)
 		                {
 		                	if(sourceStrArray[i].indexOf("<")!=-1)
 		                	{
-		                		Bukkit.broadcastMessage(sourceStrArray[i]);
+		                		//Bukkit.broadcastMessage(sourceStrArray[i]);
+		                		Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "say "+sourceStrArray[i]);
 		                	}
 		                	else if(sourceStrArray[i].indexOf("command>")!=-1)
 		                	{
@@ -322,21 +336,15 @@ public class Qqplugin extends JavaPlugin implements Listener
 		                	}
 		                }
 		                //Bukkit.broadcastMessage("debug:"+info);
-		                //4.关闭资源
-		                br.close();
-		                is.close();
-		                pw.close();
-		                os.close();
-		                socket.close();
 		            } catch (UnknownHostException e) {
-		                //e.printStackTrace();
+		                e.printStackTrace();
 		            } catch (IOException e) {
-		                //e.printStackTrace();
+		                e.printStackTrace();
 		            }
 		        //}
 		        isRev = false;
 		    } 
-		}.runTaskTimer(this, 0L, 5*20L);//参数是,主类、延迟、多少秒运行一次,比如5秒那就是5*20L
+		}.runTaskTimer(this, 0L, 1L);//参数是,主类、延迟、多少秒运行一次,比如5秒那就是5*20L
 	}
 	@Override
 	public void onDisable()
