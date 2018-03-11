@@ -1120,7 +1120,16 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                         ((float)GetHardDiskFreeSpace("E") / 1024).ToString(".00") + "G！请及时清理多于文件！");
                 }
             }
-
+            if(intMinute%15 == 0)
+            {
+                dircheck(11);
+                dircheck(12);
+                XElement uin = XElement.Load(path + "11.xml");
+                foreach (XElement mm in uin.Elements("msginfo"))
+                {
+                    GetPetState(mm.Element("ans").Value, replay_get(12, mm.Element("msg").Value));
+                }
+            }
             if(count_bc > 0)
             {
                 mcmsg += "|||||command>tm bc 倒计时" + count_bc + "秒";
@@ -1141,7 +1150,6 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             //    mcmsg += "|||||command>kick " + broadcastNewID + " 请打开sweetcreeper.com并加群！";
             //    broadcastNew = 0;
             //}
-
         }
 
 
@@ -1304,6 +1312,28 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 insert(20, fromQQ.ToString(), ConvertDateTimeInt(DateTime.Now).ToString());
 
                 CQ.SendPrivateMessage(fromQQ, "图片修改完成！使用命令pixel查看");
+            }
+            else if(msg.IndexOf("宠物绑定") == 0)
+            {
+                del(11, fromQQ.ToString());
+                del(12, fromQQ.ToString());
+                string[] str2;
+                int count_temp = 0;
+                str2 = msg.Replace("宠物绑定","").Split('/');
+                foreach (string i in str2)
+                {
+                    if (count_temp == 0)
+                    {
+                        insert(11, fromQQ.ToString(), i);
+                        count_temp++;
+                    }
+                    else if (count_temp == 1)
+                    {
+                        insert(12, fromQQ.ToString(), i);
+                        count_temp++;
+                    }
+                }
+                CQ.SendPrivateMessage(fromQQ, "宠物绑定成功！");
             }
             else
             {
@@ -2384,8 +2414,67 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     "发送“查快递”和单号即可搜索快递物流信息\r\n" +
                     "发送“网易云”和歌曲id号/歌曲名即可定向点歌\r\n" +
                     "发送“正则”+字符串+“换行”+正则表达式，可查询C#正则\r\n" +
-                    "发送“空气质量”可查询当前时间的空气质量" +
+                    "发送“空气质量”可查询当前时间的空气质量\r\n" +
+                    "发送“宠物助手”可查询QQ宠物代挂的帮助信息\r\n" +
                     "如有bug请反馈");
+            }
+            if (msg == "宠物助手")
+            {
+                SendMinecraftMessage(fromGroup, "宠物助手：\r\n" +
+                    "发送“宠物状态”可查看宠物状态\r\n" +
+                    "发送“宠物资料”可查看宠物详细资料\r\n" +
+                    "发送“宠物喂养”加页码数可查看宠物喂养物品列表\r\n" +
+                    "发送“宠物清洁”加页码数可查看宠物清洁物品列表\r\n" +
+                    "发送“宠物治疗”加页码数可查看宠物药物物品列表\r\n" +
+                    "发送“宠物使用”加物品代码可使用宠物物品\r\n" +
+                    "发送“宠物学习”可查看宠物学习课程列表\r\n" +
+                    "发送“宠物上课”加课程代码可让宠物上课\r\n" +
+                    "发送“宠物解绑”可解除绑定，停止代挂\r\n" +
+                    "测试功能，如有bug请反馈");
+            }
+            if(msg.IndexOf("宠物") == 0)
+            {
+                //获取uin和skey
+                string uin = replay_get(11, fromQQ.ToString());
+                string skey = replay_get(12, fromQQ.ToString());
+                if (msg == "宠物状态")
+                {
+                    CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + GetPetState(uin, skey));
+                }
+                if (msg == "宠物资料")
+                {
+                    CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + GetPetMore(uin, skey));
+                }
+                if(msg.IndexOf("宠物喂养") == 0)
+                {
+                    CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + FeedPetSelect(uin, skey, msg.Replace("宠物喂养","")));
+                }
+                if (msg.IndexOf("宠物清洁") == 0)
+                {
+                    CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + WashPetSelect(uin, skey, msg.Replace("宠物清洁", "")));
+                }
+                if (msg.IndexOf("宠物治疗") == 0)
+                {
+                    CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + CurePetSelect(uin, skey, msg.Replace("宠物治疗", "")));
+                }
+                if (msg.IndexOf("宠物使用") == 0)
+                {
+                    CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + UsePet(uin, skey, msg.Replace("宠物使用", "")));
+                }
+                if(msg == "宠物学习")
+                {
+                    CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + StudyPetSelect());
+                }
+                if (msg.IndexOf("宠物上课") == 0)
+                {
+                    CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + StudyPet(uin, skey, msg.Replace("宠物上课", "")));
+                }
+                if(msg == "宠物解绑")
+                {
+                    del(11, fromQQ.ToString());
+                    del(12, fromQQ.ToString());
+                    CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n解绑成功！");
+                }
             }
             else if (msg.IndexOf("点歌") == 0)
             {
@@ -3626,6 +3715,336 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             }
             return result;
         }
+
+
+        public static string pleaseLogin = "信息获取失败，请重新发送再试\r\n如果没有绑定宠物信息，请绑定！\r\n绑定方法请回复“宠物绑定方法”查看";
+        public static string petMore = "更多宠物命令请回复“宠物助手”";
+        
+        /// <summary>
+        /// 获取宠物基本信息
+        /// </summary>
+        /// <param name="uin"></param>
+        /// <param name="skey"></param>
+        /// <returns></returns>
+        public static string GetPetState(string uin, string skey)
+        {
+            string result = "";
+            string html = HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/phone_pet", "", uin, skey);
+            html = html.Replace("\r", "");
+            html = html.Replace("\n", "");
+            if (html.IndexOf("手机统一登录") != -1 || html == "")
+                return pleaseLogin;
+            result += Reg_get(html, "alt=\"QQ宠物\"/></p><p>(?<say>.*?)<", "say").Replace(" ", "") + "\r\n"
+                    + "宠物名：" + Reg_get(html, "昵称：(?<level>.*?)<", "level").Replace(" ", "") + "\r\n"
+                    + "等级：" + Reg_get(html, "等级：(?<level>.*?)<", "level").Replace(" ", "") + "\r\n"
+                    + "状态：" + Reg_get(html, "状态：(?<now>.*?)<", "now").Replace(" ", "") + "\r\n"
+                    + "成长值：" + Reg_get(html, "成长值：(?<now>.*?)<", "now").Replace(" ", "") + "\r\n"
+                    + "饥饿值：" + Reg_get(html, "饥饿值：(?<now>.*?)<", "now").Replace(" ", "") + "\r\n"
+                    + "清洁值：" + Reg_get(html, "清洁值：(?<now>.*?)<", "now").Replace(" ", "") + "\r\n"
+                    + "心情：" + Reg_get(html, "心情：(?<now>.*?)<", "now").Replace(" ", "") + "\r\n" + petMore;
+            return result;
+        }
+
+        /// <summary>
+        /// 获取宠物详细信息
+        /// </summary>
+        /// <param name="uin"></param>
+        /// <param name="skey"></param>
+        /// <returns></returns>
+        public static string GetPetMore(string uin, string skey)
+        {
+            string result = "";
+            string html = HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/phone_pet", "cmd=2", uin, skey);
+            html = html.Replace("\r", "");
+            html = html.Replace("\n", "");
+            if (html.IndexOf("手机统一登录") != -1 || html == "")
+                return pleaseLogin;
+            result += "主人昵称：" + Reg_get(html, "主人昵称：(?<name>.*?)&nbsp;", "name").Replace(" ", "") + "\r\n"
+                    + "宠物性别：" + Reg_get(html, "宠物性别：(?<level>.*?)<", "level").Replace(" ", "") + "\r\n"
+                    + "生日：" + Reg_get(html, "生日：(?<now>.*?)<", "now").Replace(" ", "") + "\r\n"
+                    + "等级：" + Reg_get(html, "等级：(?<now>.*?)<", "now").Replace(" ", "") + "\r\n"
+                    + "年龄：" + Reg_get(html, "年龄：(?<now>.*?)<", "now").Replace(" ", "") + "\r\n"
+                    + "代数：" + Reg_get(html, "代数：(?<now>.*?)<", "now").Replace(" ", "") + "\r\n"
+                    + "成长值：" + Reg_get(html, "成长值：(?<now>.*?)<", "now").Replace(" ", "") + "\r\n"
+                    + "武力值：" + Reg_get(html, "武力值：(?<now>.*?)<", "now").Replace(" ", "") + "\r\n"
+                    + "智力值：" + Reg_get(html, "智力值：(?<now>.*?)<", "now").Replace(" ", "") + "\r\n"
+                    + "魅力值：" + Reg_get(html, "魅力值：(?<now>.*?)<", "now").Replace(" ", "") + "\r\n"
+                    + "活跃度：" + Reg_get(html, "活跃度：(?<now>.*?)<", "now").Replace(" ", "") + "\r\n"
+                    + "配偶：" + Reg_get(html, "配偶：(?<now>.*?)<", "now").Replace(" ", "") + "\r\n"
+                    + petMore;
+            return result;
+        }
+
+        /// <summary>
+        /// 喂养宠物选择页面
+        /// </summary>
+        /// <param name="uin"></param>
+        /// <param name="skey"></param>
+        /// <returns></returns>
+        public static string FeedPetSelect(string uin, string skey, string page)
+        {
+            string result = "";
+            string html = HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/phone_pet", "cmd=3&page=" + page, uin, skey);
+            html = html.Replace("\r", "");
+            html = html.Replace("\n", "");
+            if (html.IndexOf("手机统一登录") != -1 || html == "")
+                return pleaseLogin;
+            result += "我的账户：" + Reg_get(html, "我的账户：(?<name>.*?)<", "name").Replace(" ", "") + "\r\n";
+            int i = 0;
+            MatchCollection matchs = Reg_solve(Reg_get(html, "元宝(?<name>.*?)上页", "name").Replace(" ", ""), "<p>(?<name>.*?)<br");
+            string[] name = new string[matchs.Count];
+            string[] id = new string[matchs.Count];
+            foreach (Match item in matchs)
+            {
+                if (item.Success)
+                {
+                    name[i++] += item.Groups["name"].Value;
+                }
+            }
+            i = 0;
+            matchs = Reg_solve(Reg_get(html, "元宝(?<name>.*?)上页", "name").Replace(" ", ""), "goodid=(?<id>.*?)\"");
+            foreach (Match item in matchs)
+            {
+                if (item.Success)
+                {
+                    id[i++] += "物品id：" + item.Groups["id"].Value;
+                }
+            }
+
+            for (int j = 0; j < i; j++)
+            {
+                result += name[j] + "\r\n" + id[j] + "\r\n";
+            }
+            if (Reg_get(html, "上页</a>(?<name>.*?)/", "name").Replace(" ", "") != "")
+            {
+                result += "第" + Reg_get(html, "上页</a>(?<name>.*?)/", "name").Replace(" ", "") + "页，共"
+                       + Reg_get(html, "上页</a>(.*?)/(?<name>\\d+)", "name").Replace(" ", "") + "页" + "\r\n";
+            }
+            else
+            {
+                result += "第" + Reg_get(html, "上页(?<name>.*?)/", "name").Replace(" ", "") + "页，共"
+                        + Reg_get(html, "上页(.*?)/(?<name>\\d+)", "name").Replace(" ", "") + "页" + "\r\n";
+            }
+
+
+            return result + petMore;
+        }
+
+        /// <summary>
+        /// 清洁宠物选择页面
+        /// </summary>
+        /// <param name="uin"></param>
+        /// <param name="skey"></param>
+        /// <returns></returns>
+        public static string WashPetSelect(string uin, string skey, string page)
+        {
+            string result = "";
+            string html = HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/phone_pet", "cmd=3&page=" + page + "&eatwash=1", uin, skey);
+            html = html.Replace("\r", "");
+            html = html.Replace("\n", "");
+            if (html.IndexOf("手机统一登录") != -1 || html == "")
+                return pleaseLogin;
+            result += "我的账户：" + Reg_get(html, "我的账户：(?<name>.*?)<", "name").Replace(" ", "") + "\r\n";
+            int i = 0;
+            MatchCollection matchs = Reg_solve(Reg_get(html, "元宝(?<name>.*?)上页", "name").Replace(" ", ""), "<p>(?<name>.*?)<br");
+            string[] name = new string[matchs.Count];
+            string[] id = new string[matchs.Count];
+            foreach (Match item in matchs)
+            {
+                if (item.Success)
+                {
+                    name[i++] += item.Groups["name"].Value;
+                }
+            }
+            i = 0;
+            matchs = Reg_solve(Reg_get(html, "元宝(?<name>.*?)上页", "name").Replace(" ", ""), "goodid=(?<id>.*?)\"");
+            foreach (Match item in matchs)
+            {
+                if (item.Success)
+                {
+                    id[i++] += "物品id：" + item.Groups["id"].Value;
+                }
+            }
+
+            for (int j = 0; j < i; j++)
+            {
+                result += name[j] + "\r\n" + id[j] + "\r\n";
+            }
+            if (Reg_get(html, "上页</a>(?<name>.*?)/", "name").Replace(" ", "") != "")
+            {
+                result += "第" + Reg_get(html, "上页</a>(?<name>.*?)/", "name").Replace(" ", "") + "页，共"
+                       + Reg_get(html, "上页</a>(.*?)/(?<name>\\d+)", "name").Replace(" ", "") + "页" + "\r\n";
+            }
+            else
+            {
+                result += "第" + Reg_get(html, "上页(?<name>.*?)/", "name").Replace(" ", "") + "页，共"
+                        + Reg_get(html, "上页(.*?)/(?<name>\\d+)", "name").Replace(" ", "") + "页" + "\r\n";
+            }
+
+            return result + petMore;
+        }
+
+        /// <summary>
+        /// 治疗宠物选择页面
+        /// </summary>
+        /// <param name="uin"></param>
+        /// <param name="skey"></param>
+        /// <returns></returns>
+        public static string CurePetSelect(string uin, string skey, string page)
+        {
+            string result = "";
+            string html = HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/phone_pet", "cmd=3&page=" + page + "&eatwash=2", uin, skey);
+            html = html.Replace("\r", "");
+            html = html.Replace("\n", "");
+            if (html.IndexOf("手机统一登录") != -1 || html == "")
+                return pleaseLogin;
+            result += "我的账户：" + Reg_get(html, "我的账户：(?<name>.*?)<", "name").Replace(" ", "") + "\r\n";
+            int i = 0;
+            MatchCollection matchs = Reg_solve(Reg_get(html, "元宝(?<name>.*?)上页", "name").Replace(" ", ""), "<p>(?<name>.*?)<br");
+            string[] name = new string[matchs.Count];
+            string[] id = new string[matchs.Count];
+            foreach (Match item in matchs)
+            {
+                if (item.Success)
+                {
+                    name[i++] += item.Groups["name"].Value;
+                }
+            }
+            i = 0;
+            matchs = Reg_solve(Reg_get(html, "元宝(?<name>.*?)上页", "name").Replace(" ", ""), "goodid=(?<id>.*?)\"");
+            foreach (Match item in matchs)
+            {
+                if (item.Success)
+                {
+                    id[i++] += "物品id：" + item.Groups["id"].Value;
+                }
+            }
+
+            for (int j = 0; j < i; j++)
+            {
+                result += name[j] + "\r\n" + id[j] + "\r\n";
+            }
+            if (Reg_get(html, "上页</a>(?<name>.*?)/", "name").Replace(" ", "") != "")
+            {
+                result += "第" + Reg_get(html, "上页</a>(?<name>.*?)/", "name").Replace(" ", "") + "页，共"
+                       + Reg_get(html, "上页</a>(.*?)/(?<name>\\d+)", "name").Replace(" ", "") + "页" + "\r\n";
+            }
+            else
+            {
+                result += "第" + Reg_get(html, "上页(?<name>.*?)/", "name").Replace(" ", "") + "页，共"
+                        + Reg_get(html, "上页(.*?)/(?<name>\\d+)", "name").Replace(" ", "") + "页" + "\r\n";
+            }
+
+            return result + petMore;
+        }
+
+        /// <summary>
+        /// 使用宠物物品
+        /// </summary>
+        /// <param name="uin"></param>
+        /// <param name="skey"></param>
+        /// <returns></returns>
+        public static string UsePet(string uin, string skey, string goodid)
+        {
+            string result = "";
+            string html = HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/phone_pet", "cmd=3&feed=3&goodid=" + goodid, uin, skey);
+            html = html.Replace("\r", "");
+            html = html.Replace("\n", "");
+            if (html.IndexOf("手机统一登录") != -1 || html == "")
+                return pleaseLogin;
+            if (html.IndexOf("不合法") != -1)
+                return "你没有这个东西，使用失败\r\n" + petMore;
+            result += "物品使用结果：\r\n" + Reg_get(html, "值：(?<name>.*?)<br", "name").Replace(" ", "").Replace("</b>", "") + "\r\n"
+                    + petMore;
+            return result;
+        }
+
+        /// <summary>
+        /// 宠物学习选择页面
+        /// </summary>
+        /// <param name="uin"></param>
+        /// <param name="skey"></param>
+        /// <returns></returns>
+        public static string StudyPetSelect()
+        {
+            return "课程id：\r\n小学体育：1\r\n小学劳技：2\r\n小学武术：5\r\n小学语文：4\r\n小学数学：5\r\n小学政治：6\r\n小学美术：7\r\n小学音乐：8\r\n小学礼仪：9\r\n\r\n中学体育：10\r\n中学劳技：11\r\n中学武术：12\r\n中学语文：13\r\n中学数学：14\r\n中学政治：15\r\n中学美术：16\r\n中学音乐：17\r\n中学礼仪：18\r\n\r\n大学体育：19\r\n大学劳技：20\r\n大学武术：21\r\n大学语文：22\r\n大学数学：23\r\n大学政治：24\r\n大学美术：25\r\n大学音乐：26\r\n大学礼仪：27\r\n" + petMore;
+        }
+
+        /// <summary>
+        /// 学习宠物课程
+        /// </summary>
+        /// <param name="uin"></param>
+        /// <param name="skey"></param>
+        /// <returns></returns>
+        public static string StudyPet(string uin, string skey, string classid)
+        {
+            string result = "";
+            string html = HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/phone_pet", "cmd=5&courseid=" + classid + "&study=2", uin, skey);
+            html = html.Replace("\r", "");
+            html = html.Replace("\n", "");
+            if (html.IndexOf("手机统一登录") != -1 || html == "")
+                return pleaseLogin;
+            if (html.IndexOf("亲爱的") != -1)
+            {
+                result += Reg_get(html, "同学：(?<name>.*?)<", "name").Replace(" ", "") + "\r\n";
+            }
+            if (html.IndexOf("您已经完成了") != -1)
+            {
+                result += "您已经完成了" + Reg_get(html, "您已经完成了(?<name>.*?)<", "name").Replace(" ", "") + "\r\n";
+            }
+            if (html.IndexOf("你的宠物") != -1)
+            {
+                result += "你的宠物" + Reg_get(html, "你的宠物(?<name>.*?)<", "name").Replace(" ", "") + "\r\n";
+            }
+            return "课程学习结果：\r\n" + result + petMore;
+        }
+
+        /// <summary>
+        /// 直接获取正则表达式的最后一组匹配值
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="regstr"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static string Reg_get(string str, string regstr, string name)
+        {
+            string result = "";
+            MatchCollection matchs = Reg_solve(str, regstr);
+            foreach (Match item in matchs)
+            {
+                if (item.Success)
+                {
+                    result = item.Groups[name].Value;
+                }
+            }
+            return result;
+        }
+
+        /// <summary>  
+        /// GET 请求与获取结果（qq宠物专用，带cookie参数）  
+        /// </summary>  
+        public static string HttpGetPet(string Url, string postDataStr, string uin, string skey)
+        {
+            try
+            {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Url + (postDataStr == "" ? "" : "?") + postDataStr);
+                request.Method = "GET";
+                request.ContentType = "text/html;charset=UTF-8";
+                request.Headers.Add("cookie", "uin=" + uin + "; skey=" + skey);
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                Stream myResponseStream = response.GetResponseStream();
+                StreamReader myStreamReader = new StreamReader(myResponseStream, Encoding.UTF8);
+
+                string retString = myStreamReader.ReadToEnd();
+                myStreamReader.Close();
+                myResponseStream.Close();
+
+                return retString;
+            }
+            catch { }
+            return "";
+        }
+
 
         /// <summary>  
         /// GET 请求与获取结果  
