@@ -1120,6 +1120,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                         ((float)GetHardDiskFreeSpace("E") / 1024).ToString(".00") + "G！请及时清理多于文件！");
                 }
             }
+            /*
             if(intMinute%15 == 0)
             {
                 dircheck(11);
@@ -1130,6 +1131,8 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     GetPetState(mm.Element("ans").Value, replay_get(12, mm.Element("msg").Value));
                 }
             }
+            */
+
             if(count_bc > 0)
             {
                 mcmsg += "|||||command>tm bc 倒计时" + count_bc + "秒";
@@ -2474,6 +2477,10 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     del(11, fromQQ.ToString());
                     del(12, fromQQ.ToString());
                     CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n解绑成功！");
+                }
+                if(msg == "宠物绑定方法")
+                {
+                    CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "[CQ:image,file=7CE7991F3D714978606B41C816FBC549.jpg]");
                 }
             }
             else if (msg.IndexOf("点歌") == 0)
