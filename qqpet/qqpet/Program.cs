@@ -24,7 +24,7 @@ namespace qqpet
                         Console.WriteLine(mm.Element("msg").Value);
                     }
                 }
-                Console.WriteLine("not run");
+                Console.WriteLine("not run,"+ DateTime.Now.Minute + "," + DateTime.Now.Second);
                 System.Threading.Thread.Sleep(1000);
             }
         }
