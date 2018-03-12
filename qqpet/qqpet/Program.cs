@@ -15,16 +15,16 @@ namespace qqpet
         {
             while(true)
             {
-                if(DateTime.Now.Minute%15 == 0 && DateTime.Now.Second == 0)
+                if(DateTime.Now.Minute%5 == 0 && DateTime.Now.Second == 0)
                 {
                     XElement uin = XElement.Load(path + "11.xml");
                     foreach (XElement mm in uin.Elements("msginfo"))
                     {
-                        GetPetState(mm.Element("ans").Value, replay_get(12, mm.Element("msg").Value));
-                        Console.WriteLine(mm.Element("msg").Value);
+                        Console.WriteLine("当前账号：" + mm.Element("msg").Value);
+                        AutoFeed(mm.Element("ans").Value, replay_get(12, mm.Element("msg").Value));
                     }
                 }
-                Console.WriteLine("not run,"+ DateTime.Now.Minute + "," + DateTime.Now.Second);
+                //Console.WriteLine("not run,"+ DateTime.Now.Minute + "," + DateTime.Now.Second);
                 System.Threading.Thread.Sleep(1000);
             }
         }
@@ -57,6 +57,35 @@ namespace qqpet
 
         public static string pleaseLogin = "请设置登陆信息！";
         public static string petMore = "更多宠物命令请回复“宠物助手”";
+
+        public static void AutoFeed(string uin, string skey)
+        {
+            string state = GetPetState(uin, skey);
+            int growNow = 0, growMax = 0, cleanNow = 0, cleanMax = 0;
+            try
+            {
+                growNow = int.Parse(Reg_get(state, "饥饿值：(?<w>\\d+)/", "w"));
+                growMax = int.Parse(Reg_get(state, "饥饿值：\\d+/(?<w>\\d+)", "w"));
+                cleanNow = int.Parse(Reg_get(state, "清洁值：(?<w>\\d+)/", "w"));
+                cleanMax = int.Parse(Reg_get(state, "清洁值：\\d+/(?<w>\\d+)", "w"));
+            }
+            catch { }
+            Console.WriteLine($"饥饿值:{growNow}/{growMax},清洁值:{cleanNow}/{cleanMax}");
+            if (growMax - growNow > 1500)
+            {
+                string grow = FeedPetSelect(uin, skey, "1");
+                string goodid = Reg_get(grow, "物品id：(?<w>\\d+)", "w");
+                Console.WriteLine($"选取了物品{goodid}，进行饥饿值补充");
+                UsePet(uin, skey, goodid);
+            }
+            if (cleanMax - cleanNow > 1500)
+            {
+                string grow = WashPetSelect(uin, skey, "1");
+                string goodid = Reg_get(grow, "物品id：(?<w>\\d+)", "w");
+                Console.WriteLine($"选取了物品{goodid}，进行清洁值值补充");
+                UsePet(uin, skey, goodid);
+            }
+        }
 
         /// <summary>
         /// 获取宠物基本信息
