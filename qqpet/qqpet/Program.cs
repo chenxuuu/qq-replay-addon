@@ -17,12 +17,14 @@ namespace qqpet
             {
                 if(DateTime.Now.Minute%5 == 0 && DateTime.Now.Second == 0)
                 {
+                    Console.WriteLine("开始时间：" + DateTime.Now);
                     XElement uin = XElement.Load(path + "11.xml");
                     foreach (XElement mm in uin.Elements("msginfo"))
                     {
-                        Console.WriteLine("当前账号：" + mm.Element("msg").Value);
+                        Console.WriteLine("-------------------\r\n当前账号：" + mm.Element("msg").Value);
                         AutoFeed(mm.Element("ans").Value, replay_get(12, mm.Element("msg").Value), mm.Element("msg").Value);
                     }
+                    Console.WriteLine("定时程序执行结束：" + DateTime.Now + "\r\n===========================================");
                 }
                 //Console.WriteLine("not run,"+ DateTime.Now.Minute + "," + DateTime.Now.Second);
                 System.Threading.Thread.Sleep(1000);
@@ -61,28 +63,49 @@ namespace qqpet
         public static void AutoFeed(string uin, string skey, string qq)
         {
             string state = GetPetState(uin, skey);
-            int growNow = 0, growMax = 0, cleanNow = 0, cleanMax = 0;
+            int growNow = 0, growMax = 0, cleanNow = 0, cleanMax = 0, level = 0;
             try
             {
                 growNow = int.Parse(Reg_get(state, "饥饿值：(?<w>\\d+)/", "w"));
                 growMax = int.Parse(Reg_get(state, "饥饿值：\\d+/(?<w>\\d+)", "w"));
                 cleanNow = int.Parse(Reg_get(state, "清洁值：(?<w>\\d+)/", "w"));
                 cleanMax = int.Parse(Reg_get(state, "清洁值：\\d+/(?<w>\\d+)", "w"));
+                level = int.Parse(Reg_get(state, "等级：(?<w>\\d+)", "w"));
             }
             catch { }
+            if (level == 0)
+                return;
             Console.WriteLine($"饥饿值:{growNow}/{growMax},清洁值:{cleanNow}/{cleanMax}");
             if (growMax - growNow > 1500)
             {
                 string grow = FeedPetSelect(uin, skey, "1");
                 string goodid = Reg_get(grow, "物品id：(?<w>\\d+)", "w");
-                Console.WriteLine($"选取了物品{goodid}，进行饥饿值补充");
+                if (goodid == "")
+                {
+                    HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/phone_pet", "cmd=3&feed=5&goodid=5629937620877313", uin, skey);
+                    goodid = "5629937620877313";
+                    Console.WriteLine($"购买了物品{goodid}，进行饥饿值补充");
+                }
+                else
+                {
+                    Console.WriteLine($"选取了物品{goodid}，进行饥饿值补充");
+                }
                 UsePet(uin, skey, goodid);
             }
             if (cleanMax - cleanNow > 1500)
             {
                 string grow = WashPetSelect(uin, skey, "1");
                 string goodid = Reg_get(grow, "物品id：(?<w>\\d+)", "w");
-                Console.WriteLine($"选取了物品{goodid}，进行清洁值值补充");
+                if(goodid == "")
+                {
+                    HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/phone_pet", "cmd=3&feed=5&goodid=3378137807192066", uin, skey);
+                    goodid = "3378137807192066";
+                    Console.WriteLine($"购买了物品{goodid}，进行清洁值值补充");
+                }
+                else
+                {
+                    Console.WriteLine($"选取了物品{goodid}，进行清洁值值补充");
+                }
                 UsePet(uin, skey, goodid);
             }
 
@@ -92,6 +115,68 @@ namespace qqpet
                 Console.WriteLine($"宠物状态发现为空闲，进行课程{study}的学习");
                 StudyPet(uin, skey, study);
             }
+            if(HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/farm", "cmd=10", uin, skey).IndexOf("一键收获") == -1)
+            {
+                Console.WriteLine("开始播种植物");
+                if (level >= 20)
+                    while (HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/farm", "cmd=10&prc=81&seedid=14&subcmd=5&sname=s8jX0w", uin, skey).IndexOf("系统繁忙") != -1);
+                if (level >= 18)
+                    while (HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/farm", "cmd=10&prc=57&seedid=13&subcmd=12&sname=z*O9tg", uin, skey).IndexOf("系统繁忙") != -1) ;
+                if (level >= 14)
+                    while (HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/farm", "cmd=10&prc=34&seedid=11&subcmd=12&sname=st3drg", uin, skey).IndexOf("系统繁忙") != -1) ;
+                if (level >= 12)
+                    while (HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/farm", "cmd=10&prc=24&seedid=10&subcmd=12&sname=xru5*w", uin, skey).IndexOf("系统繁忙") != -1) ;
+                if (level >= 10)
+                    while (HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/farm", "cmd=10&prc=24&seedid=9&subcmd=5&sname=xM*5zw", uin, skey).IndexOf("系统繁忙") != -1) ;
+                if (level >= 5)
+                    while (HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/farm", "cmd=10&prc=14&seedid=6&subcmd=5&sname=t6zH0Q", uin, skey).IndexOf("系统繁忙") != -1) ;
+                if (level >= 4)
+                    while (HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/farm", "cmd=10&prc=12&seedid=5&subcmd=12&sname=x9HX0w", uin, skey).IndexOf("系统繁忙") != -1) ;
+                if (level >= 1)
+                    while (HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/farm", "cmd=10&prc=4&seedid=1&subcmd=12&sname=xMGy3Q", uin, skey).IndexOf("系统繁忙") != -1) ;
+                Console.WriteLine("植物播种完成");
+            }
+            else
+            {
+                Console.WriteLine("一键收获植物");
+                HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/farm", "cmd=10&subcmd=10", uin, skey);
+            }
+
+            if (HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/fish", "cmd=11", uin, skey).IndexOf("一键收获") == -1)
+            {
+                Console.WriteLine("开始投放鱼苗");
+                if (level >= 55)
+                    while (HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/fish", "cmd=11&fish_sub=12&fryid=32&prc=140&sname=sNTN9dPj", uin, skey).IndexOf("系统繁忙") != -1);
+                if (level >= 50)
+                    while (HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/fish", "cmd=11&fish_sub=12&fryid=31&prc=120&sname=zuXJq9Pj", uin, skey).IndexOf("系统繁忙") != -1);
+                if (level >= 34)
+                    while (HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/fish", "cmd=11&fish_sub=12&fryid=23&prc=81&sname=tPPA9rrszrLT4w", uin, skey).IndexOf("系统繁忙") != -1);
+                if (level >= 32)
+                    while (HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/fish", "cmd=11&fish_sub=12&fryid=28&prc=73&sname=wt66utPj", uin, skey).IndexOf("系统繁忙") != -1);
+                if (level >= 30)
+                    while (HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/fish", "cmd=11&fish_sub=12&fryid=21&prc=65&sname=y-PT4w", uin, skey).IndexOf("系统繁忙") != -1);
+                if (level >= 25)
+                    while (HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/fish", "cmd=11&fish_sub=12&fryid=20&prc=63&sname=0KHB*s*6", uin, skey).IndexOf("系统繁忙") != -1);
+                if (level >= 16)
+                    while (HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/fish", "cmd=11&fish_sub=12&fryid=16&prc=32&sname=yq*w39Pj", uin, skey).IndexOf("系统繁忙") != -1);
+                if (level >= 14)
+                    while (HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/fish", "cmd=11&fish_sub=12&fryid=11&prc=40&sname=u6LGpNPj", uin, skey).IndexOf("系统繁忙") != -1);
+                if (level >= 12)
+                    while (HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/fish", "cmd=11&fish_sub=12&fryid=15&prc=27&sname=vaPT4w", uin, skey).IndexOf("系统繁忙") != -1);
+                if (level >= 4)
+                    while (HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/fish", "cmd=11&fish_sub=12&fryid=5&prc=8&sname=tMzQ6-bz0*M", uin, skey).IndexOf("系统繁忙") != -1);
+                if (level >= 2)
+                    while (HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/fish", "cmd=11&fish_sub=12&fryid=1&prc=4&sname=x**1ttPj", uin, skey).IndexOf("系统繁忙") != -1);
+                Console.WriteLine("鱼苗投放完成");
+            }
+            else
+            {
+                Console.WriteLine("一键收获鱼苗");
+                HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/fish", "cmd=11&fish_sub=10&fryid=1", uin, skey);
+            }
+
+
+
         }
 
         /// <summary>
