@@ -21,7 +21,7 @@ namespace qqpet
                     foreach (XElement mm in uin.Elements("msginfo"))
                     {
                         Console.WriteLine("当前账号：" + mm.Element("msg").Value);
-                        AutoFeed(mm.Element("ans").Value, replay_get(12, mm.Element("msg").Value));
+                        AutoFeed(mm.Element("ans").Value, replay_get(12, mm.Element("msg").Value), mm.Element("msg").Value);
                     }
                 }
                 //Console.WriteLine("not run,"+ DateTime.Now.Minute + "," + DateTime.Now.Second);
@@ -58,7 +58,7 @@ namespace qqpet
         public static string pleaseLogin = "请设置登陆信息！";
         public static string petMore = "更多宠物命令请回复“宠物助手”";
 
-        public static void AutoFeed(string uin, string skey)
+        public static void AutoFeed(string uin, string skey, string qq)
         {
             string state = GetPetState(uin, skey);
             int growNow = 0, growMax = 0, cleanNow = 0, cleanMax = 0;
@@ -84,6 +84,13 @@ namespace qqpet
                 string goodid = Reg_get(grow, "物品id：(?<w>\\d+)", "w");
                 Console.WriteLine($"选取了物品{goodid}，进行清洁值值补充");
                 UsePet(uin, skey, goodid);
+            }
+
+            if(Reg_get(state, "状态：(?<w>..)", "w") == "空闲")
+            {
+                string study = replay_get(13, qq);
+                Console.WriteLine($"宠物状态发现为空闲，进行课程{study}的学习");
+                StudyPet(uin, skey, study);
             }
         }
 

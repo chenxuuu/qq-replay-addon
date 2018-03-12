@@ -2431,7 +2431,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     "发送“宠物治疗”加页码数可查看宠物药物物品列表\r\n" +
                     "发送“宠物使用”加物品代码可使用宠物物品\r\n" +
                     "发送“宠物学习”可查看宠物学习课程列表\r\n" +
-                    "发送“宠物上课”加课程代码可让宠物上课\r\n" +
+                    "发送“宠物上课”加课程代码可让宠物上课（自动继续上）\r\n" +
                     "发送“宠物解绑”可解除绑定，停止代挂\r\n" +
                     "测试功能，如有bug请反馈");
             }
@@ -2442,41 +2442,43 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 string skey = replay_get(12, fromQQ.ToString());
                 if (msg == "宠物状态")
                 {
-                    CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + GetPetState(uin, skey));
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + GetPetState(uin, skey));
                 }
                 if (msg == "宠物资料")
                 {
-                    CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + GetPetMore(uin, skey));
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + GetPetMore(uin, skey));
                 }
                 if(msg.IndexOf("宠物喂养") == 0)
                 {
-                    CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + FeedPetSelect(uin, skey, msg.Replace("宠物喂养","")));
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + FeedPetSelect(uin, skey, msg.Replace("宠物喂养","")));
                 }
                 if (msg.IndexOf("宠物清洁") == 0)
                 {
-                    CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + WashPetSelect(uin, skey, msg.Replace("宠物清洁", "")));
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + WashPetSelect(uin, skey, msg.Replace("宠物清洁", "")));
                 }
                 if (msg.IndexOf("宠物治疗") == 0)
                 {
-                    CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + CurePetSelect(uin, skey, msg.Replace("宠物治疗", "")));
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + CurePetSelect(uin, skey, msg.Replace("宠物治疗", "")));
                 }
                 if (msg.IndexOf("宠物使用") == 0)
                 {
-                    CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + UsePet(uin, skey, msg.Replace("宠物使用", "")));
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + UsePet(uin, skey, msg.Replace("宠物使用", "")));
                 }
                 if(msg == "宠物学习")
                 {
-                    CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + StudyPetSelect());
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + StudyPetSelect());
                 }
                 if (msg.IndexOf("宠物上课") == 0)
                 {
-                    CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + StudyPet(uin, skey, msg.Replace("宠物上课", "")));
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + StudyPet(uin, skey, msg.Replace("宠物上课", "")));
+                    del(13, fromQQ.ToString());
+                    insert(13, fromQQ.ToString(), msg.Replace("宠物上课", ""));
                 }
                 if(msg == "宠物解绑")
                 {
                     del(11, fromQQ.ToString());
                     del(12, fromQQ.ToString());
-                    CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n解绑成功！");
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n解绑成功！");
                 }
                 if(msg == "宠物绑定方法")
                 {
