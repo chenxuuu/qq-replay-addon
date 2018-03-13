@@ -2430,9 +2430,10 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     "发送“宠物清洁”加页码数可查看宠物清洁物品列表\r\n" +
                     "发送“宠物治疗”加页码数可查看宠物药物物品列表\r\n" +
                     "发送“宠物使用”加物品代码可使用宠物物品\r\n" +
-                    "发送“宠物学习”可查看宠物学习课程列表\r\n" +
-                    "发送“宠物上课”加课程代码可让宠物上课（自动继续上）\r\n" +
+                    "发送“宠物学习开启”可开启自动学习\r\n" +
+                    "发送“宠物学习关闭”可关闭自动学习\r\n" +
                     "发送“宠物解绑”可解除绑定，停止代挂\r\n" +
+                    "挂机时会自动喂养与清洗，并且自动种菜收菜\r\n" +
                     "测试功能，如有bug请反馈");
             }
             if(msg.IndexOf("宠物") == 0)
@@ -2464,17 +2465,29 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 {
                     SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + UsePet(uin, skey, msg.Replace("宠物使用", "")));
                 }
-                if(msg == "宠物学习")
+                //if(msg == "宠物学习开启")
+                //{
+                //    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + StudyPetSelect());
+                //}
+                //if (msg.IndexOf("宠物上课") == 0)
+                //{
+                //    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + StudyPet(uin, skey, msg.Replace("宠物上课", "")));
+                //    del(13, fromQQ.ToString());
+                //    insert(13, fromQQ.ToString(), msg.Replace("宠物上课", ""));
+                //}
+                if(msg == "宠物学习开启")
                 {
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + StudyPetSelect());
-                }
-                if (msg.IndexOf("宠物上课") == 0)
-                {
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + StudyPet(uin, skey, msg.Replace("宠物上课", "")));
                     del(13, fromQQ.ToString());
-                    insert(13, fromQQ.ToString(), msg.Replace("宠物上课", ""));
+                    insert(13, fromQQ.ToString(), "0");
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "已开启自动学习（自动上课与换课程）");
                 }
-                if(msg == "宠物解绑")
+                if (msg == "宠物学习关闭")
+                {
+                    del(13, fromQQ.ToString());
+                    insert(13, fromQQ.ToString(), "28");
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "已关闭自动学习（学习完后不会自动继续学）");
+                }
+                if (msg == "宠物解绑")
                 {
                     del(11, fromQQ.ToString());
                     del(12, fromQQ.ToString());
@@ -3311,6 +3324,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 {
                     if(i != fromGroup)
                         SendMinecraftMessage(i, "跨群通知：\r\n" + msg.Substring(1));
+                    System.Threading.Thread.Sleep(500);
                 }
             }
             else if (msg == "开车")

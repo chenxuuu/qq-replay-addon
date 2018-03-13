@@ -56,6 +56,64 @@ namespace qqpet
 
             return ansall;
         }
+        public static void del(long group, string msg)
+        {
+            dircheck(group);
+            string gg = group.ToString();
+            XElement root = XElement.Load(path + group + ".xml");
+
+            var element = from ee in root.Elements()
+                          where (string)ee.Element("msg") == msg
+                          select ee;
+            if (element.Count() > 0)
+            {
+                //element.First().Remove();
+                element.Remove();
+            }
+            root.Save(path + group + ".xml");
+        }
+        public static void insert(long group, string msg, string ans)
+        {
+            if (msg.IndexOf("\r\n") < 0 & msg != "")
+            {
+                dircheck(group);
+                XElement root = XElement.Load(path + group + ".xml");
+
+                XElement read = root.Element("msginfo");
+
+                read.AddBeforeSelf(new XElement("msginfo",
+                       //new XElement("group", group),
+                       new XElement("msg", msg),
+                       new XElement("ans", ans)
+                       ));
+
+                root.Save(path + group + ".xml");
+            }
+        }
+        public static void createxml(long group)
+        {
+            XElement root = new XElement("Categories",
+                new XElement("msginfo",
+                    //new XElement("group", 123),
+                    new XElement("msg", "初始问题"),
+                    new XElement("ans", "初始回答")
+                    )
+               );
+            root.Save(path + group + ".xml");
+        }
+        public static void dircheck(long group)
+        {
+            if (File.Exists(path + group + ".xml"))
+            {
+                //MessageBox.Show("存在文件");
+                //File.Delete(dddd);//删除该文件
+            }
+            else
+            {
+                //MessageBox.Show("不存在文件");
+                createxml(group);//创建该文件，如果路径文件夹不存在，则报错。
+            }
+        }
 
         public static string pleaseLogin = "请设置登陆信息！";
         public static string petMore = "更多宠物命令请回复“宠物助手”";
@@ -109,12 +167,6 @@ namespace qqpet
                 UsePet(uin, skey, goodid);
             }
 
-            if(Reg_get(state, "状态：(?<w>..)", "w") == "空闲")
-            {
-                string study = replay_get(13, qq);
-                Console.WriteLine($"宠物状态发现为空闲，进行课程{study}的学习");
-                StudyPet(uin, skey, study);
-            }
             if(HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/farm", "cmd=10", uin, skey).IndexOf("一键收获") == -1)
             {
                 Console.WriteLine("开始播种植物");
@@ -138,7 +190,7 @@ namespace qqpet
             }
             else
             {
-                Console.WriteLine("一键收获植物");
+                Console.WriteLine("尝试收获植物");
                 HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/farm", "cmd=10&subcmd=10", uin, skey);
             }
 
@@ -171,11 +223,52 @@ namespace qqpet
             }
             else
             {
-                Console.WriteLine("一键收获鱼苗");
+                Console.WriteLine("尝试收获鱼苗");
                 HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/fish", "cmd=11&fish_sub=10&fryid=1", uin, skey);
             }
 
+            if (Reg_get(state, "状态：(?<w>..)", "w") == "空闲")
+            {
+                int c = 1;
+                try
+                {
+                    c = int.Parse(replay_get(13, qq));
+                }
+                catch { }
+                if(c < 28)
+                {
+                    if (c == 0)
+                        c = 1;
+                    Console.WriteLine($"宠物状态发现为空闲，从第{c}课开始尝试");
 
+                    for (int i = c; i < 27; i++)
+                    {
+                        int r = 4;
+                        while (r == 4)
+                        {
+                            r = StudyPet(uin, skey, i.ToString());
+                            //Console.WriteLine($"正在尝试，返回值为{r}");
+                        }
+
+                        if(r == 1 || r == 3)
+                        {
+                            Console.WriteLine($"宠物已开始学习{i}课");
+                            del(13, qq);
+                            insert(13, qq, i.ToString());
+                            break;
+                        }
+                        else if(r == 2)
+                        {
+                            Console.WriteLine($"已上过{i}课，尝试下一课");
+                        }
+                        else if(r == 5)
+                        {
+                            Console.WriteLine($"请求被拦截，下次再试");
+                            break;
+                        }
+                    }
+                }
+            }
 
         }
 
@@ -435,27 +528,40 @@ namespace qqpet
         /// <param name="uin"></param>
         /// <param name="skey"></param>
         /// <returns></returns>
-        public static string StudyPet(string uin, string skey, string classid)
+        public static int StudyPet(string uin, string skey, string classid)
         {
-            string result = "";
             string html = HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/phone_pet", "cmd=5&courseid=" + classid + "&study=2", uin, skey);
             html = html.Replace("\r", "");
             html = html.Replace("\n", "");
             if (html.IndexOf("手机统一登录") != -1)
-                return pleaseLogin;
+                return 0;
             if (html.IndexOf("亲爱的") != -1)
             {
-                result += Reg_get(html, "同学：(?<name>.*?)<", "name").Replace(" ", "") + "\r\n";
+                //上课成功
+                return 1;
             }
-            if (html.IndexOf("您已经完成了") != -1)
+            else if (html.IndexOf("您已经完成了") != -1)
             {
-                result += "您已经完成了" + Reg_get(html, "您已经完成了(?<name>.*?)<", "name").Replace(" ", "") + "\r\n";
+                //已经上过这个课了
+                return 2;
             }
-            if (html.IndexOf("你的宠物") != -1)
+            else if (html.IndexOf("你的宠物") != -1)
             {
-                result += "你的宠物" + Reg_get(html, "你的宠物(?<name>.*?)<", "name").Replace(" ", "") + "\r\n";
+                //正在上课
+                return 3;
             }
-            return "课程学习结果：\r\n" + result + petMore;
+            else if (html.IndexOf("不合法") != -1)
+            {
+                //不合法
+                return 5;
+            }
+            else
+            {
+                //获取失败
+                return 4;
+            }
+
+            //return "课程学习结果：\r\n" + result + petMore;
         }
 
         /// <summary>
