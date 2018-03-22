@@ -1091,15 +1091,15 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 SendMinecraftMessage(567145439, DateTime.Now.ToString() + "\r\n今天一共有" + qd + "人签到哦");
             }
 
-            //if (intMinute == 0 && intSecond == 10 && intHour == 4)
-            //{
-            //    mcmsg += "|||||command>tm bc 服务器将在10秒后例行重启！";
-            //    SendMinecraftMessage(241464054, "服务器将在10秒后进行例行重启！");
-            //}
-            //if (intMinute == 0 && intSecond == 20 && intHour == 4)
-            //{
-            //    mcmsg += "|||||command>stop";
-            //}
+            if (intMinute == 0 && intSecond == 10 && intHour == 4)
+            {
+                mcmsg += "|||||command>tm bc 服务器将在10秒后例行重启！";
+                SendMinecraftMessage(241464054, "服务器将在10秒后进行例行重启！");
+            }
+            if (intMinute == 0 && intSecond == 20 && intHour == 4)
+            {
+                mcmsg += "|||||command>stop";
+            }
 
 
             if (intMinute == 0 && intSecond == 10 && intHour == 3)
