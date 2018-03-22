@@ -1120,18 +1120,30 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                         ((float)GetHardDiskFreeSpace("E") / 1024).ToString(".00") + "G！请及时清理多于文件！");
                 }
             }
-            /*
+            
             if(intMinute%15 == 0)
             {
-                dircheck(11);
-                dircheck(12);
-                XElement uin = XElement.Load(path + "11.xml");
+                dircheck(14);
+                XElement uin = XElement.Load(path + "14.xml");
                 foreach (XElement mm in uin.Elements("msginfo"))
                 {
-                    GetPetState(mm.Element("ans").Value, replay_get(12, mm.Element("msg").Value));
+                    try
+                    {
+                        if(int.Parse(mm.Element("ans").Value) > 3)
+                        {
+                            CQ.SendPrivateMessage(long.Parse(mm.Element("msg").Value), 
+                                "你的宠物cookie绑定可能已过期，因为获取宠物信息失败次数已经超过3次，请检查后重新绑定");
+                            del(11, mm.Element("msg").Value);
+                            del(12, mm.Element("msg").Value);
+                            del(13, mm.Element("msg").Value);
+                            del(14, mm.Element("msg").Value);
+                        }
+                        
+                    }
+                    catch { }
                 }
             }
-            */
+            
 
             if(count_bc > 0)
             {

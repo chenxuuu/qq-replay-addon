@@ -132,7 +132,25 @@ namespace qqpet
             }
             catch { }
             if (level == 0)
+            {
+                int failCount = 0;
+                try
+                {
+                    failCount = int.Parse(replay_get(14, qq.ToString()));
+                }
+                catch { }
+                failCount++;
+                del(14, qq.ToString());
+                insert(14, qq.ToString(), failCount.ToString());
+                Console.WriteLine($"连续失败{failCount}次");
                 return;
+            }
+            else
+            {
+                del(14, qq.ToString());
+                insert(14, qq.ToString(), "0");
+            }
+                
             Console.WriteLine($"饥饿值:{growNow}/{growMax},清洁值:{cleanNow}/{cleanMax}");
             if (growMax - growNow > 1500)
             {
