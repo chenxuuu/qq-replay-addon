@@ -15,19 +15,21 @@ namespace qqpet
         {
             while(true)
             {
-                if(DateTime.Now.Minute%5 == 0 && DateTime.Now.Second == 0)
-                {
+                //if(DateTime.Now.Minute%5 == 0 && DateTime.Now.Second == 0)
+                //{
                     Console.WriteLine("开始时间：" + DateTime.Now);
                     XElement uin = XElement.Load(path + "11.xml");
                     foreach (XElement mm in uin.Elements("msginfo"))
                     {
+                        if (mm.Element("msg").Value == "初始问题")
+                            continue;
                         Console.WriteLine("-------------------\r\n当前账号：" + mm.Element("msg").Value);
                         AutoFeed(mm.Element("ans").Value, replay_get(12, mm.Element("msg").Value), mm.Element("msg").Value);
                     }
                     Console.WriteLine("定时程序执行结束：" + DateTime.Now + "\r\n===========================================");
-                }
+                //}
                 //Console.WriteLine("not run,"+ DateTime.Now.Minute + "," + DateTime.Now.Second);
-                System.Threading.Thread.Sleep(1000);
+                System.Threading.Thread.Sleep(10000);
             }
         }
 
