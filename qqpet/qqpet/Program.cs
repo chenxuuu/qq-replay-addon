@@ -13,10 +13,12 @@ namespace qqpet
     {
         static void Main(string[] args)
         {
-            while(true)
+            try
             {
-                //if(DateTime.Now.Minute%5 == 0 && DateTime.Now.Second == 0)
-                //{
+                while (true)
+                {
+                    //if(DateTime.Now.Minute%5 == 0 && DateTime.Now.Second == 0)
+                    //{
                     Console.WriteLine("开始时间：" + DateTime.Now);
                     XElement uin = XElement.Load(path + "11.xml");
                     foreach (XElement mm in uin.Elements("msginfo"))
@@ -27,10 +29,17 @@ namespace qqpet
                         AutoFeed(mm.Element("ans").Value, replay_get(12, mm.Element("msg").Value), mm.Element("msg").Value);
                     }
                     Console.WriteLine("定时程序执行结束：" + DateTime.Now + "\r\n===========================================");
-                //}
-                //Console.WriteLine("not run,"+ DateTime.Now.Minute + "," + DateTime.Now.Second);
-                System.Threading.Thread.Sleep(10000);
+                    //}
+                    //Console.WriteLine("not run,"+ DateTime.Now.Minute + "," + DateTime.Now.Second);
+                    System.Threading.Thread.Sleep(10000);
+                }
             }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                Console.ReadLine();
+            }
+
         }
 
         static string path = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
@@ -249,6 +258,7 @@ namespace qqpet
 
             if (Reg_get(state, "状态：(?<w>..)", "w") == "空闲")
             {
+                bool can_study = false;
                 int c = 1;
                 try
                 {
@@ -261,7 +271,7 @@ namespace qqpet
                         c = 1;
                     Console.WriteLine($"宠物状态发现为空闲，从第{c}课开始尝试");
 
-                    for (int i = c; i < 27; i++)
+                    for (int i = c; i <= 27; i++)
                     {
                         int r = 4;
                         while (r == 4)
@@ -272,14 +282,15 @@ namespace qqpet
 
                         if(r == 1 || r == 3)
                         {
+                            can_study = true;
                             Console.WriteLine($"宠物已开始学习{i}课");
-                            del(13, qq);
-                            insert(13, qq, i.ToString());
+                            //del(13, qq);
+                            //insert(13, qq, i.ToString());
                             break;
                         }
                         else if(r == 2)
                         {
-                            Console.WriteLine($"已上过{i}课，尝试下一课");
+                            Console.WriteLine($"无法上{i}课，尝试下一课");
                         }
                         else if(r == 5)
                         {
@@ -287,6 +298,11 @@ namespace qqpet
                             break;
                         }
                     }
+                }
+                if(!can_study)
+                {
+                    Console.WriteLine($"发现没课能上了，去旅游");
+                    HttpGetPet("http://qqpet.wapsns.3g.qq.com/qqpet/fcgi-bin/phone_pet", "g_f=0&cmd=7&tour=4", uin, skey);
                 }
             }
 
@@ -555,12 +571,12 @@ namespace qqpet
             html = html.Replace("\n", "");
             if (html.IndexOf("手机统一登录") != -1)
                 return 0;
-            if (html.IndexOf("亲爱的") != -1)
+            if (html.IndexOf("亲爱的") != -1 && html.IndexOf("很抱歉") == -1)
             {
                 //上课成功
                 return 1;
             }
-            else if (html.IndexOf("您已经完成了") != -1)
+            else if (html.IndexOf("您已经完成了") != -1 || html.IndexOf("很抱歉") != -1)
             {
                 //已经上过这个课了
                 return 2;
