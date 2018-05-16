@@ -3466,6 +3466,18 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     }
                 }
             }
+            else if (msg == "每日单词" || msg == "今日单词")
+            {
+                string need_to_replay = CQ.CQCode_At(fromQQ) + "\r\n";
+                Random ran = new Random(System.DateTime.Now.DayOfYear);
+                for (int i = 1;i < 6;i++)
+                {
+                    string ran_sum = ran.Next(1, 103977).ToString();
+                    need_to_replay += i.ToString() + ".  " + xml_dic_get(ran_sum) + "\r\n";
+                }
+                need_to_replay += "今日日期：" + System.DateTime.Today.ToString().Replace(" 0:00:00", "");
+                SendMinecraftMessage(fromGroup, need_to_replay);
+            }
             else if (replay_ok != "")
             {
                 if (replay_common != "")
@@ -3613,6 +3625,21 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             }
 
             return ansall;
+        }
+
+        public static string xml_dic_get(string num)
+        {
+            XElement root = XElement.Load(path + "dic.xml");
+            string ans = "";
+            foreach (XElement mm in root.Elements("msginfo"))
+            {
+                if (num == mm.Element("sum").Value)
+                {
+                    ans = mm.Element("word").Value + "\r\n" + mm.Element("translate").Value;
+                    break;
+                }
+            }
+            return ans;
         }
 
         public static string list_get(long group, string msg)
