@@ -3469,7 +3469,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             else if (msg == "每日单词" || msg == "今日单词")
             {
                 string need_to_replay = CQ.CQCode_At(fromQQ) + "\r\n";
-                Random ran = new Random(System.DateTime.Now.DayOfYear);
+                Random ran = new Random(System.DateTime.Now.DayOfYear + (int)(fromQQ - (fromQQ / 10000) * 10000));
                 for (int i = 1;i < 6;i++)
                 {
                     string ran_sum = ran.Next(1, 103977).ToString();
