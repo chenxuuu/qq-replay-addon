@@ -2431,6 +2431,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                     "发送“正则”+字符串+“换行”+正则表达式，可查询C#正则\r\n" +
                     "发送“空气质量”可查询当前时间的空气质量\r\n" +
                     "发送“宠物助手”可查询QQ宠物代挂的帮助信息\r\n" +
+                    "发送“查磁链”+“关键词”可查询磁链\r\n" +
                     "如有bug请反馈");
             }
             if (msg == "宠物助手")
@@ -3261,11 +3262,11 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             }
             else if (msg.IndexOf("找番号") == 0 || msg.IndexOf("查番号") == 0 || msg.IndexOf("查磁链") == 0 || msg.IndexOf("找磁链") == 0)
             {
-                if (System.DateTime.Now.Hour > 5 && fromGroup != 115872123 && fromQQ != 961726194)
-                {
-                    SendMinecraftMessage(fromGroup, "开车时间为00:00-6:00");
-                    return;
-                }
+                //if (System.DateTime.Now.Hour > 5 && fromGroup != 115872123 && fromQQ != 961726194)
+                //{
+                //    SendMinecraftMessage(fromGroup, "开车时间为00:00-6:00");
+                //    return;
+                //}
                 string url = msg;
                 url = url.Replace("找番号", "");
                 url = url.Replace("查番号", "");
@@ -3327,7 +3328,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                         }
                         catch { }
                     }
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n"+ url.Replace(" ", "-") + "的资源：" + magnets);
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n"+ url.Replace(" ", "-") + "的资源：" + magnets + "\r\n小贴士：magnet:?xt=urn:btih:");
                 }
             }
             else if(msg.IndexOf("*") == 0 && fromQQ == 961726194)
@@ -3341,7 +3342,7 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             }
             else if (msg == "开车")
             {
-                SendMinecraftMessage(fromGroup, "假车：magnet:?xt=urn:btih:" + GetRandomString(40, true, false, false, false, "ABCDEF"));
+                SendMinecraftMessage(fromGroup, "magnet:?xt=urn:btih:" + GetRandomString(40, true, false, false, false, "ABCDEF"));
             }
             else if(msg.IndexOf("正则") == 0)
             {
@@ -3477,6 +3478,74 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 }
                 need_to_replay += "今日日期：" + System.DateTime.Today.ToString().Replace(" 0:00:00", "");
                 SendMinecraftMessage(fromGroup, need_to_replay);
+            }
+            //else if(msg.IndexOf("osu绑定") == 0)
+            //{
+            //    msg = msg.Replace(" ","").Replace("osu绑定","");
+            //    del(15, fromQQ.ToString());
+            //    insert(15, fromQQ.ToString(), msg);
+            //    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ)+"\r\n绑定osu账号"+msg+"成功");
+            //}
+            //else if (msg.IndexOf("osu查询") == 0)
+            //{
+            //    msg = msg.Replace(" ", "").Replace("osu查询", "");
+            //    if (msg == "")
+            //        msg = xml_get(15, fromQQ.ToString());
+            //    string html = HttpGet("https://osu.ppy.sh/api/get_user", "k=76c9d43a944c66c5ccbb08509b51ef30ce095071&u=" + msg);
+            //    string osu_result = "";
+            //    JObject jo = (JObject)JsonConvert.DeserializeObject(html.Replace("[", "").Replace("]", "").Replace(",\"events\":", ""));
+            //    try
+            //    {
+            //        osu_result += "玩家id：" + (string)jo["user_id"] + "\r\n";
+            //        osu_result += "玩家名：" + (string)jo["username"] + "\r\n";
+            //        osu_result += "游戏次数：" + (string)jo["playcount"] + "\r\n";
+            //        osu_result += "Ranked谱面总分：" + (string)jo["ranked_score"] + "\r\n";
+            //        osu_result += "准确率：" + (string)jo["accuracy"] + "%\r\n";
+            //        osu_result += "总分：" + (string)jo["total_score"] + "\r\n";
+            //        osu_result += "等级：" + (string)jo["level"] + "\r\n";
+            //        osu_result += "全球排名：" + (string)jo["pp_rank"];
+            //    }
+            //    catch (Exception err)
+            //    {
+            //        string aa = err.Message.ToString();
+            //        osu_result += "机器人爆炸了，原因：" + aa;
+            //    }
+            //    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n玩家" + msg + "的osu信息如下：\r\n" + osu_result);
+            //}
+            //else if (msg.IndexOf("osu最近游戏") == 0)
+            //{
+            //    msg = msg.Replace(" ", "").Replace("osu最近游戏", "");
+            //    if (msg == "")
+            //        msg = xml_get(15, fromQQ.ToString());
+            //    string html = HttpGet("https://osu.ppy.sh/api/get_user_recent", "k=76c9d43a944c66c5ccbb08509b51ef30ce095071&u=" + msg);
+            //    string osu_result = "";
+                
+            //    try
+            //    {
+            //        JObject jo = (JObject)JsonConvert.DeserializeObject("{" + html + "}");
+            //        for (int i = 0; i<3; i++)
+            //        {
+            //            osu_result += "\r\n谱面id：" + (string)jo[i]["beatmap_id"] + "\r\n";
+            //            osu_result += "分数：" + (string)jo[i]["score"] + "\r\n";
+            //            osu_result += "连击数：" + (string)jo[i]["maxcombo"] + "\r\n";
+            //            osu_result += "300：" + (string)jo[i]["count300"] + "\r\n";
+            //            osu_result += "100：" + (string)jo[i]["count100"] + "\r\n";
+            //            osu_result += "50：" + (string)jo[i]["count50"] + "\r\n";
+            //            osu_result += "miss：" + (string)jo[i]["countmiss"] + "\r\n";
+            //            osu_result += "结果：" + (string)jo[i]["rank"] + "\r\n";
+            //            osu_result += "日期：" + (string)jo[i]["date"] + "\r\n";
+            //        }
+            //    }
+            //    catch (Exception err)
+            //    {
+            //        string aa = err.Message.ToString();
+            //        osu_result += "机器人爆炸了，原因：" + aa;
+            //    }
+            //    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n玩家" + msg + "的osu最近游戏记录如下：" + osu_result);
+            //}
+            else if(msg.IndexOf("cmd ") == 0 && fromQQ == 961726194)
+            {
+                SendMinecraftMessage(fromGroup, execCMD(msg.Replace("cmd ","")));
             }
             else if (replay_ok != "")
             {
@@ -4105,6 +4174,32 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             }
             catch { }
             return "";
+        }
+
+        /// <summary>
+        /// 获取CMD执行结果
+        /// </summary>
+        /// <param name="command">命令</param>
+        /// <returns></returns>
+        public static string execCMD(string command)
+        {
+            System.Diagnostics.Process pro = new System.Diagnostics.Process();
+            pro.StartInfo.FileName = "cmd.exe";
+            pro.StartInfo.UseShellExecute = false;
+            pro.StartInfo.RedirectStandardError = true;
+            pro.StartInfo.RedirectStandardInput = true;
+            pro.StartInfo.RedirectStandardOutput = true;
+            pro.StartInfo.CreateNoWindow = true;
+            //pro.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+            pro.Start();
+            pro.StandardInput.WriteLine(command);
+            pro.StandardInput.WriteLine("exit");
+            pro.StandardInput.AutoFlush = true;
+            //获取cmd窗口的输出信息
+            string output = pro.StandardOutput.ReadToEnd();
+            pro.WaitForExit();//等待程序执行完退出进程
+            pro.Close();
+            return output;
         }
 
 
