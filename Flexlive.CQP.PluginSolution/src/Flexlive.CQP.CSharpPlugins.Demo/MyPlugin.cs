@@ -1489,126 +1489,52 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
         /// <param name="font">字体。</param>
         public override void GroupMessage(int subType, int sendTime, long fromGroup, long fromQQ, string fromAnonymous, string msg, int font)
         {
-            if (fromQQ == 80000000 || fromQQ == 1811436283)
-                return;
-            // 处理群消息。
-            var groupMember = CQ.GetGroupMemberInfo(fromGroup, fromQQ);
-            var me = CQ.GetGroupMemberInfo(fromGroup, 751323264);
-
-            if(fromQQ == 961726194 && msg == "停止运行")
+            try
             {
-                CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "已停止运行，可以重启机器人了");
-                while(true)
-                {
-                    Thread.Sleep(1000);
-                }
-            }
-
-            if (fromGroup == 241464054 && fromQQ != 1000000)
-            {
-                if(msg.IndexOf("刘晨旭") != -1 || msg.IndexOf("艹") != -1 || msg.IndexOf("你妈") != -1)
-                {
-                    CQ.SetGroupMemberGag(fromGroup, fromQQ, 60*60);
-                }
-                string reply;
-                string reply1 = xml_get(1, fromQQ.ToString());
-                string reply2 = xml_get(5, fromQQ.ToString());
-                if (reply1 != "")
-                    reply = reply1;
-                else
-                    reply = reply2;
-                if (fromQQ == 961726194 && msg.IndexOf("命令") == 0)
-                {
-                    mcmsg += "|||||command>" + msg.Replace("命令","");
-                }
-                else if (msg.IndexOf("命令") == 0)
-                {
-                    if (reply != "")
-                    {
-                        CQ.SendGroupMessage(fromGroup, "封禁" + reply + "命令执行成功！");
-                    }
-                }
-                else if(msg == "在线")
-                {
-
-                    string CoinStr = xml_get(2, fromQQ.ToString());
-                    int CoinsTemp;
-                    if (CoinStr != "")
-                    {
-                        CoinsTemp = int.Parse(CoinStr);
-                    }
-                    else
-                    {
-                        CoinsTemp = 0;
-                    }
-                    if(CoinsTemp < 100)
-                    {
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n群银行游戏币不足100，无法查询在线人数");
-                    }
-                    else
-                    {
-                        CoinsTemp -= 100;
-                        mcmsg += "|||||sum>我要看人数";
-                        mcmsg += "|||||[群消息]<" + reply + ">" + msg;
-                        del(2, fromQQ.ToString());
-                        insert(2, fromQQ.ToString(), CoinsTemp.ToString());
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n已扣除100游戏币作为查询在线人数的服务费");
-                    }
-                }
-                else if (reply != "")
-                {
-                    mcmsg += "|||||[群消息]<" + reply + ">" + msg;
-                    if (groupMember.GroupCard.IndexOf(reply) == -1)
-                    {
-                        CQ.SetGroupNickName(fromGroup, fromQQ, reply);
-                    }
-                }
-                else if (msg.IndexOf("绑定") == 0)
-                {
-                    if (xml_get(1, fromQQ.ToString()) == "" && xml_get(5, fromQQ.ToString()) == "" && qq_get(msg.Replace("绑定", "")) == 0 && CheckID(msg.Replace("绑定", "")))
-                    {
-                        insert(5, fromQQ.ToString(), msg.Replace("绑定", ""));
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "绑定id:" + msg.Replace("绑定", "") + "成功！" +
-                                                      "\r\n请耐心等待管理员审核白名单申请哟~" +
-                                                      "\r\n如未申请请打开此链接：https://wj.qq.com/s/1308067/143c" +
-                                                      "\r\n如果过去24小时仍未被审核，请回复“催促审核”来进行催促");
-
-                        CQ.SendGroupMessage(567145439, "接待喵糖拌管理：\r\n玩家id：" + msg.Replace("绑定", "") + "\r\n已成功绑定QQ：" + fromQQ.ToString() +
-                                                        "\r\n群名片：" + groupMember.GroupCard +
-                                                        "\r\n请及时检查该玩家是否已经提交白名单申请https://wj.qq.com/mine.html" +
-                                                        "\r\n如果符合要求，请回复“通过”+qq来给予白名单" +
-                                                        "\r\n如果不符合要求，请回复“不通过”+qq+空格+原因来给打回去重填");
-                    }
-                    else if (!CheckID(msg.Replace("绑定", "")))
-                    {
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "拜托你起个正常的名字好吗？");
-                    }
-                    else
-                    {
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你可能已经绑定过了，请私聊腐竹解绑。");
-                    }
-                }
-                else
-                {
-                    CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n检测到你没有绑定服务器id，请在群里发送“绑定”+“你自己的id”来绑定（没空格），如：\r\n绑定notch\r\n长时间未绑定你将会被移出本群");
-                    //CQ.SendGroupMessage(567145439, "接待喵糖拌管理：\r\nQQ：" + fromQQ.ToString() +
-                    //                            "\r\n群名片：" + groupMember.GroupCard +
-                    //                            "\r\n没有绑定id\r\n如长时间没绑请将其移出群");
+                if (fromQQ == 80000000 || fromQQ == 1811436283)
                     return;
+                // 处理群消息。
+                var groupMember = CQ.GetGroupMemberInfo(fromGroup, fromQQ);
+                var me = CQ.GetGroupMemberInfo(fromGroup, 751323264);
+
+                if (fromQQ == 961726194 && msg == "停止运行")
+                {
+                    CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "已停止运行，可以重启机器人了");
+                    while (true)
+                    {
+                        Thread.Sleep(1000);
+                    }
                 }
 
-                if (msg == "签到")
+                if (fromGroup == 241464054 && fromQQ != 1000000)
                 {
-                    if (xml_get(3, fromQQ.ToString()) == System.DateTime.Today.ToString())
+                    if (msg.IndexOf("刘晨旭") != -1 || msg.IndexOf("艹") != -1 || msg.IndexOf("你妈") != -1)
                     {
-                        SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "你今天已经签过到啦！");
+                        CQ.SetGroupMemberGag(fromGroup, fromQQ, 60 * 60);
                     }
+                    string reply;
+                    string reply1 = xml_get(1, fromQQ.ToString());
+                    string reply2 = xml_get(5, fromQQ.ToString());
+                    if (reply1 != "")
+                        reply = reply1;
                     else
+                        reply = reply2;
+                    if (fromQQ == 961726194 && msg.IndexOf("命令") == 0)
                     {
-                        string last_time = xml_get(3, fromQQ.ToString());
-                        string qdTimesStr = xml_get(7, fromQQ.ToString());
+                        mcmsg += "|||||command>" + msg.Replace("命令", "");
+                    }
+                    else if (msg.IndexOf("命令") == 0)
+                    {
+                        if (reply != "")
+                        {
+                            CQ.SendGroupMessage(fromGroup, "封禁" + reply + "命令执行成功！");
+                        }
+                    }
+                    else if (msg == "在线")
+                    {
+
                         string CoinStr = xml_get(2, fromQQ.ToString());
-                        int CoinsTemp, qdTimesTemp;
+                        int CoinsTemp;
                         if (CoinStr != "")
                         {
                             CoinsTemp = int.Parse(CoinStr);
@@ -1617,1952 +1543,2039 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                         {
                             CoinsTemp = 0;
                         }
-                        if (qdTimesStr != "")
-                        {
-                            qdTimesTemp = int.Parse(qdTimesStr);
-                        }
-                        else
-                        {
-                            qdTimesTemp = 1;
-                        }
-                        if(xml_get(3, fromQQ.ToString()) == System.DateTime.Today.AddDays(-1).ToString())
-                        {
-                            qdTimesTemp++;
-                        }
-                        else
-                        {
-                            qdTimesTemp = 1;
-                        }
-                        Random ran = new Random(System.DateTime.Now.Millisecond);
-                        int RandKey = ran.Next(0, 100);
-                        CoinsTemp += RandKey + qdTimesTemp;
-                        SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "\r\n签到成功！已连续签到"+ qdTimesTemp.ToString() + "天\r\n获得游戏币" + RandKey + "+"+ qdTimesTemp.ToString() + "枚！\r\n银行内游戏币" + CoinsTemp + "枚\r\n抽奖次数已重置为一次！\r\n回复“帮助”查看如何取钱\r\n如果登陆游戏进行签到的话可以获得五倍金币、五次抽奖机会哦~");
-                        del(2, fromQQ.ToString());
-                        del(3, fromQQ.ToString());
-                        del(4, fromQQ.ToString());
-                        del(7, fromQQ.ToString());
-                        insert(2, fromQQ.ToString(), CoinsTemp.ToString());
-                        insert(7, fromQQ.ToString(), qdTimesTemp.ToString());
-                        insert(3, fromQQ.ToString(), System.DateTime.Today.ToString());
-                        insert(4, fromQQ.ToString(), "4");
-
-                        string qd_get = xml_get(8, "qd");  //签到数
-                        int qd = 0;
-                        try
-                        {
-                            qd = int.Parse(qd_get);
-                        }
-                        catch { }
-                        qd++;
-                        del(8, "qd");
-                        insert(8, "qd", qd.ToString());
-                    }
-                }
-                if (msg == "取钱" || msg == "我要取钱")
-                {
-                    string CoinStr = xml_get(2, fromQQ.ToString());
-                    int CoinsTemp;
-                    if (CoinStr != "")
-                    {
-                        CoinsTemp = int.Parse(CoinStr);
-                    }
-                    else
-                    {
-                        CoinsTemp = 0;
-                    }
-                    mcmsg += "|||||command>eco give " + reply + " " + CoinsTemp.ToString();
-                    //SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "已为玩家" + reply + "充值" + CoinsTemp.ToString() + "游戏币！");
-                    del(2, fromQQ.ToString());
-                }
-                if (msg == "查询" || msg == "查询余额")
-                {
-                    string CoinStr = xml_get(2, fromQQ.ToString());
-                    int CoinsTemp;
-                    if (CoinStr != "")
-                    {
-                        CoinsTemp = int.Parse(CoinStr);
-                    }
-                    else
-                    {
-                        CoinsTemp = 0;
-                    }
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n你当前余额为" + CoinsTemp.ToString() + "游戏币");
-                    mcmsg += "|||||eco>" + reply;
-                }
-                if (msg == "存钱100")
-                {
-                    mcmsg += "|||||ecodel100>" + reply;
-                }
-                else if (msg == "存钱500")
-                {
-                    mcmsg += "|||||ecodel500>" + reply;
-                }
-                else if (msg == "存钱1000")
-                {
-                    mcmsg += "|||||ecodel1000>" + reply;
-                }
-                else if (msg == "存钱5000")
-                {
-                    mcmsg += "|||||ecodel5000>" + reply;
-                }
-                else if (msg == "存钱10000")
-                {
-                    mcmsg += "|||||ecodel10000>" + reply;
-                }
-                else if (msg.IndexOf("存钱") == 0)
-                {
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "无效命令，回复帮助查看更多。");
-                }
-                if (msg == "帮助")
-                {
-                    SendMinecraftMessage(fromGroup, "关于签到奖励：\r\n每日可随机领取0-500游戏币的奖励，奖励暂存在银行中。\r\n取钱方式：在群里发送“取钱”即可取出所有钱。\r\n回复存钱+金额可将服务器钱存入银行\r\n每次仅限100、500、1000、5000、10000这几个额度\r\n回复“查询”可查询当前银行内余额。\r\n回复“抽奖”可花费100游戏币进行抽奖，中奖率为玄学");
-                }
-                if (msg == "抽奖")
-                {
-                    string CoinStr = xml_get(2, fromQQ.ToString());
-                    string RanCount = xml_get(4, fromQQ.ToString());
-                    int CoinsTemp, Counttemp;
-                    if (CoinStr != "")
-                    {
-                        CoinsTemp = int.Parse(CoinStr);
-                    }
-                    else
-                    {
-                        CoinsTemp = 0;
-                    }
-
-                    if (RanCount != "")
-                    {
-                        Counttemp = int.Parse(RanCount);
-                    }
-                    else
-                    {
-                        Counttemp = 0;
-                    }
-
-                    if (Counttemp < 5)
-                    {
                         if (CoinsTemp < 100)
                         {
-                            SendMinecraftMessage(fromGroup, "你只有" + CoinsTemp + "游戏币，你个穷逼还想抽奖？");
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n群银行游戏币不足100，无法查询在线人数");
                         }
                         else
                         {
-                            Random ran = new Random(System.DateTime.Now.Millisecond);
-                            int RandKey = ran.Next(0, 500);
                             CoinsTemp -= 100;
-                            if (RandKey > 350)
+                            mcmsg += "|||||sum>我要看人数";
+                            mcmsg += "|||||[群消息]<" + reply + ">" + msg;
+                            del(2, fromQQ.ToString());
+                            insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n已扣除100游戏币作为查询在线人数的服务费");
+                        }
+                    }
+                    else if (reply != "")
+                    {
+                        mcmsg += "|||||[群消息]<" + reply + ">" + msg;
+                        if (groupMember.GroupCard.IndexOf(reply) == -1)
+                        {
+                            CQ.SetGroupNickName(fromGroup, fromQQ, reply);
+                        }
+                    }
+                    else if (msg.IndexOf("绑定") == 0)
+                    {
+                        if (xml_get(1, fromQQ.ToString()) == "" && xml_get(5, fromQQ.ToString()) == "" && qq_get(msg.Replace("绑定", "")) == 0 && CheckID(msg.Replace("绑定", "")))
+                        {
+                            insert(5, fromQQ.ToString(), msg.Replace("绑定", ""));
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "绑定id:" + msg.Replace("绑定", "") + "成功！" +
+                                                          "\r\n请耐心等待管理员审核白名单申请哟~" +
+                                                          "\r\n如未申请请打开此链接：https://wj.qq.com/s/1308067/143c" +
+                                                          "\r\n如果过去24小时仍未被审核，请回复“催促审核”来进行催促");
+
+                            CQ.SendGroupMessage(567145439, "接待喵糖拌管理：\r\n玩家id：" + msg.Replace("绑定", "") + "\r\n已成功绑定QQ：" + fromQQ.ToString() +
+                                                            "\r\n群名片：" + groupMember.GroupCard +
+                                                            "\r\n请及时检查该玩家是否已经提交白名单申请https://wj.qq.com/mine.html" +
+                                                            "\r\n如果符合要求，请回复“通过”+qq来给予白名单" +
+                                                            "\r\n如果不符合要求，请回复“不通过”+qq+空格+原因来给打回去重填");
+                        }
+                        else if (!CheckID(msg.Replace("绑定", "")))
+                        {
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "拜托你起个正常的名字好吗？");
+                        }
+                        else
+                        {
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你可能已经绑定过了，请私聊腐竹解绑。");
+                        }
+                    }
+                    else
+                    {
+                        CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n检测到你没有绑定服务器id，请在群里发送“绑定”+“你自己的id”来绑定（没空格），如：\r\n绑定notch\r\n长时间未绑定你将会被移出本群");
+                        //CQ.SendGroupMessage(567145439, "接待喵糖拌管理：\r\nQQ：" + fromQQ.ToString() +
+                        //                            "\r\n群名片：" + groupMember.GroupCard +
+                        //                            "\r\n没有绑定id\r\n如长时间没绑请将其移出群");
+                        return;
+                    }
+
+                    if (msg == "签到")
+                    {
+                        if (xml_get(3, fromQQ.ToString()) == System.DateTime.Today.ToString())
+                        {
+                            SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "你今天已经签过到啦！");
+                        }
+                        else
+                        {
+                            string last_time = xml_get(3, fromQQ.ToString());
+                            string qdTimesStr = xml_get(7, fromQQ.ToString());
+                            string CoinStr = xml_get(2, fromQQ.ToString());
+                            int CoinsTemp, qdTimesTemp;
+                            if (CoinStr != "")
                             {
-                                CoinsTemp += RandKey;
-                                SendMinecraftMessage(fromGroup, "恭喜你抽中了" + RandKey + "游戏币，当前余额" + CoinsTemp + "游戏币");
-                                del(2, fromQQ.ToString());
-                                insert(2, fromQQ.ToString(), CoinsTemp.ToString());
-                            }
-                            else if(RandKey > 150)
-                            {
-                                SendMinecraftMessage(fromGroup, "啊哦，你没有中奖。当前余额" + CoinsTemp + "游戏币");
-                                del(2, fromQQ.ToString());
-                                insert(2, fromQQ.ToString(), CoinsTemp.ToString());
-                            }
-                            else if(RandKey > 50)
-                            {
-                                int fkt = ran.Next(1, 11);
-                                CQ.SetGroupMemberGag(fromGroup, fromQQ, fkt * 60);
-                                SendMinecraftMessage(fromGroup, "恭喜你抽中了禁言" + fkt + "分钟！当前余额" + CoinsTemp + "游戏币");
-                                del(2, fromQQ.ToString());
-                                insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                                CoinsTemp = int.Parse(CoinStr);
                             }
                             else
                             {
-                                int fk = 0;
-                                string fks = xml_get(10, fromQQ.ToString());
-                                if(fks != "")
-                                {
-                                    fk = int.Parse(fks);
-                                }
-                                fk++;
-                                SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n恭喜你抽中了一张禁言卡，回复“禁言卡”可以查看使用帮助。");
-                                del(10, fromQQ.ToString());
-                                insert(10, fromQQ.ToString(), fk.ToString());
-                                del(2, fromQQ.ToString());
-                                insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                                CoinsTemp = 0;
                             }
-                            Counttemp++;
-                            del(4, fromQQ.ToString());
-                            insert(4, fromQQ.ToString(), Counttemp.ToString());
-                        }
-                    }
-                    else
-                    {
-                        SendMinecraftMessage(fromGroup, "抽奖次数已用完！请用签到补充次数");
-                    }
-
-                }
-                if (msg == "5连抽" || msg == "五连抽")
-                {
-                    string CoinStr = xml_get(2, fromQQ.ToString());
-                    string RanCount = xml_get(4, fromQQ.ToString());
-                    int CoinsTemp, Counttemp;
-                    if (CoinStr != "")
-                    {
-                        CoinsTemp = int.Parse(CoinStr);
-                    }
-                    else
-                    {
-                        CoinsTemp = 0;
-                    }
-
-                    if (RanCount != "")
-                    {
-                        Counttemp = int.Parse(RanCount);
-                    }
-                    else
-                    {
-                        Counttemp = 0;
-                    }
-
-                    if (Counttemp < 1)
-                    {
-                        if (CoinsTemp < 500)
-                        {
-                            SendMinecraftMessage(fromGroup, "你只有" + CoinsTemp + "游戏币，你个穷逼还想五连抽？");
-                        }
-                        else
-                        {
-                            CoinsTemp -= 500;
-                            del(2, fromQQ.ToString());
-                            insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                            if (qdTimesStr != "")
+                            {
+                                qdTimesTemp = int.Parse(qdTimesStr);
+                            }
+                            else
+                            {
+                                qdTimesTemp = 1;
+                            }
+                            if (xml_get(3, fromQQ.ToString()) == System.DateTime.Today.AddDays(-1).ToString())
+                            {
+                                qdTimesTemp++;
+                            }
+                            else
+                            {
+                                qdTimesTemp = 1;
+                            }
                             Random ran = new Random(System.DateTime.Now.Millisecond);
-                            string replay5all = "";
-                            int RandKey,jinyan = 0;
-                            for(int count_temp = 0;count_temp<5;count_temp++)
-                            {
-                                RandKey = ran.Next(0, 500);
-                                if (RandKey > 350)
-                                {
-                                    CoinsTemp += RandKey;
-                                    replay5all += "恭喜你抽中了" + RandKey + "游戏币，当前余额" + CoinsTemp + "游戏币\r\n";
-                                }
-                                else if (RandKey > 150)
-                                {
-                                    replay5all += "啊哦，你没有中奖。当前余额" + CoinsTemp + "游戏币\r\n";
-                                }
-                                else if (RandKey > 50)
-                                {
-                                    int fkt = ran.Next(1, 11);
-                                    jinyan += fkt;
-                                    replay5all += "恭喜你抽中了禁言" + fkt + "分钟！当前余额" + CoinsTemp + "游戏币\r\n";
-                                }
-                                else
-                                {
-                                    int fk = 0;
-                                    string fks = xml_get(10, fromQQ.ToString());
-                                    if (fks != "")
-                                    {
-                                        fk = int.Parse(fks);
-                                    }
-                                    fk++;
-                                    replay5all += "恭喜你抽中了一张禁言卡，回复“禁言卡”可以查看使用帮助。\r\n";
-                                    del(10, fromQQ.ToString());
-                                    insert(10, fromQQ.ToString(), fk.ToString());
-                                }
-                            }
-                            Counttemp+=5;
+                            int RandKey = ran.Next(0, 100);
+                            CoinsTemp += RandKey + qdTimesTemp;
+                            SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "\r\n签到成功！已连续签到" + qdTimesTemp.ToString() + "天\r\n获得游戏币" + RandKey + "+" + qdTimesTemp.ToString() + "枚！\r\n银行内游戏币" + CoinsTemp + "枚\r\n抽奖次数已重置为一次！\r\n回复“帮助”查看如何取钱\r\n如果登陆游戏进行签到的话可以获得五倍金币、五次抽奖机会哦~");
+                            del(2, fromQQ.ToString());
+                            del(3, fromQQ.ToString());
                             del(4, fromQQ.ToString());
-                            del(2, fromQQ.ToString());
-                            insert(4, fromQQ.ToString(), Counttemp.ToString());
+                            del(7, fromQQ.ToString());
                             insert(2, fromQQ.ToString(), CoinsTemp.ToString());
-                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + replay5all + "五连抽完毕");
-                            if (jinyan > 0)
+                            insert(7, fromQQ.ToString(), qdTimesTemp.ToString());
+                            insert(3, fromQQ.ToString(), System.DateTime.Today.ToString());
+                            insert(4, fromQQ.ToString(), "4");
+
+                            string qd_get = xml_get(8, "qd");  //签到数
+                            int qd = 0;
+                            try
                             {
-                                CQ.SetGroupMemberGag(fromGroup, fromQQ, jinyan * 60);
+                                qd = int.Parse(qd_get);
                             }
+                            catch { }
+                            qd++;
+                            del(8, "qd");
+                            insert(8, "qd", qd.ToString());
                         }
                     }
-                    else
+                    if (msg == "取钱" || msg == "我要取钱")
                     {
-                        SendMinecraftMessage(fromGroup, "你今天只有"+ (5 - Counttemp).ToString() + "次抽奖机会了，无法进行五连抽");
-                    }
-
-                }
-                if (msg == "4连抽" || msg == "四连抽")
-                {
-                    string CoinStr = xml_get(2, fromQQ.ToString());
-                    string RanCount = xml_get(4, fromQQ.ToString());
-                    int CoinsTemp, Counttemp;
-                    if (CoinStr != "")
-                    {
-                        CoinsTemp = int.Parse(CoinStr);
-                    }
-                    else
-                    {
-                        CoinsTemp = 0;
-                    }
-
-                    if (RanCount != "")
-                    {
-                        Counttemp = int.Parse(RanCount);
-                    }
-                    else
-                    {
-                        Counttemp = 0;
-                    }
-
-                    if (Counttemp < 2)
-                    {
-                        if (CoinsTemp < 400)
+                        string CoinStr = xml_get(2, fromQQ.ToString());
+                        int CoinsTemp;
+                        if (CoinStr != "")
                         {
-                            SendMinecraftMessage(fromGroup, "你只有" + CoinsTemp + "游戏币，你个穷逼还想四连抽？");
+                            CoinsTemp = int.Parse(CoinStr);
                         }
                         else
                         {
-                            CoinsTemp -= 400;
-                            del(2, fromQQ.ToString());
-                            insert(2, fromQQ.ToString(), CoinsTemp.ToString());
-                            Random ran = new Random(System.DateTime.Now.Millisecond);
-                            string replay5all = "";
-                            int RandKey, jinyan = 0;
-                            for (int count_temp = 0; count_temp < 4; count_temp++)
-                            {
-                                RandKey = ran.Next(0, 500);
-                                if (RandKey > 350)
-                                {
-                                    CoinsTemp += RandKey;
-                                    replay5all += "恭喜你抽中了" + RandKey + "游戏币，当前余额" + CoinsTemp + "游戏币\r\n";
-                                }
-                                else if (RandKey > 150)
-                                {
-                                    replay5all += "啊哦，你没有中奖。当前余额" + CoinsTemp + "游戏币\r\n";
-                                }
-                                else if (RandKey > 50)
-                                {
-                                    int fkt = ran.Next(1, 11);
-                                    jinyan += fkt;
-                                    replay5all += "恭喜你抽中了禁言" + fkt + "分钟！当前余额" + CoinsTemp + "游戏币\r\n";
-                                }
-                                else
-                                {
-                                    int fk = 0;
-                                    string fks = xml_get(10, fromQQ.ToString());
-                                    if (fks != "")
-                                    {
-                                        fk = int.Parse(fks);
-                                    }
-                                    fk++;
-                                    replay5all += "恭喜你抽中了一张禁言卡，回复“禁言卡”可以查看使用帮助。\r\n";
-                                    del(10, fromQQ.ToString());
-                                    insert(10, fromQQ.ToString(), fk.ToString());
-                                }
-                            }
-                            Counttemp += 4;
-                            del(4, fromQQ.ToString());
-                            del(2, fromQQ.ToString());
-                            insert(4, fromQQ.ToString(), Counttemp.ToString());
-                            insert(2, fromQQ.ToString(), CoinsTemp.ToString());
-                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + replay5all + "四连抽完毕");
-                            if (jinyan > 0)
-                            {
-                                CQ.SetGroupMemberGag(fromGroup, fromQQ, jinyan * 60);
-                            }
+                            CoinsTemp = 0;
                         }
-                    }
-                    else
-                    {
-                        SendMinecraftMessage(fromGroup, "你今天只有" + (5 - Counttemp).ToString() + "次抽奖机会了，无法进行四连抽");
-                    }
-
-                }
-                if (msg == "3连抽" || msg == "三连抽")
-                {
-                    string CoinStr = xml_get(2, fromQQ.ToString());
-                    string RanCount = xml_get(4, fromQQ.ToString());
-                    int CoinsTemp, Counttemp;
-                    if (CoinStr != "")
-                    {
-                        CoinsTemp = int.Parse(CoinStr);
-                    }
-                    else
-                    {
-                        CoinsTemp = 0;
-                    }
-
-                    if (RanCount != "")
-                    {
-                        Counttemp = int.Parse(RanCount);
-                    }
-                    else
-                    {
-                        Counttemp = 0;
-                    }
-
-                    if (Counttemp < 3)
-                    {
-                        if (CoinsTemp < 300)
-                        {
-                            SendMinecraftMessage(fromGroup, "你只有" + CoinsTemp + "游戏币，你个穷逼还想三连抽？");
-                        }
-                        else
-                        {
-                            CoinsTemp -= 300;
-                            del(2, fromQQ.ToString());
-                            insert(2, fromQQ.ToString(), CoinsTemp.ToString());
-                            Random ran = new Random(System.DateTime.Now.Millisecond);
-                            string replay5all = "";
-                            int RandKey, jinyan = 0;
-                            for (int count_temp = 0; count_temp < 3; count_temp++)
-                            {
-                                RandKey = ran.Next(0, 500);
-                                if (RandKey > 350)
-                                {
-                                    CoinsTemp += RandKey;
-                                    replay5all += "恭喜你抽中了" + RandKey + "游戏币，当前余额" + CoinsTemp + "游戏币\r\n";
-                                }
-                                else if (RandKey > 150)
-                                {
-                                    replay5all += "啊哦，你没有中奖。当前余额" + CoinsTemp + "游戏币\r\n";
-                                }
-                                else if (RandKey > 50)
-                                {
-                                    int fkt = ran.Next(1, 11);
-                                    jinyan += fkt;
-                                    replay5all += "恭喜你抽中了禁言" + fkt + "分钟！当前余额" + CoinsTemp + "游戏币\r\n";
-                                }
-                                else
-                                {
-                                    int fk = 0;
-                                    string fks = xml_get(10, fromQQ.ToString());
-                                    if (fks != "")
-                                    {
-                                        fk = int.Parse(fks);
-                                    }
-                                    fk++;
-                                    replay5all += "恭喜你抽中了一张禁言卡，回复“禁言卡”可以查看使用帮助。\r\n";
-                                    del(10, fromQQ.ToString());
-                                    insert(10, fromQQ.ToString(), fk.ToString());
-                                }
-                            }
-                            Counttemp += 3;
-                            del(4, fromQQ.ToString());
-                            del(2, fromQQ.ToString());
-                            insert(4, fromQQ.ToString(), Counttemp.ToString());
-                            insert(2, fromQQ.ToString(), CoinsTemp.ToString());
-                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + replay5all + "三连抽完毕");
-                            if (jinyan > 0)
-                            {
-                                CQ.SetGroupMemberGag(fromGroup, fromQQ, jinyan * 60);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        SendMinecraftMessage(fromGroup, "你今天只有" + (5 - Counttemp).ToString() + "次抽奖机会了，无法进行三连抽");
-                    }
-
-                }
-                if (msg == "2连抽" || msg == "二连抽" || msg == "两连抽")
-                {
-                    string CoinStr = xml_get(2, fromQQ.ToString());
-                    string RanCount = xml_get(4, fromQQ.ToString());
-                    int CoinsTemp, Counttemp;
-                    if (CoinStr != "")
-                    {
-                        CoinsTemp = int.Parse(CoinStr);
-                    }
-                    else
-                    {
-                        CoinsTemp = 0;
-                    }
-
-                    if (RanCount != "")
-                    {
-                        Counttemp = int.Parse(RanCount);
-                    }
-                    else
-                    {
-                        Counttemp = 0;
-                    }
-
-                    if (Counttemp < 4)
-                    {
-                        if (CoinsTemp < 200)
-                        {
-                            SendMinecraftMessage(fromGroup, "你只有" + CoinsTemp + "游戏币，你个穷逼还想两连抽？");
-                        }
-                        else
-                        {
-                            CoinsTemp -= 200;
-                            del(2, fromQQ.ToString());
-                            insert(2, fromQQ.ToString(), CoinsTemp.ToString());
-                            Random ran = new Random(System.DateTime.Now.Millisecond);
-                            string replay5all = "";
-                            int RandKey, jinyan = 0;
-                            for (int count_temp = 0; count_temp < 2; count_temp++)
-                            {
-                                RandKey = ran.Next(0, 500);
-                                if (RandKey > 350)
-                                {
-                                    CoinsTemp += RandKey;
-                                    replay5all += "恭喜你抽中了" + RandKey + "游戏币，当前余额" + CoinsTemp + "游戏币\r\n";
-                                }
-                                else if (RandKey > 150)
-                                {
-                                    replay5all += "啊哦，你没有中奖。当前余额" + CoinsTemp + "游戏币\r\n";
-                                }
-                                else if (RandKey > 50)
-                                {
-                                    int fkt = ran.Next(1, 11);
-                                    jinyan += fkt;
-                                    replay5all += "恭喜你抽中了禁言" + fkt + "分钟！当前余额" + CoinsTemp + "游戏币\r\n";
-                                }
-                                else
-                                {
-                                    int fk = 0;
-                                    string fks = xml_get(10, fromQQ.ToString());
-                                    if (fks != "")
-                                    {
-                                        fk = int.Parse(fks);
-                                    }
-                                    fk++;
-                                    replay5all += "恭喜你抽中了一张禁言卡，回复“禁言卡”可以查看使用帮助。\r\n";
-                                    del(10, fromQQ.ToString());
-                                    insert(10, fromQQ.ToString(), fk.ToString());
-                                }
-                            }
-                            Counttemp += 2;
-                            del(4, fromQQ.ToString());
-                            del(2, fromQQ.ToString());
-                            insert(4, fromQQ.ToString(), Counttemp.ToString());
-                            insert(2, fromQQ.ToString(), CoinsTemp.ToString());
-                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + replay5all + "两连抽完毕");
-                            if (jinyan > 0)
-                            {
-                                CQ.SetGroupMemberGag(fromGroup, fromQQ, jinyan * 60);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        SendMinecraftMessage(fromGroup, "你今天只有" + (5 - Counttemp).ToString() + "次抽奖机会了，无法进行两连抽");
-                    }
-
-                }
-                if (msg == "激活")
-                {
-                    if(reply1 != "")
-                    {
-                        mcmsg += "|||||command>manuadd " + reply1 + " builder world";
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "已给予你的账号相应权限");
-                    }
-                    else
-                    {
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你没有通过白名单审核，无法激活账号");
-                    }
-                }
-                if (msg.IndexOf("邀请人") == 0)
-                {
-                    string reply3 = xml_get(6, fromQQ.ToString());
-                    if (reply1 == "")
-                    {
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你还没有白名单呢！");
-                        return;
-                    }
-                    else if (reply3 != "")
-                    {
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "已领取过该奖励，请勿再次领取");
-                        return;
-                    }
-                    long targetQQ = 0;
-                    try
-                    {
-                        targetQQ = GetNumberLong(msg);
-                        if (fromQQ == targetQQ)
-                        {
-                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "。。。。");
-                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "不要这样子好吗。。。。哪有自己邀请自己的。。。");
-                            return;
-                        }
-                        string CoinStr1 = xml_get(2, targetQQ.ToString());
-                        int CoinsTemp1;
-                        if (CoinStr1 != "")
-                        {
-                            CoinsTemp1 = int.Parse(CoinStr1);
-                        }
-                        else
-                        {
-                            CoinsTemp1 = 0;
-                        }
-
-                        string CoinStr2 = xml_get(2, fromQQ.ToString());
-                        int CoinsTemp2;
-                        if (CoinStr2 != "")
-                        {
-                            CoinsTemp2 = int.Parse(CoinStr2);
-                        }
-                        else
-                        {
-                            CoinsTemp2 = 0;
-                        }
-
-                        CoinsTemp1 += 3000;
-                        CoinsTemp2 += 1000;
+                        mcmsg += "|||||command>eco give " + reply + " " + CoinsTemp.ToString();
+                        //SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "已为玩家" + reply + "充值" + CoinsTemp.ToString() + "游戏币！");
                         del(2, fromQQ.ToString());
-                        del(2, targetQQ.ToString());
-                        insert(2, fromQQ.ToString(), CoinsTemp2.ToString());
-                        insert(2, targetQQ.ToString(), CoinsTemp1.ToString());
-                        insert(6, fromQQ.ToString(), "推荐人：" + targetQQ.ToString());
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "游戏币奖励已发放到群内银行~给你1000，给你的小伙伴3000~快去告诉你的小伙伴吧~");
                     }
-                    catch
+                    if (msg == "查询" || msg == "查询余额")
                     {
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "命令错误！");
-                    }
-                }
-                if (msg == "催促审核")
-                {
-                    string reply3 = xml_get(5, fromQQ.ToString());
-                    if (reply1 != "")
-                    {
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你已经有白名单了");
-                        return;
-                    }
-                    else if (reply3 == "")
-                    {
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你还没有绑定id，请回复“绑定”加你的id来绑定");
-                        return;
-                    }
-                    CQ.SendGroupMessage(567145439, "接待喵糖拌管理：\r\n玩家id：" + reply3 + "\r\nQQ：" + fromQQ.ToString() +
-                                                "\r\n进行了催促审核的操作" +
-                                                "\r\n请及时检查该玩家是否已经提交白名单申请https://wj.qq.com/mine.html" +
-                                                "\r\n如果符合要求，请回复“通过”+qq来给予白名单" +
-                                                "\r\n如果不符合要求，请回复“不通过”+qq+空格+原因来给打回去重填" +
-                                                "\r\n" + CQ.CQCode_At(1021479600) + CQ.CQCode_At(635309406) +
-                                                CQ.CQCode_At(1928361196) + CQ.CQCode_At(1420355171) + CQ.CQCode_At(280585112) +
-                                                CQ.CQCode_At(2561620740) + CQ.CQCode_At(2433380978) + CQ.CQCode_At(2679146075) +
-                                                CQ.CQCode_At(961726194) + CQ.CQCode_At(185939950) + CQ.CQCode_At(2522468269));
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "已成功催促管理员审核！请耐心等待！如果还没有被审核，你可以选择继续催促！");
-                }
-            }  //糖拌群
-            if (fromGroup == 567145439)
-            {
-                if (msg.IndexOf("删除") == 0)
-                {
-                    if (msg.Replace("删除","") != "")
-                    {
-                        del(1, msg.Replace("删除", ""));
-                        del(5, msg.Replace("删除", ""));
-                        SendMinecraftMessage(fromGroup, "已删除QQ：" + msg.Replace("删除", "") + "所绑定的id。");
-                    }
-                }
-                else if (msg.IndexOf("通过") == 0)
-                {
-                    string reply = xml_get(5, msg.Replace("通过", ""));
-                    if(reply!="")
-                    {
-                        del(5, msg.Replace("通过", ""));
-                        insert(1, msg.Replace("通过", ""), reply);
-                        SendMinecraftMessage(fromGroup, "已通过QQ：" + msg.Replace("通过", "") + "，id：" + reply + "的白名单申请");
-                        SendMinecraftMessage(241464054, CQ.CQCode_At(long.Parse(msg.Replace("通过", ""))) + "你的白名单申请已经通过了哟~"+
-                                                                                "\r\n当游戏在线的时候在群里发送“激活”即可激活你的账号哦~"+
-                                                                                "\r\n你的id：" + reply +
-                                                                                "\r\n现在回复我“邀请人”加上@邀请人" +
-                                                                                "\r\n可以让邀请者和被邀请者领取奖励哟~");
-                    }
-                    else
-                    {
-                        SendMinecraftMessage(fromGroup, "参数不对或该玩家不在待审核玩家数据中");
-                    }
-                    
-                }
-                else if (msg.IndexOf("不通过") == 0)
-                {
-                    if (msg.IndexOf("不通过 ") == 0)
-                    {
-                        SendMinecraftMessage(fromGroup, "命令关键字后不要加空格，直接加玩家id");
-                        return;
-                    }
-                    string reply = "";
-                    string reason = "";
-                    string qq_get = "";
-                    string[] str2;
-                    int count_temp = 0;
-                    str2 = msg.Replace("不通过","").Split(' ');
-                    foreach (string i in str2)
-                    {
-                        if (count_temp == 0)
+                        string CoinStr = xml_get(2, fromQQ.ToString());
+                        int CoinsTemp;
+                        if (CoinStr != "")
                         {
-                            reply = xml_get(5, i);
-                            qq_get = i;
-                            count_temp++;
+                            CoinsTemp = int.Parse(CoinStr);
                         }
-                        else if (count_temp == 1)
+                        else
                         {
-                            reason += i + " ";
+                            CoinsTemp = 0;
                         }
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n你当前余额为" + CoinsTemp.ToString() + "游戏币");
+                        mcmsg += "|||||eco>" + reply;
                     }
-                    
-                    if (reply != "")
+                    if (msg == "存钱100")
                     {
-                        SendMinecraftMessage(fromGroup, "已不通过QQ：" + qq_get + "，id：" + reply + "的白名单申请，原因：" + reason);
-                        SendMinecraftMessage(241464054, CQ.CQCode_At(long.Parse(qq_get)) + "你的白名单申请并没有通过。" +
-                                                                                "\r\n原因：" + reason +
-                                                                                "\r\n请按照原因重新填写白名单：https://wj.qq.com/s/1308067/143c" +
-                                                                                "\r\n你的id：" + reply);
+                        mcmsg += "|||||ecodel100>" + reply;
                     }
-                    else
+                    else if (msg == "存钱500")
                     {
-                        SendMinecraftMessage(fromGroup, "参数不对或该玩家不在待审核玩家数据中");
+                        mcmsg += "|||||ecodel500>" + reply;
                     }
-
-                }
-                else if (msg.IndexOf("封禁") == 0)
-                {
-                    if (msg.IndexOf("封禁 ") == 0)
+                    else if (msg == "存钱1000")
                     {
-                        SendMinecraftMessage(fromGroup, "命令关键字后不要加空格，直接加玩家id");
-                        return;
+                        mcmsg += "|||||ecodel1000>" + reply;
                     }
-                    string reason = "";
-                    string id_get = "";
-                    string[] str2;
-                    int count_temp = 0;
-                    str2 = msg.Replace("封禁", "").Split(' ');
-                    foreach (string i in str2)
+                    else if (msg == "存钱5000")
                     {
-                        if (count_temp == 0)
+                        mcmsg += "|||||ecodel5000>" + reply;
+                    }
+                    else if (msg == "存钱10000")
+                    {
+                        mcmsg += "|||||ecodel10000>" + reply;
+                    }
+                    else if (msg.IndexOf("存钱") == 0)
+                    {
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "无效命令，回复帮助查看更多。");
+                    }
+                    if (msg == "帮助")
+                    {
+                        SendMinecraftMessage(fromGroup, "关于签到奖励：\r\n每日可随机领取0-500游戏币的奖励，奖励暂存在银行中。\r\n取钱方式：在群里发送“取钱”即可取出所有钱。\r\n回复存钱+金额可将服务器钱存入银行\r\n每次仅限100、500、1000、5000、10000这几个额度\r\n回复“查询”可查询当前银行内余额。\r\n回复“抽奖”可花费100游戏币进行抽奖，中奖率为玄学");
+                    }
+                    if (msg == "抽奖")
+                    {
+                        string CoinStr = xml_get(2, fromQQ.ToString());
+                        string RanCount = xml_get(4, fromQQ.ToString());
+                        int CoinsTemp, Counttemp;
+                        if (CoinStr != "")
                         {
-                            id_get = i;
-                            count_temp++;
+                            CoinsTemp = int.Parse(CoinStr);
                         }
-                        else if (count_temp == 1)
+                        else
                         {
-                            reason += i + " ";
+                            CoinsTemp = 0;
                         }
-                    }
 
-                    SendMinecraftMessage(fromGroup, "已封禁id：" + id_get + "原因：" + reason);
-                    mcmsg += "|||||command>ban " + id_get + " " + reason;
-                    SendMinecraftMessage(241464054, "玩家" + id_get + "已被管理员封禁\r\n" + "封禁原因：" + reason + "\r\n如有误判请联系管理");
-                }
-                else if (msg.IndexOf("解封") == 0)
-                {
-                    if (msg.IndexOf("解封 ") == 0)
-                    {
-                        SendMinecraftMessage(fromGroup, "命令关键字后不要加空格，直接加玩家id");
-                        return;
-                    }
-                    string id_get = msg.Replace("解封", "");
-
-                    SendMinecraftMessage(fromGroup, "已解除玩家" + id_get + "的封禁");
-                    mcmsg += "|||||command>unban " + id_get;
-                    SendMinecraftMessage(241464054, "玩家" + id_get + "已被管理员解除封禁");
-                }
-                else if (msg.IndexOf("踢出") == 0)
-                {
-                    if (msg.IndexOf("踢出 ") == 0)
-                    {
-                        SendMinecraftMessage(fromGroup, "命令关键字后不要加空格，直接加玩家id");
-                        return;
-                    }
-                    string reason = "";
-                    string id_get = "";
-                    string[] str2;
-                    int count_temp = 0;
-                    str2 = msg.Replace("踢出", "").Split(' ');
-                    foreach (string i in str2)
-                    {
-                        if (count_temp == 0)
+                        if (RanCount != "")
                         {
-                            id_get = i;
-                            count_temp++;
+                            Counttemp = int.Parse(RanCount);
                         }
-                        else if (count_temp == 1)
+                        else
                         {
-                            reason += i + " ";
+                            Counttemp = 0;
                         }
-                    }
 
-                    SendMinecraftMessage(fromGroup, "已将玩家" + id_get + "踢出服务器\r\n原因：" + reason);
-                    mcmsg += "|||||command>kick " + id_get + " " + reason;
-                    SendMinecraftMessage(241464054, "玩家" + id_get + "已被管理员踢出服务器\r\n原因：" + reason);
-                }
-                else if(msg == "空间")
-                {
-                    SendMinecraftMessage(fromGroup,
-                        "服务器盘剩余空间：" + ((float)GetHardDiskFreeSpace("D") / 1024).ToString(".00") + "GB\r\n" +
-                        "备份盘剩余空间：" + ((float)GetHardDiskFreeSpace("E")/1024).ToString(".00") + "GB");
-                }
-                else if(msg == "即时备份" && fromQQ == 961726194)
-                {
-                    SendMinecraftMessage(fromGroup, "任务已开始");  //567145439
-                    System.Diagnostics.Process.Start(@"D:\backup.bat");
-                }
-                else if (msg.IndexOf("倒计时") == 0)
-                {
-                    count_bc = -1;
-                    try
-                    {
-                        count_bc = int.Parse(msg.Replace("倒计时", ""));
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ)+"已启动显示倒计时"+ msg.Replace("倒计时", "")+"秒");
-                    }
-                    catch { }
-                }
-            }  //糖拌管理群
-
-
-            //CQ.SendGroupMessage(fromGroup, String.Format("[{4}]{0} 你的群名片：{1}， 入群时间：{2}， 最后发言：{3}。", CQ.CQCode_At(fromQQ),
-            //    groupMember.GroupCard, groupMember.JoinTime, groupMember.LastSpeakingTime, CQ.ProxyType));
-            // CQ.SendGroupMessage(fromGroup, String.Format("[{0}]{1}你发的群消息是：{2}", CQ.ProxyType, CQ.CQCode_At(fromQQ), msg));
-            //CQ.SendGroupMessage(fromGroup, string.Format("{0}发的群消息是：{1}", CQ.CQCode_At(fromQQ), msg));
-            string replay_ok = replay_get(fromGroup, msg);
-            string replay_common = replay_get(2333, msg);
-
-            if (msg.ToUpper() == "HELP")
-            {
-                //CQ.SendGroupMessage(fromGroup, msg.ToUpper().IndexOf("help").ToString());
-                SendMinecraftMessage(fromGroup, "命令帮助：\r\n！add 词条：回答\r\n！del 词条：回答\r\n！list 词条\r\n" +
-                    "所有符号均为全角符号\r\n词条中请勿包含冒号\r\n" +
-                    "发送“坷垃金曲”+数字序号即可点金坷垃歌（如坷垃金曲21，最大71）\r\n" +
-                    "私聊发送“赞我”可使接待给你点赞\r\n" +
-                    "发送“今日运势”可以查看今日运势\r\n" +
-                    "发送“淘宝”+关键词即可搜索淘宝优惠搜索结果\r\n" +
-                    "发送“pixel”可以查看像素游戏图片\r\n" +
-                    "发送“查快递”和单号即可搜索快递物流信息\r\n" +
-                    "发送“网易云”和歌曲id号/歌曲名即可定向点歌\r\n" +
-                    "发送“正则”+字符串+“换行”+正则表达式，可查询C#正则\r\n" +
-                    "发送“空气质量”可查询当前时间的空气质量\r\n" +
-                    "发送“宠物助手”可查询QQ宠物代挂的帮助信息\r\n" +
-                    "发送“查磁链”+“关键词”可查询磁链\r\n" +
-                    "如有bug请反馈");
-            }
-            if (msg == "宠物助手")
-            {
-                SendMinecraftMessage(fromGroup, "宠物助手：\r\n" +
-                    "发送“宠物状态”可查看宠物状态\r\n" +
-                    "发送“宠物资料”可查看宠物详细资料\r\n" +
-                    "发送“宠物喂养”加页码数可查看宠物喂养物品列表\r\n" +
-                    "发送“宠物清洁”加页码数可查看宠物清洁物品列表\r\n" +
-                    "发送“宠物治疗”加页码数可查看宠物药物物品列表\r\n" +
-                    "发送“宠物使用”加物品代码可使用宠物物品\r\n" +
-                    "发送“宠物学习开启”可开启自动学习\r\n" +
-                    "发送“宠物学习关闭”可关闭自动学习\r\n" +
-                    "发送“宠物解绑”可解除绑定，停止代挂\r\n" +
-                    "挂机时会自动喂养与清洗，并且自动种菜收菜\r\n" +
-                    "测试功能，如有bug请反馈");
-            }
-            if(msg.IndexOf("宠物") == 0)
-            {
-                //获取uin和skey
-                string uin = replay_get(11, fromQQ.ToString());
-                string skey = replay_get(12, fromQQ.ToString());
-                if (msg == "宠物状态")
-                {
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + GetPetState(uin, skey));
-                }
-                if (msg == "宠物资料")
-                {
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + GetPetMore(uin, skey));
-                }
-                if(msg.IndexOf("宠物喂养") == 0)
-                {
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + FeedPetSelect(uin, skey, msg.Replace("宠物喂养","")));
-                }
-                if (msg.IndexOf("宠物清洁") == 0)
-                {
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + WashPetSelect(uin, skey, msg.Replace("宠物清洁", "")));
-                }
-                if (msg.IndexOf("宠物治疗") == 0)
-                {
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + CurePetSelect(uin, skey, msg.Replace("宠物治疗", "")));
-                }
-                if (msg.IndexOf("宠物使用") == 0)
-                {
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + UsePet(uin, skey, msg.Replace("宠物使用", "")));
-                }
-                //if(msg == "宠物学习开启")
-                //{
-                //    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + StudyPetSelect());
-                //}
-                //if (msg.IndexOf("宠物上课") == 0)
-                //{
-                //    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + StudyPet(uin, skey, msg.Replace("宠物上课", "")));
-                //    del(13, fromQQ.ToString());
-                //    insert(13, fromQQ.ToString(), msg.Replace("宠物上课", ""));
-                //}
-                if(msg == "宠物学习开启")
-                {
-                    del(13, fromQQ.ToString());
-                    insert(13, fromQQ.ToString(), "0");
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "已开启自动学习（自动上课与换课程）");
-                }
-                if (msg == "宠物学习关闭")
-                {
-                    del(13, fromQQ.ToString());
-                    insert(13, fromQQ.ToString(), "28");
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "已关闭自动学习（学习完后不会自动继续学）");
-                }
-                if (msg == "宠物解绑")
-                {
-                    del(11, fromQQ.ToString());
-                    del(12, fromQQ.ToString());
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n解绑成功！");
-                }
-                if(msg == "宠物绑定方法")
-                {
-                    CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "[CQ:image,file=7CE7991F3D714978606B41C816FBC549.jpg]");
-                }
-            }
-            else if (msg.IndexOf("点歌") == 0)
-            {
-                int song = 0;
-                try
-                {
-                    song = int.Parse(msg.Replace("点歌", ""));
-                }catch { }
-                if (song >= 1 && song <= 134)
-                {
-                    SendMinecraftMessage(fromGroup, string.Format("{0}正在发送歌曲{1}，请稍候哦~\r\n如未收到请重试", CQ.CQCode_At(fromQQ), song.ToString()));
-                    CQ.SendGroupMessage(fromGroup, "[CQ:record,file=CoolQ 语音时代！\\点歌\\" + song.ToString().PadLeft(3, '0') + ".mp3]");
-                }
-                else
-                {
-                    SendMinecraftMessage(fromGroup, string.Format("{0}编号不对哦，编号只能是1-134", CQ.CQCode_At(fromQQ)));
-                }
-            }
-            else if (msg.IndexOf("坷垃金曲") == 0)
-            {
-                int song = 0;
-                try
-                {
-                    song = int.Parse(msg.Replace("坷垃金曲", ""));
-                }
-                catch { }
-                if (song >= 1 && song <= 71)
-                {
-                    SendMinecraftMessage(fromGroup, string.Format("{0}正在发送坷垃金曲{1}，请稍候哦~\r\n如未收到请重试", CQ.CQCode_At(fromQQ), song.ToString()));
-                    CQ.SendGroupMessage(fromGroup, "[CQ:record,file=CoolQ 语音时代！\\坷垃金曲\\" + song.ToString().PadLeft(3, '0') + ".mp3]");
-                }
-                else
-                {
-                    SendMinecraftMessage(fromGroup, string.Format("{0}编号不对哦，编号只能是1-71", CQ.CQCode_At(fromQQ)));
-                }
-            }
-            else if (msg == "赞我" || msg== "点赞")
-            {
-                //CQ.SendPraise(fromQQ, 10);
-                CQ.SendPrivateMessage(fromQQ, "妈的智障以后私聊我点赞，别在群里发");
-                //CQ.SendGroupMessage(fromGroup, "已为QQ" + fromQQ + "点赞十次");
-            }
-            else if (msg.IndexOf("！list ") == 0)
-            {
-                SendMinecraftMessage(fromGroup, string.Format("当前词条回复如下：\r\n{0}\r\n全局词库内容：\r\n{1}",
-                                                                list_get(fromGroup, msg.Replace("！list ", "")),
-                                                                list_get(2333, msg.Replace("！list ", "")) ));
-            }
-            else if (msg.IndexOf("！add ") == 0)
-            {
-                if (AdminCheck(fromQQ) == 1)
-                {
-                    string get_msg = msg.Replace("！add ", ""), tmsg = "", tans = "";
-
-                    if (get_msg.IndexOf("：") >= 1 && get_msg.IndexOf("：") != get_msg.Length - 1)
-                    {
-                        string[] str2;
-                        int count_temp = 0;
-                        str2 = get_msg.Split('：');
-                        foreach (string i in str2)
+                        if (Counttemp < 5)
                         {
-                            if (count_temp == 0)
+                            if (CoinsTemp < 100)
                             {
-                                tmsg = i.ToString();
-                                count_temp++;
+                                SendMinecraftMessage(fromGroup, "你只有" + CoinsTemp + "游戏币，你个穷逼还想抽奖？");
                             }
-                            else if (count_temp == 1)
-                            {
-                                tans = i.ToString();
-                            }
-                        }
-                        insert(fromGroup, tmsg, tans);
-                        SendMinecraftMessage(fromGroup, "添加完成！\r\n词条：" + tmsg + "\r\n回答为：" + tans);
-                    }
-                    else
-                    {
-                        SendMinecraftMessage(fromGroup, "格式错误！");
-                    }
-                }
-                else
-                {
-                    SendMinecraftMessage(fromGroup, "你没有权限调教接待喵");
-                }
-            }
-            else if (msg.IndexOf("！del ") == 0)
-            {
-                if (AdminCheck(fromQQ) == 1)
-                {
-                    string get_msg = msg.Replace("！del ", ""), tmsg = "", tans = "";
-                    if (get_msg.IndexOf("：") >= 1 && get_msg.IndexOf("：") != get_msg.Length - 1)
-                    {
-                        string[] str2;
-                        int count_temp = 0;
-                        str2 = get_msg.Split('：');
-                        foreach (string i in str2)
-                        {
-                            if (count_temp == 0)
-                            {
-                                tmsg = i.ToString();
-                                count_temp++;
-                            }
-                            else if (count_temp == 1)
-                            {
-                                tans = i.ToString();
-                            }
-                        }
-                        remove(fromGroup, tmsg, tans);
-                        SendMinecraftMessage(fromGroup, "删除完成！\r\n词条：" + tmsg + "\r\n回答为：" + tans);
-                    }
-                    else
-                    {
-                        SendMinecraftMessage(fromGroup, "格式错误！");
-                    }
-                }
-                else
-                {
-                    SendMinecraftMessage(fromGroup, "你没有权限调教接待喵");
-                }
-            }
-            else if (msg.IndexOf("！delall ") == 0)
-            {
-                if (AdminCheck(fromQQ) == 1)
-                {
-                    string get_msg = msg.Replace("！delall ", "");
-                    if (get_msg.Length > 0)
-                    {
-                        del(fromGroup, get_msg);
-                        SendMinecraftMessage(fromGroup, "删除完成！\r\n触发词：" + get_msg);
-                    }
-                    else
-                    {
-                        SendMinecraftMessage(fromGroup, "格式错误！");
-                    }
-                }
-                else
-                {
-                    SendMinecraftMessage(fromGroup, "你没有权限调教接待喵");
-                }
-            }
-            else if(msg == "今日黄历" || msg == "今日运势")
-            {
-                if (fromQQ == 1262897311 || fromQQ == 66831919)
-                {
-                    string rs = string.Format("{0}\r\n你的今日运势如下~\r\n会被捅死。\r\n今日日期：{1}",
-                            CQ.CQCode_At(fromQQ), System.DateTime.Today.ToString().Replace(" 0:00:00", "")
-                            );
-                    SendMinecraftMessage(fromGroup, rs);
-                    return;
-                }
-                string ReplayString="";
-                Random ran = new Random(System.DateTime.Now.DayOfYear + (int)(fromQQ - (fromQQ/10000) * 10000) );
-                //int RanKey = ran.Next(0, 25);
-                int sum1, sum2, sum3, sum4, bad1, bad2, count = 0;
-                sum1 = ran.Next(0, 25);
-                sum2 = ran.Next(0, 25);
-                while (sum2 == sum1)
-                {
-                    sum2 = ran.Next(0, 25);
-                    count++; if (count > 10) { sum2 = 25; break; }
-                }count = 0;
-                sum3 = ran.Next(0, 25);
-                while (sum3 == sum1 || sum3 == sum2)
-                {
-                    sum3 = ran.Next(0, 25);
-                    count++;if (count > 10) { sum3 = 25; break; }
-                }count = 0;
-                sum4 = ran.Next(0, 25);
-                while (sum4 == sum1 || sum4 == sum2 || sum4 == sum3)
-                {
-                    sum4 = ran.Next(0, 25);
-                    count++; if (count > 10) { sum4 = 25; break; }
-                }count = 0;
-                bad1 = ran.Next(0, 25);
-                while (bad1 == sum1 || bad1 == sum2 || bad1 == sum3 || bad1 == sum4)
-                {
-                    bad2 = ran.Next(0, 25);
-                    count++; if (count > 10) { bad1 = 25; break; }
-                }count = 0;
-                bad2 = ran.Next(0, 25);
-                while (bad2 == bad1 || bad2 == sum1 || bad2 == sum2 || bad2 == sum3 || bad2 == sum4)
-                {
-                    bad2 = ran.Next(0, 25);
-                    count++; if (count > 10) { bad2 = 25; break; }
-                }count = 0;
-
-                int allsum = ran.Next(0, 100);
-                ReplayString = string.Format("{0}\r\n你的今日运势如下~\r\n宜：\r\n{1}\r\n{2}\r\n{3}\r\n{4}\r\n忌：\r\n{5}\r\n{6}\r\n今日日期：{7}\r\n今日综合幸运指数：{8}%\r\n今日吉言：{9}",
-                                            CQ.CQCode_At(fromQQ),
-                                            GoodThings[sum1],
-                                            GoodThings[sum2],
-                                            GoodThings[sum3],
-                                            GoodThings[sum4],
-                                            BadThings[bad1],
-                                            BadThings[bad2],
-                                            System.DateTime.Today.ToString().Replace(" 0:00:00", ""),
-                                            allsum.ToString(),
-                                            itsays[ran.Next(0,613)]
-                                            );
-                SendMinecraftMessage(fromGroup, ReplayString);
-            }
-            else if (msg == "昨日黄历" || msg == "昨日运势")
-            {
-                if(fromQQ== 1262897311 || fromQQ== 66831919)
-                {
-                    string rs = string.Format("{0}\r\n你的昨日运势如下~\r\n会被捅死。\r\n今日日期：{1}",
-                            CQ.CQCode_At(fromQQ), System.DateTime.Today.ToString().Replace(" 0:00:00", "")
-                            );
-                    SendMinecraftMessage(fromGroup, rs);
-                    return;
-                }
-                string ReplayString = "";
-                Random ran = new Random(System.DateTime.Now.DayOfYear - 1 + (int)(fromQQ - (fromQQ / 10000) * 10000));
-                //int RanKey = ran.Next(0, 25);
-                int sum1, sum2, sum3, sum4, bad1, bad2, count = 0;
-                sum1 = ran.Next(0, 25);
-                sum2 = ran.Next(0, 25);
-                while (sum2 == sum1)
-                {
-                    sum2 = ran.Next(0, 25);
-                    count++; if (count > 10) { sum2 = 25; break; }
-                }
-                count = 0;
-                sum3 = ran.Next(0, 25);
-                while (sum3 == sum1 || sum3 == sum2)
-                {
-                    sum3 = ran.Next(0, 25);
-                    count++; if (count > 10) { sum3 = 25; break; }
-                }
-                count = 0;
-                sum4 = ran.Next(0, 25);
-                while (sum4 == sum1 || sum4 == sum2 || sum4 == sum3)
-                {
-                    sum4 = ran.Next(0, 25);
-                    count++; if (count > 10) { sum4 = 25; break; }
-                }
-                count = 0;
-                bad1 = ran.Next(0, 25);
-                while (bad1 == sum1 || bad1 == sum2 || bad1 == sum3 || bad1 == sum4)
-                {
-                    bad2 = ran.Next(0, 25);
-                    count++; if (count > 10) { bad1 = 25; break; }
-                }
-                count = 0;
-                bad2 = ran.Next(0, 25);
-                while (bad2 == bad1 || bad2 == sum1 || bad2 == sum2 || bad2 == sum3 || bad2 == sum4)
-                {
-                    bad2 = ran.Next(0, 25);
-                    count++; if (count > 10) { bad2 = 25; break; }
-                }
-                count = 0;
-                ReplayString = string.Format("{0}\r\n你的昨日运势如下~\r\n宜：\r\n{1}\r\n{2}\r\n{3}\r\n{4}\r\n忌：\r\n{5}\r\n{6}\r\n今日日期：{7}",
-                                            CQ.CQCode_At(fromQQ),
-                                            GoodThings[sum1],
-                                            GoodThings[sum2],
-                                            GoodThings[sum3],
-                                            GoodThings[sum4],
-                                            BadThings[bad1],
-                                            BadThings[bad2],
-                                            System.DateTime.Today.ToString().Replace(" 0:00:00", "")
-                                            );
-                SendMinecraftMessage(fromGroup, ReplayString);
-            }
-            else if (msg == "明日黄历" || msg == "明日运势")
-            {
-                if (fromQQ == 1262897311 || fromQQ == 66831919)
-                {
-                    string rs = string.Format("{0}\r\n你的明日运势如下~\r\n会被捅死。\r\n今日日期：{1}",
-                            CQ.CQCode_At(fromQQ), System.DateTime.Today.ToString().Replace(" 0:00:00", "")
-                            );
-                    SendMinecraftMessage(fromGroup, rs);
-                    return;
-                }
-                string ReplayString = "";
-                Random ran = new Random(System.DateTime.Now.DayOfYear + 1 + (int)(fromQQ - (fromQQ / 10000) * 10000));
-                //int RanKey = ran.Next(0, 25);
-                int sum1, sum2, sum3, sum4, bad1, bad2, count = 0;
-                sum1 = ran.Next(0, 25);
-                sum2 = ran.Next(0, 25);
-                while (sum2 == sum1)
-                {
-                    sum2 = ran.Next(0, 25);
-                    count++; if (count > 10) { sum2 = 25; break; }
-                }
-                count = 0;
-                sum3 = ran.Next(0, 25);
-                while (sum3 == sum1 || sum3 == sum2)
-                {
-                    sum3 = ran.Next(0, 25);
-                    count++; if (count > 10) { sum3 = 25; break; }
-                }
-                count = 0;
-                sum4 = ran.Next(0, 25);
-                while (sum4 == sum1 || sum4 == sum2 || sum4 == sum3)
-                {
-                    sum4 = ran.Next(0, 25);
-                    count++; if (count > 10) { sum4 = 25; break; }
-                }
-                count = 0;
-                bad1 = ran.Next(0, 25);
-                while (bad1 == sum1 || bad1 == sum2 || bad1 == sum3 || bad1 == sum4)
-                {
-                    bad2 = ran.Next(0, 25);
-                    count++; if (count > 10) { bad1 = 25; break; }
-                }
-                count = 0;
-                bad2 = ran.Next(0, 25);
-                while (bad2 == bad1 || bad2 == sum1 || bad2 == sum2 || bad2 == sum3 || bad2 == sum4)
-                {
-                    bad2 = ran.Next(0, 25);
-                    count++; if (count > 10) { bad2 = 25; break; }
-                }
-                count = 0;
-                ReplayString = string.Format("{0}\r\n你的明日运势如下~\r\n宜：\r\n{1}\r\n{2}\r\n{3}\r\n{4}\r\n忌：\r\n{5}\r\n{6}\r\n今日日期：{7}",
-                                            CQ.CQCode_At(fromQQ),
-                                            GoodThings[sum1],
-                                            GoodThings[sum2],
-                                            GoodThings[sum3],
-                                            GoodThings[sum4],
-                                            BadThings[bad1],
-                                            BadThings[bad2],
-                                            System.DateTime.Today.ToString().Replace(" 0:00:00", "")
-                                            );
-                SendMinecraftMessage(fromGroup, ReplayString);
-            }
-            else if (msg.IndexOf("！addadmin ") == 0 && fromQQ == 961726194)
-            {
-                insert(123456, "给我列一下狗管理", msg.Replace("！addadmin ", ""));
-                SendMinecraftMessage(fromGroup, "已添加一位狗管理");
-            }
-            else if (msg.IndexOf("！deladmin ") == 0 && fromQQ == 961726194)
-            {
-                remove(123456, "给我列一下狗管理", msg.Replace("！deladmin ", ""));
-                SendMinecraftMessage(fromGroup, "已删除一位狗管理");
-            }
-            else if(msg == "给我列一下狗管理")
-            {
-                SendMinecraftMessage(fromGroup, "当前狗管理如下：\r\n" + list_get(123456, "给我列一下狗管理"));
-            }
-            else if(msg == "抽奖" && fromGroup != 241464054)
-            {
-                if (me.Authority == "成员")
-                {
-                    SendMinecraftMessage(fromGroup, "我没有禁言权限，无法使用抽奖功能");
-                }
-                else if(groupMember.Authority != "管理员" && groupMember.Authority != "群主")
-                {
-                    Random ran = new Random(System.DateTime.Now.Millisecond);
-                    int RandKey = ran.Next(1, 22);
-                    int RandKey2 = ran.Next(0, 10);
-                    if (RandKey > 12)
-                    {
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n恭喜你！什么也没有抽中！");
-                    }
-                    else if (RandKey == 1 && RandKey2 != 0)
-                    {
-                        CQ.SetGroupMemberGag(fromGroup, fromQQ, RandKey * 3600 * 24 * 20);
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n恭喜你抽中了超豪华禁言套餐，并附赠10张禁言卡！奖励已发放！");
-                        int fk = 0;
-                        string fks = xml_get(10, fromQQ.ToString());
-                        if (fks != "")
-                        {
-                            fk = int.Parse(fks);
-                        }
-                        fk += 10;
-                        del(10, fromQQ.ToString());
-                        insert(10, fromQQ.ToString(), fk.ToString());
-                    }
-                    else if (RandKey == 1 && RandKey2 == 0)
-                    {
-                        CQ.SetGroupMemberGag(fromGroup, fromQQ, RandKey * 3600 * 24 * 30);
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n恭喜你抽中了顶级豪华月卡禁言套餐，并附赠200张禁言卡！奖励已发放！");
-                        int fk = 0;
-                        string fks = xml_get(10, fromQQ.ToString());
-                        if (fks != "")
-                        {
-                            fk = int.Parse(fks);
-                        }
-                        fk += 200;
-                        del(10, fromQQ.ToString());
-                        insert(10, fromQQ.ToString(), fk.ToString());
-                    }
-                    else if (RandKey < 11)
-                    {
-                        CQ.SetGroupMemberGag(fromGroup, fromQQ, RandKey * 3600 * 24);
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n恭喜你抽中了禁言" + RandKey + "天！奖励已发放到你的QQ~");
-                    }
-                    else
-                    {
-                        int fk = 0;
-                        string fks = xml_get(10, fromQQ.ToString());
-                        if (fks != "")
-                        {
-                            fk = int.Parse(fks);
-                        }
-                        fk++;
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n恭喜你抽中了一张禁言卡，回复“禁言卡”可以查看使用帮助。");
-                        del(10, fromQQ.ToString());
-                        insert(10, fromQQ.ToString(), fk.ToString());
-                    }
-                }
-                else
-                {
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n你个管理员玩个鸡毛的抽奖啊，我又没法禁言你。");
-                }
-            }
-            else if(msg == "禁言卡")
-            {
-                int fk = 0;
-                string fks = xml_get(10, fromQQ.ToString());
-                if (fks != "")
-                {
-                    fk = int.Parse(fks);
-                }
-                SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n禁言卡可用于禁言或解禁他人，如果接待权限足够。\r\n使用方法：发送禁言或解禁加上@那个人\r\n禁言时长将为1分钟-10分钟随机\r\n获取方式：抽奖时有十分之一的概率获得\r\n你当前剩余的禁言卡数量：" + fk.ToString());
-            }
-            else if (msg.IndexOf("禁言") == 0)
-            {
-                int fk = 0;
-                string fks = xml_get(10, fromQQ.ToString());
-                if (fks != "")
-                {
-                    fk = int.Parse(fks);
-                }
-                if (fk > 0)
-                {
-                    if ((groupMember.Authority != "管理员" && groupMember.Authority != "群主") || me.Authority == "群主" || fromGroup == 241464054)
-                    {
-                        try
-                        {
-                            long qq = GetNumberLong(msg);
-                            var qqinfo = CQ.GetGroupMemberInfo(fromGroup, qq);
-                            if (qqinfo.Authority != "管理员" || fromGroup == 241464054)
+                            else
                             {
                                 Random ran = new Random(System.DateTime.Now.Millisecond);
-                                int RandKey = ran.Next(60, 600);
-                                CQ.SetGroupMemberGag(fromGroup, qq, RandKey);
-                                SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n已将" + qq + "禁言" + RandKey / 60 + "分钟");
-                                fk--;
-                                del(10, fromQQ.ToString());
-                                insert(10, fromQQ.ToString(), fk.ToString());
+                                int RandKey = ran.Next(0, 500);
+                                CoinsTemp -= 100;
+                                if (RandKey > 350)
+                                {
+                                    CoinsTemp += RandKey;
+                                    SendMinecraftMessage(fromGroup, "恭喜你抽中了" + RandKey + "游戏币，当前余额" + CoinsTemp + "游戏币");
+                                    del(2, fromQQ.ToString());
+                                    insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                                }
+                                else if (RandKey > 150)
+                                {
+                                    SendMinecraftMessage(fromGroup, "啊哦，你没有中奖。当前余额" + CoinsTemp + "游戏币");
+                                    del(2, fromQQ.ToString());
+                                    insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                                }
+                                else if (RandKey > 50)
+                                {
+                                    int fkt = ran.Next(1, 11);
+                                    CQ.SetGroupMemberGag(fromGroup, fromQQ, fkt * 60);
+                                    SendMinecraftMessage(fromGroup, "恭喜你抽中了禁言" + fkt + "分钟！当前余额" + CoinsTemp + "游戏币");
+                                    del(2, fromQQ.ToString());
+                                    insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                                }
+                                else
+                                {
+                                    int fk = 0;
+                                    string fks = xml_get(10, fromQQ.ToString());
+                                    if (fks != "")
+                                    {
+                                        fk = int.Parse(fks);
+                                    }
+                                    fk++;
+                                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n恭喜你抽中了一张禁言卡，回复“禁言卡”可以查看使用帮助。");
+                                    del(10, fromQQ.ToString());
+                                    insert(10, fromQQ.ToString(), fk.ToString());
+                                    del(2, fromQQ.ToString());
+                                    insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                                }
+                                Counttemp++;
+                                del(4, fromQQ.ToString());
+                                insert(4, fromQQ.ToString(), Counttemp.ToString());
+                            }
+                        }
+                        else
+                        {
+                            SendMinecraftMessage(fromGroup, "抽奖次数已用完！请用签到补充次数");
+                        }
+
+                    }
+                    if (msg == "5连抽" || msg == "五连抽")
+                    {
+                        string CoinStr = xml_get(2, fromQQ.ToString());
+                        string RanCount = xml_get(4, fromQQ.ToString());
+                        int CoinsTemp, Counttemp;
+                        if (CoinStr != "")
+                        {
+                            CoinsTemp = int.Parse(CoinStr);
+                        }
+                        else
+                        {
+                            CoinsTemp = 0;
+                        }
+
+                        if (RanCount != "")
+                        {
+                            Counttemp = int.Parse(RanCount);
+                        }
+                        else
+                        {
+                            Counttemp = 0;
+                        }
+
+                        if (Counttemp < 1)
+                        {
+                            if (CoinsTemp < 500)
+                            {
+                                SendMinecraftMessage(fromGroup, "你只有" + CoinsTemp + "游戏币，你个穷逼还想五连抽？");
                             }
                             else
                             {
-                                SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n目标成员为管理员，我没法禁言那个辣鸡玩意儿");
+                                CoinsTemp -= 500;
+                                del(2, fromQQ.ToString());
+                                insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                                Random ran = new Random(System.DateTime.Now.Millisecond);
+                                string replay5all = "";
+                                int RandKey, jinyan = 0;
+                                for (int count_temp = 0; count_temp < 5; count_temp++)
+                                {
+                                    RandKey = ran.Next(0, 500);
+                                    if (RandKey > 350)
+                                    {
+                                        CoinsTemp += RandKey;
+                                        replay5all += "恭喜你抽中了" + RandKey + "游戏币，当前余额" + CoinsTemp + "游戏币\r\n";
+                                    }
+                                    else if (RandKey > 150)
+                                    {
+                                        replay5all += "啊哦，你没有中奖。当前余额" + CoinsTemp + "游戏币\r\n";
+                                    }
+                                    else if (RandKey > 50)
+                                    {
+                                        int fkt = ran.Next(1, 11);
+                                        jinyan += fkt;
+                                        replay5all += "恭喜你抽中了禁言" + fkt + "分钟！当前余额" + CoinsTemp + "游戏币\r\n";
+                                    }
+                                    else
+                                    {
+                                        int fk = 0;
+                                        string fks = xml_get(10, fromQQ.ToString());
+                                        if (fks != "")
+                                        {
+                                            fk = int.Parse(fks);
+                                        }
+                                        fk++;
+                                        replay5all += "恭喜你抽中了一张禁言卡，回复“禁言卡”可以查看使用帮助。\r\n";
+                                        del(10, fromQQ.ToString());
+                                        insert(10, fromQQ.ToString(), fk.ToString());
+                                    }
+                                }
+                                Counttemp += 5;
+                                del(4, fromQQ.ToString());
+                                del(2, fromQQ.ToString());
+                                insert(4, fromQQ.ToString(), Counttemp.ToString());
+                                insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                                SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + replay5all + "五连抽完毕");
+                                if (jinyan > 0)
+                                {
+                                    CQ.SetGroupMemberGag(fromGroup, fromQQ, jinyan * 60);
+                                }
                             }
+                        }
+                        else
+                        {
+                            SendMinecraftMessage(fromGroup, "你今天只有" + (5 - Counttemp).ToString() + "次抽奖机会了，无法进行五连抽");
+                        }
+
+                    }
+                    if (msg == "4连抽" || msg == "四连抽")
+                    {
+                        string CoinStr = xml_get(2, fromQQ.ToString());
+                        string RanCount = xml_get(4, fromQQ.ToString());
+                        int CoinsTemp, Counttemp;
+                        if (CoinStr != "")
+                        {
+                            CoinsTemp = int.Parse(CoinStr);
+                        }
+                        else
+                        {
+                            CoinsTemp = 0;
+                        }
+
+                        if (RanCount != "")
+                        {
+                            Counttemp = int.Parse(RanCount);
+                        }
+                        else
+                        {
+                            Counttemp = 0;
+                        }
+
+                        if (Counttemp < 2)
+                        {
+                            if (CoinsTemp < 400)
+                            {
+                                SendMinecraftMessage(fromGroup, "你只有" + CoinsTemp + "游戏币，你个穷逼还想四连抽？");
+                            }
+                            else
+                            {
+                                CoinsTemp -= 400;
+                                del(2, fromQQ.ToString());
+                                insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                                Random ran = new Random(System.DateTime.Now.Millisecond);
+                                string replay5all = "";
+                                int RandKey, jinyan = 0;
+                                for (int count_temp = 0; count_temp < 4; count_temp++)
+                                {
+                                    RandKey = ran.Next(0, 500);
+                                    if (RandKey > 350)
+                                    {
+                                        CoinsTemp += RandKey;
+                                        replay5all += "恭喜你抽中了" + RandKey + "游戏币，当前余额" + CoinsTemp + "游戏币\r\n";
+                                    }
+                                    else if (RandKey > 150)
+                                    {
+                                        replay5all += "啊哦，你没有中奖。当前余额" + CoinsTemp + "游戏币\r\n";
+                                    }
+                                    else if (RandKey > 50)
+                                    {
+                                        int fkt = ran.Next(1, 11);
+                                        jinyan += fkt;
+                                        replay5all += "恭喜你抽中了禁言" + fkt + "分钟！当前余额" + CoinsTemp + "游戏币\r\n";
+                                    }
+                                    else
+                                    {
+                                        int fk = 0;
+                                        string fks = xml_get(10, fromQQ.ToString());
+                                        if (fks != "")
+                                        {
+                                            fk = int.Parse(fks);
+                                        }
+                                        fk++;
+                                        replay5all += "恭喜你抽中了一张禁言卡，回复“禁言卡”可以查看使用帮助。\r\n";
+                                        del(10, fromQQ.ToString());
+                                        insert(10, fromQQ.ToString(), fk.ToString());
+                                    }
+                                }
+                                Counttemp += 4;
+                                del(4, fromQQ.ToString());
+                                del(2, fromQQ.ToString());
+                                insert(4, fromQQ.ToString(), Counttemp.ToString());
+                                insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                                SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + replay5all + "四连抽完毕");
+                                if (jinyan > 0)
+                                {
+                                    CQ.SetGroupMemberGag(fromGroup, fromQQ, jinyan * 60);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            SendMinecraftMessage(fromGroup, "你今天只有" + (5 - Counttemp).ToString() + "次抽奖机会了，无法进行四连抽");
+                        }
+
+                    }
+                    if (msg == "3连抽" || msg == "三连抽")
+                    {
+                        string CoinStr = xml_get(2, fromQQ.ToString());
+                        string RanCount = xml_get(4, fromQQ.ToString());
+                        int CoinsTemp, Counttemp;
+                        if (CoinStr != "")
+                        {
+                            CoinsTemp = int.Parse(CoinStr);
+                        }
+                        else
+                        {
+                            CoinsTemp = 0;
+                        }
+
+                        if (RanCount != "")
+                        {
+                            Counttemp = int.Parse(RanCount);
+                        }
+                        else
+                        {
+                            Counttemp = 0;
+                        }
+
+                        if (Counttemp < 3)
+                        {
+                            if (CoinsTemp < 300)
+                            {
+                                SendMinecraftMessage(fromGroup, "你只有" + CoinsTemp + "游戏币，你个穷逼还想三连抽？");
+                            }
+                            else
+                            {
+                                CoinsTemp -= 300;
+                                del(2, fromQQ.ToString());
+                                insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                                Random ran = new Random(System.DateTime.Now.Millisecond);
+                                string replay5all = "";
+                                int RandKey, jinyan = 0;
+                                for (int count_temp = 0; count_temp < 3; count_temp++)
+                                {
+                                    RandKey = ran.Next(0, 500);
+                                    if (RandKey > 350)
+                                    {
+                                        CoinsTemp += RandKey;
+                                        replay5all += "恭喜你抽中了" + RandKey + "游戏币，当前余额" + CoinsTemp + "游戏币\r\n";
+                                    }
+                                    else if (RandKey > 150)
+                                    {
+                                        replay5all += "啊哦，你没有中奖。当前余额" + CoinsTemp + "游戏币\r\n";
+                                    }
+                                    else if (RandKey > 50)
+                                    {
+                                        int fkt = ran.Next(1, 11);
+                                        jinyan += fkt;
+                                        replay5all += "恭喜你抽中了禁言" + fkt + "分钟！当前余额" + CoinsTemp + "游戏币\r\n";
+                                    }
+                                    else
+                                    {
+                                        int fk = 0;
+                                        string fks = xml_get(10, fromQQ.ToString());
+                                        if (fks != "")
+                                        {
+                                            fk = int.Parse(fks);
+                                        }
+                                        fk++;
+                                        replay5all += "恭喜你抽中了一张禁言卡，回复“禁言卡”可以查看使用帮助。\r\n";
+                                        del(10, fromQQ.ToString());
+                                        insert(10, fromQQ.ToString(), fk.ToString());
+                                    }
+                                }
+                                Counttemp += 3;
+                                del(4, fromQQ.ToString());
+                                del(2, fromQQ.ToString());
+                                insert(4, fromQQ.ToString(), Counttemp.ToString());
+                                insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                                SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + replay5all + "三连抽完毕");
+                                if (jinyan > 0)
+                                {
+                                    CQ.SetGroupMemberGag(fromGroup, fromQQ, jinyan * 60);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            SendMinecraftMessage(fromGroup, "你今天只有" + (5 - Counttemp).ToString() + "次抽奖机会了，无法进行三连抽");
+                        }
+
+                    }
+                    if (msg == "2连抽" || msg == "二连抽" || msg == "两连抽")
+                    {
+                        string CoinStr = xml_get(2, fromQQ.ToString());
+                        string RanCount = xml_get(4, fromQQ.ToString());
+                        int CoinsTemp, Counttemp;
+                        if (CoinStr != "")
+                        {
+                            CoinsTemp = int.Parse(CoinStr);
+                        }
+                        else
+                        {
+                            CoinsTemp = 0;
+                        }
+
+                        if (RanCount != "")
+                        {
+                            Counttemp = int.Parse(RanCount);
+                        }
+                        else
+                        {
+                            Counttemp = 0;
+                        }
+
+                        if (Counttemp < 4)
+                        {
+                            if (CoinsTemp < 200)
+                            {
+                                SendMinecraftMessage(fromGroup, "你只有" + CoinsTemp + "游戏币，你个穷逼还想两连抽？");
+                            }
+                            else
+                            {
+                                CoinsTemp -= 200;
+                                del(2, fromQQ.ToString());
+                                insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                                Random ran = new Random(System.DateTime.Now.Millisecond);
+                                string replay5all = "";
+                                int RandKey, jinyan = 0;
+                                for (int count_temp = 0; count_temp < 2; count_temp++)
+                                {
+                                    RandKey = ran.Next(0, 500);
+                                    if (RandKey > 350)
+                                    {
+                                        CoinsTemp += RandKey;
+                                        replay5all += "恭喜你抽中了" + RandKey + "游戏币，当前余额" + CoinsTemp + "游戏币\r\n";
+                                    }
+                                    else if (RandKey > 150)
+                                    {
+                                        replay5all += "啊哦，你没有中奖。当前余额" + CoinsTemp + "游戏币\r\n";
+                                    }
+                                    else if (RandKey > 50)
+                                    {
+                                        int fkt = ran.Next(1, 11);
+                                        jinyan += fkt;
+                                        replay5all += "恭喜你抽中了禁言" + fkt + "分钟！当前余额" + CoinsTemp + "游戏币\r\n";
+                                    }
+                                    else
+                                    {
+                                        int fk = 0;
+                                        string fks = xml_get(10, fromQQ.ToString());
+                                        if (fks != "")
+                                        {
+                                            fk = int.Parse(fks);
+                                        }
+                                        fk++;
+                                        replay5all += "恭喜你抽中了一张禁言卡，回复“禁言卡”可以查看使用帮助。\r\n";
+                                        del(10, fromQQ.ToString());
+                                        insert(10, fromQQ.ToString(), fk.ToString());
+                                    }
+                                }
+                                Counttemp += 2;
+                                del(4, fromQQ.ToString());
+                                del(2, fromQQ.ToString());
+                                insert(4, fromQQ.ToString(), Counttemp.ToString());
+                                insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                                SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + replay5all + "两连抽完毕");
+                                if (jinyan > 0)
+                                {
+                                    CQ.SetGroupMemberGag(fromGroup, fromQQ, jinyan * 60);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            SendMinecraftMessage(fromGroup, "你今天只有" + (5 - Counttemp).ToString() + "次抽奖机会了，无法进行两连抽");
+                        }
+
+                    }
+                    if (msg == "激活")
+                    {
+                        if (reply1 != "")
+                        {
+                            mcmsg += "|||||command>manuadd " + reply1 + " builder world";
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "已给予你的账号相应权限");
+                        }
+                        else
+                        {
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你没有通过白名单审核，无法激活账号");
+                        }
+                    }
+                    if (msg.IndexOf("邀请人") == 0)
+                    {
+                        string reply3 = xml_get(6, fromQQ.ToString());
+                        if (reply1 == "")
+                        {
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你还没有白名单呢！");
+                            return;
+                        }
+                        else if (reply3 != "")
+                        {
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "已领取过该奖励，请勿再次领取");
+                            return;
+                        }
+                        long targetQQ = 0;
+                        try
+                        {
+                            targetQQ = GetNumberLong(msg);
+                            if (fromQQ == targetQQ)
+                            {
+                                SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "。。。。");
+                                SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "不要这样子好吗。。。。哪有自己邀请自己的。。。");
+                                return;
+                            }
+                            string CoinStr1 = xml_get(2, targetQQ.ToString());
+                            int CoinsTemp1;
+                            if (CoinStr1 != "")
+                            {
+                                CoinsTemp1 = int.Parse(CoinStr1);
+                            }
+                            else
+                            {
+                                CoinsTemp1 = 0;
+                            }
+
+                            string CoinStr2 = xml_get(2, fromQQ.ToString());
+                            int CoinsTemp2;
+                            if (CoinStr2 != "")
+                            {
+                                CoinsTemp2 = int.Parse(CoinStr2);
+                            }
+                            else
+                            {
+                                CoinsTemp2 = 0;
+                            }
+
+                            CoinsTemp1 += 3000;
+                            CoinsTemp2 += 1000;
+                            del(2, fromQQ.ToString());
+                            del(2, targetQQ.ToString());
+                            insert(2, fromQQ.ToString(), CoinsTemp2.ToString());
+                            insert(2, targetQQ.ToString(), CoinsTemp1.ToString());
+                            insert(6, fromQQ.ToString(), "推荐人：" + targetQQ.ToString());
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "游戏币奖励已发放到群内银行~给你1000，给你的小伙伴3000~快去告诉你的小伙伴吧~");
                         }
                         catch
                         {
-                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n执行失败。");
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "命令错误！");
                         }
                     }
-                    else
+                    if (msg == "催促审核")
                     {
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n你个管理员不会自己手动去禁言？智障？");
+                        string reply3 = xml_get(5, fromQQ.ToString());
+                        if (reply1 != "")
+                        {
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你已经有白名单了");
+                            return;
+                        }
+                        else if (reply3 == "")
+                        {
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你还没有绑定id，请回复“绑定”加你的id来绑定");
+                            return;
+                        }
+                        CQ.SendGroupMessage(567145439, "接待喵糖拌管理：\r\n玩家id：" + reply3 + "\r\nQQ：" + fromQQ.ToString() +
+                                                    "\r\n进行了催促审核的操作" +
+                                                    "\r\n请及时检查该玩家是否已经提交白名单申请https://wj.qq.com/mine.html" +
+                                                    "\r\n如果符合要求，请回复“通过”+qq来给予白名单" +
+                                                    "\r\n如果不符合要求，请回复“不通过”+qq+空格+原因来给打回去重填" +
+                                                    "\r\n" + CQ.CQCode_At(1021479600) + CQ.CQCode_At(635309406) +
+                                                    CQ.CQCode_At(1928361196) + CQ.CQCode_At(1420355171) + CQ.CQCode_At(280585112) +
+                                                    CQ.CQCode_At(2561620740) + CQ.CQCode_At(2433380978) + CQ.CQCode_At(2679146075) +
+                                                    CQ.CQCode_At(961726194) + CQ.CQCode_At(185939950) + CQ.CQCode_At(2522468269));
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "已成功催促管理员审核！请耐心等待！如果还没有被审核，你可以选择继续催促！");
                     }
-                }
-                else
+                }  //糖拌群
+                if (fromGroup == 567145439)
                 {
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n你哪儿有禁言卡？");
-                }
-
-            }
-            else if (msg.IndexOf("解禁") == 0)
-            {
-                int fk = 0;
-                string fks = xml_get(10, fromQQ.ToString());
-                if (fks != "")
-                {
-                    fk = int.Parse(fks);
-                }
-                if (fk > 0)
-                {
-                    if ((groupMember.Authority != "管理员" && groupMember.Authority != "群主") || me.Authority == "群主" || fromGroup == 241464054)
+                    if (msg.IndexOf("删除") == 0)
                     {
+                        if (msg.Replace("删除", "") != "")
+                        {
+                            del(1, msg.Replace("删除", ""));
+                            del(5, msg.Replace("删除", ""));
+                            SendMinecraftMessage(fromGroup, "已删除QQ：" + msg.Replace("删除", "") + "所绑定的id。");
+                        }
+                    }
+                    else if (msg.IndexOf("通过") == 0)
+                    {
+                        string reply = xml_get(5, msg.Replace("通过", ""));
+                        if (reply != "")
+                        {
+                            del(5, msg.Replace("通过", ""));
+                            insert(1, msg.Replace("通过", ""), reply);
+                            SendMinecraftMessage(fromGroup, "已通过QQ：" + msg.Replace("通过", "") + "，id：" + reply + "的白名单申请");
+                            SendMinecraftMessage(241464054, CQ.CQCode_At(long.Parse(msg.Replace("通过", ""))) + "你的白名单申请已经通过了哟~" +
+                                                                                    "\r\n当游戏在线的时候在群里发送“激活”即可激活你的账号哦~" +
+                                                                                    "\r\n你的id：" + reply +
+                                                                                    "\r\n现在回复我“邀请人”加上@邀请人" +
+                                                                                    "\r\n可以让邀请者和被邀请者领取奖励哟~");
+                        }
+                        else
+                        {
+                            SendMinecraftMessage(fromGroup, "参数不对或该玩家不在待审核玩家数据中");
+                        }
+
+                    }
+                    else if (msg.IndexOf("不通过") == 0)
+                    {
+                        if (msg.IndexOf("不通过 ") == 0)
+                        {
+                            SendMinecraftMessage(fromGroup, "命令关键字后不要加空格，直接加玩家id");
+                            return;
+                        }
+                        string reply = "";
+                        string reason = "";
+                        string qq_get = "";
+                        string[] str2;
+                        int count_temp = 0;
+                        str2 = msg.Replace("不通过", "").Split(' ');
+                        foreach (string i in str2)
+                        {
+                            if (count_temp == 0)
+                            {
+                                reply = xml_get(5, i);
+                                qq_get = i;
+                                count_temp++;
+                            }
+                            else if (count_temp == 1)
+                            {
+                                reason += i + " ";
+                            }
+                        }
+
+                        if (reply != "")
+                        {
+                            SendMinecraftMessage(fromGroup, "已不通过QQ：" + qq_get + "，id：" + reply + "的白名单申请，原因：" + reason);
+                            SendMinecraftMessage(241464054, CQ.CQCode_At(long.Parse(qq_get)) + "你的白名单申请并没有通过。" +
+                                                                                    "\r\n原因：" + reason +
+                                                                                    "\r\n请按照原因重新填写白名单：https://wj.qq.com/s/1308067/143c" +
+                                                                                    "\r\n你的id：" + reply);
+                        }
+                        else
+                        {
+                            SendMinecraftMessage(fromGroup, "参数不对或该玩家不在待审核玩家数据中");
+                        }
+
+                    }
+                    else if (msg.IndexOf("封禁") == 0)
+                    {
+                        if (msg.IndexOf("封禁 ") == 0)
+                        {
+                            SendMinecraftMessage(fromGroup, "命令关键字后不要加空格，直接加玩家id");
+                            return;
+                        }
+                        string reason = "";
+                        string id_get = "";
+                        string[] str2;
+                        int count_temp = 0;
+                        str2 = msg.Replace("封禁", "").Split(' ');
+                        foreach (string i in str2)
+                        {
+                            if (count_temp == 0)
+                            {
+                                id_get = i;
+                                count_temp++;
+                            }
+                            else if (count_temp == 1)
+                            {
+                                reason += i + " ";
+                            }
+                        }
+
+                        SendMinecraftMessage(fromGroup, "已封禁id：" + id_get + "原因：" + reason);
+                        mcmsg += "|||||command>ban " + id_get + " " + reason;
+                        SendMinecraftMessage(241464054, "玩家" + id_get + "已被管理员封禁\r\n" + "封禁原因：" + reason + "\r\n如有误判请联系管理");
+                    }
+                    else if (msg.IndexOf("解封") == 0)
+                    {
+                        if (msg.IndexOf("解封 ") == 0)
+                        {
+                            SendMinecraftMessage(fromGroup, "命令关键字后不要加空格，直接加玩家id");
+                            return;
+                        }
+                        string id_get = msg.Replace("解封", "");
+
+                        SendMinecraftMessage(fromGroup, "已解除玩家" + id_get + "的封禁");
+                        mcmsg += "|||||command>unban " + id_get;
+                        SendMinecraftMessage(241464054, "玩家" + id_get + "已被管理员解除封禁");
+                    }
+                    else if (msg.IndexOf("踢出") == 0)
+                    {
+                        if (msg.IndexOf("踢出 ") == 0)
+                        {
+                            SendMinecraftMessage(fromGroup, "命令关键字后不要加空格，直接加玩家id");
+                            return;
+                        }
+                        string reason = "";
+                        string id_get = "";
+                        string[] str2;
+                        int count_temp = 0;
+                        str2 = msg.Replace("踢出", "").Split(' ');
+                        foreach (string i in str2)
+                        {
+                            if (count_temp == 0)
+                            {
+                                id_get = i;
+                                count_temp++;
+                            }
+                            else if (count_temp == 1)
+                            {
+                                reason += i + " ";
+                            }
+                        }
+
+                        SendMinecraftMessage(fromGroup, "已将玩家" + id_get + "踢出服务器\r\n原因：" + reason);
+                        mcmsg += "|||||command>kick " + id_get + " " + reason;
+                        SendMinecraftMessage(241464054, "玩家" + id_get + "已被管理员踢出服务器\r\n原因：" + reason);
+                    }
+                    else if (msg == "空间")
+                    {
+                        SendMinecraftMessage(fromGroup,
+                            "服务器盘剩余空间：" + ((float)GetHardDiskFreeSpace("D") / 1024).ToString(".00") + "GB\r\n" +
+                            "备份盘剩余空间：" + ((float)GetHardDiskFreeSpace("E") / 1024).ToString(".00") + "GB");
+                    }
+                    else if (msg == "即时备份" && fromQQ == 961726194)
+                    {
+                        SendMinecraftMessage(fromGroup, "任务已开始");  //567145439
+                        System.Diagnostics.Process.Start(@"D:\backup.bat");
+                    }
+                    else if (msg.IndexOf("倒计时") == 0)
+                    {
+                        count_bc = -1;
                         try
                         {
-                            long qq = GetNumberLong(msg);
-                            var qqinfo = CQ.GetGroupMemberInfo(fromGroup, qq);
-                            if (qqinfo.Authority != "管理员" || fromGroup == 241464054)
-                            {
-                                CQ.SetGroupMemberGag(fromGroup, qq, 0);
-                                SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n已将" + qq + "解除禁言");
-                                fk--;
-                                del(10, fromQQ.ToString());
-                                insert(10, fromQQ.ToString(), fk.ToString());
-                            }
-                            else
-                            {
-                                SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n目标成员为管理员，我没法解禁那个辣鸡玩意儿");
-                            }
-                        }
-                        catch
-                        {
-                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n执行失败。");
-                        }
-                    }
-                    else
-                    {
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n你个管理员不会自己手动去解禁？智障？");
-                    }
-                }
-                else
-                {
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n你哪儿有禁言卡？");
-                }
-
-            }
-            else if (msg.IndexOf("淘宝") == 0 && msg.Length > 2)
-            {
-                SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你搜索的" + msg.Replace("淘宝", "") + "的相关优惠结果如下：\r\nhttps://ai.taobao.com/search/index.htm?key=" + System.Web.HttpUtility.UrlEncode(msg.Replace("淘宝", "")) + "&pid=mm_96609811_10528667_128948010");
-            }
-            else if(msg == "pixel")
-            {
-                int picCount;
-                try
-                {
-                    picCount = int.Parse(xml_get(20, "count"));
-                }
-                catch
-                {
-                    SendMinecraftMessage(fromGroup, "遇到致命性错误，请联系晨旭修复");
-                    return;
-                }
-                SendMinecraftMessage(fromGroup, "[CQ:image,file=pixel_game\\" + picCount + ".png]\r\n当前图片已被修改过" + picCount + "次。");
-            }
-            else if(msg.IndexOf("pixel") == 0 && (msg.Length - msg.Replace("/","").Length) == 2)
-            {
-                string fromqqtime_get = xml_get(20, fromQQ.ToString());
-                int fromqqtime = 0;
-                try
-                {
-                    fromqqtime = int.Parse(fromqqtime_get);
-                }
-                catch { }
-
-                if(ConvertDateTimeInt(DateTime.Now)-fromqqtime < 60)
-                {
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你需要再等" + (60 - ConvertDateTimeInt(DateTime.Now) + fromqqtime) + "秒才能继续放像素点");
-                    return;
-                }
-
-                string get_msg = msg.Replace("pixel", ""), getx = "", gety = "", getcolor = "";
-                int placex, placey;
-
-                string[] str2;
-                int count_temp = 0;
-                str2 = get_msg.Split('/');
-                foreach (string i in str2)
-                {
-                    if (count_temp == 0)
-                    {
-                        getx = i.ToString();
-                        count_temp++;
-                    }
-                    else if (count_temp == 1)
-                    {
-                        gety = i.ToString();
-                        count_temp++;
-                    }
-                    else if (count_temp == 2)
-                    {
-                        getcolor = i.ToString();
-                        count_temp++;
-                    }
-                }
-                try
-                {
-                    placex = int.Parse(getx) - 1;
-                    placey = int.Parse(gety) - 1;
-                    if (getcolor.IndexOf("#") == -1 || placex > 99 || placey > 99)
-                        throw new ArgumentNullException("fuck wrong color");
-                }
-                catch
-                {
-                    SendMinecraftMessage(fromGroup, "放置像素点时遇到未知错误，请检查颜色与坐标是否正确");
-                    return;
-                }
-                int picCount;
-                try
-                {
-                    picCount = int.Parse(xml_get(20, "count"));
-                }
-                catch
-                {
-                    SendMinecraftMessage(fromGroup, "遇到致命性错误，请联系晨旭修复");
-                    return;
-                }
-
-                try
-                {
-                    string picPath = @"C:\Users\Administrator\Desktop\kuqpro\data\image\pixel_game\" + picCount + ".png";
-                    Bitmap pic = ReadImageFile(picPath);
-                    pic = SetPoint(pic, ColorTranslator.FromHtml(getcolor), placex, placey);
-
-                    picCount++;
-                    picPath = @"C:\Users\Administrator\Desktop\kuqpro\data\image\pixel_game\" + picCount + ".png";
-                    pic.Save(picPath);
-                }
-                catch
-                {
-                    SendMinecraftMessage(fromGroup, "遭遇未知错误");
-                    return;
-                }
-
-
-                del(20, "count");
-                del(20, fromQQ.ToString());
-                insert(20, "count", picCount.ToString());
-                insert(20, fromQQ.ToString(), ConvertDateTimeInt(DateTime.Now).ToString());
-
-                //SendMinecraftMessage(fromGroup, "[CQ:image,file=pixel_game\\" + picCount + ".png]\r\n图片修改完成！" + DateTime.Now.ToString() + CQ.CQCode_At(fromQQ));
-                SendMinecraftMessage(fromGroup, "图片修改完成！使用命令pixel查看" + CQ.CQCode_At(fromQQ));
-            }
-            else if(msg.IndexOf("查快递") == 0)
-            {
-                string kdcode = msg.Replace("查快递", "");
-
-                if (msg== "查快递")
-                {
-                    kdcode = xml_get(9, fromQQ.ToString());
-                    if(kdcode == "")
-                    {
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你没有查询过任何快递，请输入要查询的单号");
-                        return;
-                    }
-                }
-                else
-                {
-                    del(9, fromQQ.ToString());
-                    insert(9, fromQQ.ToString(), kdcode);
-                }
-
-                string result_msg = "";
-                try
-                {
-                    string html = HttpGet("https://www.kuaidi100.com/autonumber/autoComNum", "text=" + kdcode);
-                    JObject jo = (JObject)JsonConvert.DeserializeObject(html);
-                    string comCode = jo["auto"][0]["comCode"].ToString();
-                    result_msg = comCode + "\r\n";
-
-                    html = HttpGet("https://www.kuaidi100.com/query", "type=" + comCode + "&postid=" + kdcode);
-                    jo = (JObject)JsonConvert.DeserializeObject(html);
-                    foreach (var i in jo["data"])
-                    {
-                        result_msg += i["time"].ToString() + " ";
-                        result_msg += i["context"].ToString() + " 地点：";
-                        result_msg += i["location"].ToString() + "\r\n";
-                    }
-                    if(result_msg == comCode + "\r\n")
-                    {
-                        result_msg = "";
-                    }
-                }
-                catch
-                {
-
-                }
-                if(result_msg=="")
-                {
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "无此单号的数据" + "\r\n下次查询该快递可直接发送“查快递”命令，无需在输入单号");
-                }
-                else
-                {
-                    SendMinecraftMessage(fromGroup, result_msg + "下次查询该快递可直接发送“查快递”命令，无需在输入单号\r\n" + CQ.CQCode_At(fromQQ));
-                }
-            }
-            else if(msg.IndexOf("下载图片") == 0)
-            {
-                if(fromQQ != 961726194)
-                {
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n下你mb");
-                    return;
-                }
-                bool Value = false;
-                WebResponse response = null;
-                Stream stream = null;
-
-                string FileName = GetRandomString(10, true, false, false, false, "ABCDEF");
-
-                try
-                {
-                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(msg.Replace("下载图片",""));
-
-                    response = request.GetResponse();
-                    stream = response.GetResponseStream();
-
-                    if (!response.ContentType.ToLower().StartsWith("text/"))
-                    {
-                        Value = SaveBinaryFile(response, @"C:\Users\Administrator\Desktop\kuqpro\data\image\download\" + FileName);
-                    }
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "图片下载完成：\r\n[CQ:image,file=download\\" + FileName + "]");
-                }
-                catch (Exception err)
-                {
-                    string aa = err.Message.ToString();
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n机器人爆炸了，原因：" + aa);
-                }
-            }
-            else if(msg.IndexOf("网易云") == 0)
-            {
-                int songID = 0;
-                try
-                {
-                    songID = int.Parse(msg.Replace("网易云", ""));
-                }
-                catch
-                {
-                    try
-                    {
-                        string html = HttpGet("http://s.music.163.com/search/get/", "type=1&s=" + msg.Replace("网易云", ""));
-                        JObject jo = (JObject)JsonConvert.DeserializeObject(html);
-                        string idGet = jo["result"]["songs"][0]["id"].ToString();
-                        songID = int.Parse(idGet);
-                    }
-                    catch
-                    {
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n机器人爆炸了，原因：根本没这首歌");
-                        return;
-                    }
-                    
-                }
-
-                bool Value = false;
-                WebResponse response = null;
-                Stream stream = null;
-
-                string FileName = msg.Replace("网易云", "") + ".mp3";
-
-                string url = HttpGet("https://www.chenxublog.com/163music/", "id=" + songID);
-
-                try
-                {
-                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-
-                    response = request.GetResponse();
-                    stream = response.GetResponseStream();
-
-                    if (!response.ContentType.ToLower().StartsWith("text/"))
-                    {
-                        Value = SaveBinaryFile(response, @"C:\Users\Administrator\Desktop\kuqpro\data\record\download\" + FileName);
-                    }
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "音乐加载完成，正在发送音乐，请稍后~");
-                    SendMinecraftMessage(fromGroup, "[CQ:record,file=download\\" + FileName + "]");
-                }
-                catch (Exception err)
-                {
-                    string aa = err.Message.ToString();
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n机器人爆炸了，原因：" + aa);
-                }
-            }
-            else if (msg.IndexOf("找番号") == 0 || msg.IndexOf("查番号") == 0 || msg.IndexOf("查磁链") == 0 || msg.IndexOf("找磁链") == 0)
-            {
-                //if (System.DateTime.Now.Hour > 5 && fromGroup != 115872123 && fromQQ != 961726194)
-                //{
-                //    SendMinecraftMessage(fromGroup, "开车时间为00:00-6:00");
-                //    return;
-                //}
-                string url = msg;
-                url = url.Replace("找番号", "");
-                url = url.Replace("查番号", "");
-                url = url.Replace("查磁链", "");
-                url = url.Replace("找磁链", "");
-
-                string html = HttpGet("http://torrentkitty.uno/tk/" + url + "/1-0-0.html", "?q=1");
-                //Console.WriteLine(html);
-                if (html == "")
-                {
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "加载失败");
-                }
-                else
-                {
-                    string magnets = "";
-                    int i = 0, j = 0, k = 0;
-                    MatchCollection matchs = Reg_solve(html, "<span>\\[(?<type>.*?)\\]&nbsp;</span><a href=(.*?)target=\"_blank\">(?<name>.*?)</a>");
-                    string[] type = new string[matchs.Count];
-                    string[] name = new string[matchs.Count];
-                    MatchCollection check;
-                    foreach (Match item in matchs)
-                    {
-                        if (item.Success)
-                        {
-                            string check_str = "";
-                            check = Reg_solve(item.Groups["name"].Value.Replace("<b>", "").Replace("</b>", ""), "<span class=\"__cf_email__\" data-cfemail=\"(.*?)\">\\[email&#160;protected\\]</span>");
-                            foreach (Match check_item in check)
-                            {
-                                check_str = check_item.Value;
-                            }
-                            type[i++] = item.Groups["type"].Value;
-                            if (check_str != "")
-                                name[j++] = item.Groups["name"].Value.Replace("<b>", "").Replace("</b>", "").Replace(check_str, "");
-                            else
-                                name[j++] = item.Groups["name"].Value.Replace("<b>", "").Replace("</b>", "");
-                        }
-                    }
-                    MatchCollection link_matchs = Reg_solve(html, " href='magnet:\\?xt=urn:btih:(?<magnet>.*?)&dn=(.*?)' >磁力链接(.*?)<b>(?<filenum>\\d*?)个文件(.*?)共<b>(?<size>.*?)</b>");
-                    i = 0;
-                    j = 0;
-                    string[] magnet = new string[link_matchs.Count];
-                    string[] filenum = new string[link_matchs.Count];
-                    string[] size = new string[link_matchs.Count];
-                    foreach (Match item in link_matchs)
-                    {
-                        if (item.Success)
-                        {
-                            magnet[i++] = item.Groups["magnet"].Value;
-                            filenum[j++] = item.Groups["filenum"].Value;
-                            size[k++] = item.Groups["size"].Value;
-                        }
-                    }
-
-                    for (i = 0; i < link_matchs.Count; i++)
-                    {
-                        try
-                        {
-                            magnets += "\r\n[" + type[i] + "]" + name[i] + "," + size[i] + "," + filenum[i] + "个文件\r\n" + magnet[i];
+                            count_bc = int.Parse(msg.Replace("倒计时", ""));
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "已启动显示倒计时" + msg.Replace("倒计时", "") + "秒");
                         }
                         catch { }
                     }
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n"+ url.Replace(" ", "-") + "的资源：" + magnets + "\r\n小贴士：magnet:?xt=urn:btih:");
-                }
-            }
-            else if(msg.IndexOf("*") == 0 && fromQQ == 961726194)
-            {
-                foreach(long i in grouplist)
-                {
-                    if(i != fromGroup)
-                        SendMinecraftMessage(i, "跨群通知：\r\n" + msg.Substring(1));
-                    System.Threading.Thread.Sleep(500);
-                }
-            }
-            else if (msg == "开车")
-            {
-                SendMinecraftMessage(fromGroup, "magnet:?xt=urn:btih:" + GetRandomString(40, true, false, false, false, "ABCDEF"));
-            }
-            else if(msg.IndexOf("正则") == 0)
-            {
-                string get_msg = msg.Replace("正则", "").Replace("\r",""), text = "", reg = "";
+                }  //糖拌管理群
 
-                if (get_msg.IndexOf("\n") >= 1 && get_msg.IndexOf("\n") != get_msg.Length - 1)
+
+                //CQ.SendGroupMessage(fromGroup, String.Format("[{4}]{0} 你的群名片：{1}， 入群时间：{2}， 最后发言：{3}。", CQ.CQCode_At(fromQQ),
+                //    groupMember.GroupCard, groupMember.JoinTime, groupMember.LastSpeakingTime, CQ.ProxyType));
+                // CQ.SendGroupMessage(fromGroup, String.Format("[{0}]{1}你发的群消息是：{2}", CQ.ProxyType, CQ.CQCode_At(fromQQ), msg));
+                //CQ.SendGroupMessage(fromGroup, string.Format("{0}发的群消息是：{1}", CQ.CQCode_At(fromQQ), msg));
+                string replay_ok = replay_get(fromGroup, msg);
+                string replay_common = replay_get(2333, msg);
+
+                if (msg.ToUpper() == "HELP")
                 {
-                    string result_msg = "匹配如下：";
+                    //CQ.SendGroupMessage(fromGroup, msg.ToUpper().IndexOf("help").ToString());
+                    SendMinecraftMessage(fromGroup, "命令帮助：\r\n！add 词条：回答\r\n！del 词条：回答\r\n！list 词条\r\n" +
+                        "所有符号均为全角符号\r\n词条中请勿包含冒号\r\n" +
+                        "发送“坷垃金曲”+数字序号即可点金坷垃歌（如坷垃金曲21，最大71）\r\n" +
+                        "私聊发送“赞我”可使接待给你点赞\r\n" +
+                        "发送“今日运势”可以查看今日运势\r\n" +
+                        "发送“淘宝”+关键词即可搜索淘宝优惠搜索结果\r\n" +
+                        "发送“pixel”可以查看像素游戏图片\r\n" +
+                        "发送“查快递”和单号即可搜索快递物流信息\r\n" +
+                        "发送“网易云”和歌曲id号/歌曲名即可定向点歌\r\n" +
+                        "发送“正则”+字符串+“换行”+正则表达式，可查询C#正则\r\n" +
+                        "发送“空气质量”可查询当前时间的空气质量\r\n" +
+                        "发送“宠物助手”可查询QQ宠物代挂的帮助信息\r\n" +
+                        "发送“查磁链”+“关键词”可查询磁链\r\n" +
+                        "如有bug请反馈");
+                }
+                if (msg == "宠物助手")
+                {
+                    SendMinecraftMessage(fromGroup, "宠物助手：\r\n" +
+                        "发送“宠物状态”可查看宠物状态\r\n" +
+                        "发送“宠物资料”可查看宠物详细资料\r\n" +
+                        "发送“宠物喂养”加页码数可查看宠物喂养物品列表\r\n" +
+                        "发送“宠物清洁”加页码数可查看宠物清洁物品列表\r\n" +
+                        "发送“宠物治疗”加页码数可查看宠物药物物品列表\r\n" +
+                        "发送“宠物使用”加物品代码可使用宠物物品\r\n" +
+                        "发送“宠物学习开启”可开启自动学习\r\n" +
+                        "发送“宠物学习关闭”可关闭自动学习\r\n" +
+                        "发送“宠物解绑”可解除绑定，停止代挂\r\n" +
+                        "挂机时会自动喂养与清洗，并且自动种菜收菜\r\n" +
+                        "测试功能，如有bug请反馈");
+                }
+                if (msg.IndexOf("宠物") == 0)
+                {
+                    //获取uin和skey
+                    string uin = replay_get(11, fromQQ.ToString());
+                    string skey = replay_get(12, fromQQ.ToString());
+                    if (msg == "宠物状态")
+                    {
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + GetPetState(uin, skey));
+                    }
+                    if (msg == "宠物资料")
+                    {
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + GetPetMore(uin, skey));
+                    }
+                    if (msg.IndexOf("宠物喂养") == 0)
+                    {
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + FeedPetSelect(uin, skey, msg.Replace("宠物喂养", "")));
+                    }
+                    if (msg.IndexOf("宠物清洁") == 0)
+                    {
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + WashPetSelect(uin, skey, msg.Replace("宠物清洁", "")));
+                    }
+                    if (msg.IndexOf("宠物治疗") == 0)
+                    {
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + CurePetSelect(uin, skey, msg.Replace("宠物治疗", "")));
+                    }
+                    if (msg.IndexOf("宠物使用") == 0)
+                    {
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + UsePet(uin, skey, msg.Replace("宠物使用", "")));
+                    }
+                    //if(msg == "宠物学习开启")
+                    //{
+                    //    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + StudyPetSelect());
+                    //}
+                    //if (msg.IndexOf("宠物上课") == 0)
+                    //{
+                    //    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + StudyPet(uin, skey, msg.Replace("宠物上课", "")));
+                    //    del(13, fromQQ.ToString());
+                    //    insert(13, fromQQ.ToString(), msg.Replace("宠物上课", ""));
+                    //}
+                    if (msg == "宠物学习开启")
+                    {
+                        del(13, fromQQ.ToString());
+                        insert(13, fromQQ.ToString(), "0");
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "已开启自动学习（自动上课与换课程）");
+                    }
+                    if (msg == "宠物学习关闭")
+                    {
+                        del(13, fromQQ.ToString());
+                        insert(13, fromQQ.ToString(), "28");
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "已关闭自动学习（学习完后不会自动继续学）");
+                    }
+                    if (msg == "宠物解绑")
+                    {
+                        del(11, fromQQ.ToString());
+                        del(12, fromQQ.ToString());
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n解绑成功！");
+                    }
+                    if (msg == "宠物绑定方法")
+                    {
+                        CQ.SendGroupMessage(fromGroup, CQ.CQCode_At(fromQQ) + "[CQ:image,file=7CE7991F3D714978606B41C816FBC549.jpg]");
+                    }
+                }
+                else if (msg.IndexOf("点歌") == 0)
+                {
+                    int song = 0;
                     try
                     {
-                        string[] str2;
-                        int count_temp = 0;
-                        str2 = get_msg.Split('\n');
-                        foreach (string i in str2)
+                        song = int.Parse(msg.Replace("点歌", ""));
+                    }
+                    catch { }
+                    if (song >= 1 && song <= 134)
+                    {
+                        SendMinecraftMessage(fromGroup, string.Format("{0}正在发送歌曲{1}，请稍候哦~\r\n如未收到请重试", CQ.CQCode_At(fromQQ), song.ToString()));
+                        CQ.SendGroupMessage(fromGroup, "[CQ:record,file=CoolQ 语音时代！\\点歌\\" + song.ToString().PadLeft(3, '0') + ".mp3]");
+                    }
+                    else
+                    {
+                        SendMinecraftMessage(fromGroup, string.Format("{0}编号不对哦，编号只能是1-134", CQ.CQCode_At(fromQQ)));
+                    }
+                }
+                else if (msg.IndexOf("坷垃金曲") == 0)
+                {
+                    int song = 0;
+                    try
+                    {
+                        song = int.Parse(msg.Replace("坷垃金曲", ""));
+                    }
+                    catch { }
+                    if (song >= 1 && song <= 71)
+                    {
+                        SendMinecraftMessage(fromGroup, string.Format("{0}正在发送坷垃金曲{1}，请稍候哦~\r\n如未收到请重试", CQ.CQCode_At(fromQQ), song.ToString()));
+                        CQ.SendGroupMessage(fromGroup, "[CQ:record,file=CoolQ 语音时代！\\坷垃金曲\\" + song.ToString().PadLeft(3, '0') + ".mp3]");
+                    }
+                    else
+                    {
+                        SendMinecraftMessage(fromGroup, string.Format("{0}编号不对哦，编号只能是1-71", CQ.CQCode_At(fromQQ)));
+                    }
+                }
+                else if (msg == "赞我" || msg == "点赞")
+                {
+                    //CQ.SendPraise(fromQQ, 10);
+                    CQ.SendPrivateMessage(fromQQ, "妈的智障以后私聊我点赞，别在群里发");
+                    //CQ.SendGroupMessage(fromGroup, "已为QQ" + fromQQ + "点赞十次");
+                }
+                else if (msg.IndexOf("！list ") == 0)
+                {
+                    SendMinecraftMessage(fromGroup, string.Format("当前词条回复如下：\r\n{0}\r\n全局词库内容：\r\n{1}",
+                                                                    list_get(fromGroup, msg.Replace("！list ", "")),
+                                                                    list_get(2333, msg.Replace("！list ", ""))));
+                }
+                else if (msg.IndexOf("！add ") == 0)
+                {
+                    if (AdminCheck(fromQQ) == 1)
+                    {
+                        string get_msg = msg.Replace("！add ", ""), tmsg = "", tans = "";
+
+                        if (get_msg.IndexOf("：") >= 1 && get_msg.IndexOf("：") != get_msg.Length - 1)
                         {
-                            if (count_temp == 0)
+                            string[] str2;
+                            int count_temp = 0;
+                            str2 = get_msg.Split('：');
+                            foreach (string i in str2)
                             {
-                                text = i.ToString();
-                                count_temp++;
+                                if (count_temp == 0)
+                                {
+                                    tmsg = i.ToString();
+                                    count_temp++;
+                                }
+                                else if (count_temp == 1)
+                                {
+                                    tans = i.ToString();
+                                }
                             }
-                            else if (count_temp == 1)
+                            insert(fromGroup, tmsg, tans);
+                            SendMinecraftMessage(fromGroup, "添加完成！\r\n词条：" + tmsg + "\r\n回答为：" + tans);
+                        }
+                        else
+                        {
+                            SendMinecraftMessage(fromGroup, "格式错误！");
+                        }
+                    }
+                    else
+                    {
+                        SendMinecraftMessage(fromGroup, "你没有权限调教接待喵");
+                    }
+                }
+                else if (msg.IndexOf("！del ") == 0)
+                {
+                    if (AdminCheck(fromQQ) == 1)
+                    {
+                        string get_msg = msg.Replace("！del ", ""), tmsg = "", tans = "";
+                        if (get_msg.IndexOf("：") >= 1 && get_msg.IndexOf("：") != get_msg.Length - 1)
+                        {
+                            string[] str2;
+                            int count_temp = 0;
+                            str2 = get_msg.Split('：');
+                            foreach (string i in str2)
                             {
-                                reg = i.ToString();
-                                break;
+                                if (count_temp == 0)
+                                {
+                                    tmsg = i.ToString();
+                                    count_temp++;
+                                }
+                                else if (count_temp == 1)
+                                {
+                                    tans = i.ToString();
+                                }
+                            }
+                            remove(fromGroup, tmsg, tans);
+                            SendMinecraftMessage(fromGroup, "删除完成！\r\n词条：" + tmsg + "\r\n回答为：" + tans);
+                        }
+                        else
+                        {
+                            SendMinecraftMessage(fromGroup, "格式错误！");
+                        }
+                    }
+                    else
+                    {
+                        SendMinecraftMessage(fromGroup, "你没有权限调教接待喵");
+                    }
+                }
+                else if (msg.IndexOf("！delall ") == 0)
+                {
+                    if (AdminCheck(fromQQ) == 1)
+                    {
+                        string get_msg = msg.Replace("！delall ", "");
+                        if (get_msg.Length > 0)
+                        {
+                            del(fromGroup, get_msg);
+                            SendMinecraftMessage(fromGroup, "删除完成！\r\n触发词：" + get_msg);
+                        }
+                        else
+                        {
+                            SendMinecraftMessage(fromGroup, "格式错误！");
+                        }
+                    }
+                    else
+                    {
+                        SendMinecraftMessage(fromGroup, "你没有权限调教接待喵");
+                    }
+                }
+                else if (msg == "今日黄历" || msg == "今日运势")
+                {
+                    if (fromQQ == 1262897311 || fromQQ == 66831919)
+                    {
+                        string rs = string.Format("{0}\r\n你的今日运势如下~\r\n会被捅死。\r\n今日日期：{1}",
+                                CQ.CQCode_At(fromQQ), System.DateTime.Today.ToString().Replace(" 0:00:00", "")
+                                );
+                        SendMinecraftMessage(fromGroup, rs);
+                        return;
+                    }
+                    string ReplayString = "";
+                    Random ran = new Random(System.DateTime.Now.DayOfYear + (int)(fromQQ - (fromQQ / 10000) * 10000));
+                    //int RanKey = ran.Next(0, 25);
+                    int sum1, sum2, sum3, sum4, bad1, bad2, count = 0;
+                    sum1 = ran.Next(0, 25);
+                    sum2 = ran.Next(0, 25);
+                    while (sum2 == sum1)
+                    {
+                        sum2 = ran.Next(0, 25);
+                        count++; if (count > 10) { sum2 = 25; break; }
+                    }
+                    count = 0;
+                    sum3 = ran.Next(0, 25);
+                    while (sum3 == sum1 || sum3 == sum2)
+                    {
+                        sum3 = ran.Next(0, 25);
+                        count++; if (count > 10) { sum3 = 25; break; }
+                    }
+                    count = 0;
+                    sum4 = ran.Next(0, 25);
+                    while (sum4 == sum1 || sum4 == sum2 || sum4 == sum3)
+                    {
+                        sum4 = ran.Next(0, 25);
+                        count++; if (count > 10) { sum4 = 25; break; }
+                    }
+                    count = 0;
+                    bad1 = ran.Next(0, 25);
+                    while (bad1 == sum1 || bad1 == sum2 || bad1 == sum3 || bad1 == sum4)
+                    {
+                        bad2 = ran.Next(0, 25);
+                        count++; if (count > 10) { bad1 = 25; break; }
+                    }
+                    count = 0;
+                    bad2 = ran.Next(0, 25);
+                    while (bad2 == bad1 || bad2 == sum1 || bad2 == sum2 || bad2 == sum3 || bad2 == sum4)
+                    {
+                        bad2 = ran.Next(0, 25);
+                        count++; if (count > 10) { bad2 = 25; break; }
+                    }
+                    count = 0;
+
+                    int allsum = ran.Next(0, 100);
+                    ReplayString = string.Format("{0}\r\n你的今日运势如下~\r\n宜：\r\n{1}\r\n{2}\r\n{3}\r\n{4}\r\n忌：\r\n{5}\r\n{6}\r\n今日日期：{7}\r\n今日综合幸运指数：{8}%\r\n今日吉言：{9}",
+                                                CQ.CQCode_At(fromQQ),
+                                                GoodThings[sum1],
+                                                GoodThings[sum2],
+                                                GoodThings[sum3],
+                                                GoodThings[sum4],
+                                                BadThings[bad1],
+                                                BadThings[bad2],
+                                                System.DateTime.Today.ToString().Replace(" 0:00:00", ""),
+                                                allsum.ToString(),
+                                                itsays[ran.Next(0, 613)]
+                                                );
+                    SendMinecraftMessage(fromGroup, ReplayString);
+                }
+                else if (msg == "昨日黄历" || msg == "昨日运势")
+                {
+                    if (fromQQ == 1262897311 || fromQQ == 66831919)
+                    {
+                        string rs = string.Format("{0}\r\n你的昨日运势如下~\r\n会被捅死。\r\n今日日期：{1}",
+                                CQ.CQCode_At(fromQQ), System.DateTime.Today.ToString().Replace(" 0:00:00", "")
+                                );
+                        SendMinecraftMessage(fromGroup, rs);
+                        return;
+                    }
+                    string ReplayString = "";
+                    Random ran = new Random(System.DateTime.Now.DayOfYear - 1 + (int)(fromQQ - (fromQQ / 10000) * 10000));
+                    //int RanKey = ran.Next(0, 25);
+                    int sum1, sum2, sum3, sum4, bad1, bad2, count = 0;
+                    sum1 = ran.Next(0, 25);
+                    sum2 = ran.Next(0, 25);
+                    while (sum2 == sum1)
+                    {
+                        sum2 = ran.Next(0, 25);
+                        count++; if (count > 10) { sum2 = 25; break; }
+                    }
+                    count = 0;
+                    sum3 = ran.Next(0, 25);
+                    while (sum3 == sum1 || sum3 == sum2)
+                    {
+                        sum3 = ran.Next(0, 25);
+                        count++; if (count > 10) { sum3 = 25; break; }
+                    }
+                    count = 0;
+                    sum4 = ran.Next(0, 25);
+                    while (sum4 == sum1 || sum4 == sum2 || sum4 == sum3)
+                    {
+                        sum4 = ran.Next(0, 25);
+                        count++; if (count > 10) { sum4 = 25; break; }
+                    }
+                    count = 0;
+                    bad1 = ran.Next(0, 25);
+                    while (bad1 == sum1 || bad1 == sum2 || bad1 == sum3 || bad1 == sum4)
+                    {
+                        bad2 = ran.Next(0, 25);
+                        count++; if (count > 10) { bad1 = 25; break; }
+                    }
+                    count = 0;
+                    bad2 = ran.Next(0, 25);
+                    while (bad2 == bad1 || bad2 == sum1 || bad2 == sum2 || bad2 == sum3 || bad2 == sum4)
+                    {
+                        bad2 = ran.Next(0, 25);
+                        count++; if (count > 10) { bad2 = 25; break; }
+                    }
+                    count = 0;
+                    ReplayString = string.Format("{0}\r\n你的昨日运势如下~\r\n宜：\r\n{1}\r\n{2}\r\n{3}\r\n{4}\r\n忌：\r\n{5}\r\n{6}\r\n今日日期：{7}",
+                                                CQ.CQCode_At(fromQQ),
+                                                GoodThings[sum1],
+                                                GoodThings[sum2],
+                                                GoodThings[sum3],
+                                                GoodThings[sum4],
+                                                BadThings[bad1],
+                                                BadThings[bad2],
+                                                System.DateTime.Today.ToString().Replace(" 0:00:00", "")
+                                                );
+                    SendMinecraftMessage(fromGroup, ReplayString);
+                }
+                else if (msg == "明日黄历" || msg == "明日运势")
+                {
+                    if (fromQQ == 1262897311 || fromQQ == 66831919)
+                    {
+                        string rs = string.Format("{0}\r\n你的明日运势如下~\r\n会被捅死。\r\n今日日期：{1}",
+                                CQ.CQCode_At(fromQQ), System.DateTime.Today.ToString().Replace(" 0:00:00", "")
+                                );
+                        SendMinecraftMessage(fromGroup, rs);
+                        return;
+                    }
+                    string ReplayString = "";
+                    Random ran = new Random(System.DateTime.Now.DayOfYear + 1 + (int)(fromQQ - (fromQQ / 10000) * 10000));
+                    //int RanKey = ran.Next(0, 25);
+                    int sum1, sum2, sum3, sum4, bad1, bad2, count = 0;
+                    sum1 = ran.Next(0, 25);
+                    sum2 = ran.Next(0, 25);
+                    while (sum2 == sum1)
+                    {
+                        sum2 = ran.Next(0, 25);
+                        count++; if (count > 10) { sum2 = 25; break; }
+                    }
+                    count = 0;
+                    sum3 = ran.Next(0, 25);
+                    while (sum3 == sum1 || sum3 == sum2)
+                    {
+                        sum3 = ran.Next(0, 25);
+                        count++; if (count > 10) { sum3 = 25; break; }
+                    }
+                    count = 0;
+                    sum4 = ran.Next(0, 25);
+                    while (sum4 == sum1 || sum4 == sum2 || sum4 == sum3)
+                    {
+                        sum4 = ran.Next(0, 25);
+                        count++; if (count > 10) { sum4 = 25; break; }
+                    }
+                    count = 0;
+                    bad1 = ran.Next(0, 25);
+                    while (bad1 == sum1 || bad1 == sum2 || bad1 == sum3 || bad1 == sum4)
+                    {
+                        bad2 = ran.Next(0, 25);
+                        count++; if (count > 10) { bad1 = 25; break; }
+                    }
+                    count = 0;
+                    bad2 = ran.Next(0, 25);
+                    while (bad2 == bad1 || bad2 == sum1 || bad2 == sum2 || bad2 == sum3 || bad2 == sum4)
+                    {
+                        bad2 = ran.Next(0, 25);
+                        count++; if (count > 10) { bad2 = 25; break; }
+                    }
+                    count = 0;
+                    ReplayString = string.Format("{0}\r\n你的明日运势如下~\r\n宜：\r\n{1}\r\n{2}\r\n{3}\r\n{4}\r\n忌：\r\n{5}\r\n{6}\r\n今日日期：{7}",
+                                                CQ.CQCode_At(fromQQ),
+                                                GoodThings[sum1],
+                                                GoodThings[sum2],
+                                                GoodThings[sum3],
+                                                GoodThings[sum4],
+                                                BadThings[bad1],
+                                                BadThings[bad2],
+                                                System.DateTime.Today.ToString().Replace(" 0:00:00", "")
+                                                );
+                    SendMinecraftMessage(fromGroup, ReplayString);
+                }
+                else if (msg.IndexOf("！addadmin ") == 0 && fromQQ == 961726194)
+                {
+                    insert(123456, "给我列一下狗管理", msg.Replace("！addadmin ", ""));
+                    SendMinecraftMessage(fromGroup, "已添加一位狗管理");
+                }
+                else if (msg.IndexOf("！deladmin ") == 0 && fromQQ == 961726194)
+                {
+                    remove(123456, "给我列一下狗管理", msg.Replace("！deladmin ", ""));
+                    SendMinecraftMessage(fromGroup, "已删除一位狗管理");
+                }
+                else if (msg == "给我列一下狗管理")
+                {
+                    SendMinecraftMessage(fromGroup, "当前狗管理如下：\r\n" + list_get(123456, "给我列一下狗管理"));
+                }
+                else if (msg == "抽奖" && fromGroup != 241464054)
+                {
+                    if (me.Authority == "成员")
+                    {
+                        SendMinecraftMessage(fromGroup, "我没有禁言权限，无法使用抽奖功能");
+                    }
+                    else if (groupMember.Authority != "管理员" && groupMember.Authority != "群主")
+                    {
+                        Random ran = new Random(System.DateTime.Now.Millisecond);
+                        int RandKey = ran.Next(1, 22);
+                        int RandKey2 = ran.Next(0, 10);
+                        if (RandKey > 12)
+                        {
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n恭喜你！什么也没有抽中！");
+                        }
+                        else if (RandKey == 1 && RandKey2 != 0)
+                        {
+                            CQ.SetGroupMemberGag(fromGroup, fromQQ, RandKey * 3600 * 24 * 20);
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n恭喜你抽中了超豪华禁言套餐，并附赠10张禁言卡！奖励已发放！");
+                            int fk = 0;
+                            string fks = xml_get(10, fromQQ.ToString());
+                            if (fks != "")
+                            {
+                                fk = int.Parse(fks);
+                            }
+                            fk += 10;
+                            del(10, fromQQ.ToString());
+                            insert(10, fromQQ.ToString(), fk.ToString());
+                        }
+                        else if (RandKey == 1 && RandKey2 == 0)
+                        {
+                            CQ.SetGroupMemberGag(fromGroup, fromQQ, RandKey * 3600 * 24 * 30);
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n恭喜你抽中了顶级豪华月卡禁言套餐，并附赠200张禁言卡！奖励已发放！");
+                            int fk = 0;
+                            string fks = xml_get(10, fromQQ.ToString());
+                            if (fks != "")
+                            {
+                                fk = int.Parse(fks);
+                            }
+                            fk += 200;
+                            del(10, fromQQ.ToString());
+                            insert(10, fromQQ.ToString(), fk.ToString());
+                        }
+                        else if (RandKey < 11)
+                        {
+                            CQ.SetGroupMemberGag(fromGroup, fromQQ, RandKey * 3600 * 24);
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n恭喜你抽中了禁言" + RandKey + "天！奖励已发放到你的QQ~");
+                        }
+                        else
+                        {
+                            int fk = 0;
+                            string fks = xml_get(10, fromQQ.ToString());
+                            if (fks != "")
+                            {
+                                fk = int.Parse(fks);
+                            }
+                            fk++;
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n恭喜你抽中了一张禁言卡，回复“禁言卡”可以查看使用帮助。");
+                            del(10, fromQQ.ToString());
+                            insert(10, fromQQ.ToString(), fk.ToString());
+                        }
+                    }
+                    else
+                    {
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n你个管理员玩个鸡毛的抽奖啊，我又没法禁言你。");
+                    }
+                }
+                else if (msg == "禁言卡")
+                {
+                    int fk = 0;
+                    string fks = xml_get(10, fromQQ.ToString());
+                    if (fks != "")
+                    {
+                        fk = int.Parse(fks);
+                    }
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n禁言卡可用于禁言或解禁他人，如果接待权限足够。\r\n使用方法：发送禁言或解禁加上@那个人\r\n禁言时长将为1分钟-10分钟随机\r\n获取方式：抽奖时有十分之一的概率获得\r\n你当前剩余的禁言卡数量：" + fk.ToString());
+                }
+                else if (msg.IndexOf("禁言") == 0)
+                {
+                    int fk = 0;
+                    string fks = xml_get(10, fromQQ.ToString());
+                    if (fks != "")
+                    {
+                        fk = int.Parse(fks);
+                    }
+                    if (fk > 0)
+                    {
+                        if ((groupMember.Authority != "管理员" && groupMember.Authority != "群主") || me.Authority == "群主" || fromGroup == 241464054)
+                        {
+                            try
+                            {
+                                long qq = GetNumberLong(msg);
+                                var qqinfo = CQ.GetGroupMemberInfo(fromGroup, qq);
+                                if (qqinfo.Authority != "管理员" || fromGroup == 241464054)
+                                {
+                                    Random ran = new Random(System.DateTime.Now.Millisecond);
+                                    int RandKey = ran.Next(60, 600);
+                                    CQ.SetGroupMemberGag(fromGroup, qq, RandKey);
+                                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n已将" + qq + "禁言" + RandKey / 60 + "分钟");
+                                    fk--;
+                                    del(10, fromQQ.ToString());
+                                    insert(10, fromQQ.ToString(), fk.ToString());
+                                }
+                                else
+                                {
+                                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n目标成员为管理员，我没法禁言那个辣鸡玩意儿");
+                                }
+                            }
+                            catch
+                            {
+                                SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n执行失败。");
                             }
                         }
+                        else
+                        {
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n你个管理员不会自己手动去禁言？智障？");
+                        }
+                    }
+                    else
+                    {
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n你哪儿有禁言卡？");
+                    }
 
-                        MatchCollection matchs = Reg_solve(text, reg);
+                }
+                else if (msg.IndexOf("解禁") == 0)
+                {
+                    int fk = 0;
+                    string fks = xml_get(10, fromQQ.ToString());
+                    if (fks != "")
+                    {
+                        fk = int.Parse(fks);
+                    }
+                    if (fk > 0)
+                    {
+                        if ((groupMember.Authority != "管理员" && groupMember.Authority != "群主") || me.Authority == "群主" || fromGroup == 241464054)
+                        {
+                            try
+                            {
+                                long qq = GetNumberLong(msg);
+                                var qqinfo = CQ.GetGroupMemberInfo(fromGroup, qq);
+                                if (qqinfo.Authority != "管理员" || fromGroup == 241464054)
+                                {
+                                    CQ.SetGroupMemberGag(fromGroup, qq, 0);
+                                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n已将" + qq + "解除禁言");
+                                    fk--;
+                                    del(10, fromQQ.ToString());
+                                    insert(10, fromQQ.ToString(), fk.ToString());
+                                }
+                                else
+                                {
+                                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n目标成员为管理员，我没法解禁那个辣鸡玩意儿");
+                                }
+                            }
+                            catch
+                            {
+                                SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n执行失败。");
+                            }
+                        }
+                        else
+                        {
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n你个管理员不会自己手动去解禁？智障？");
+                        }
+                    }
+                    else
+                    {
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n你哪儿有禁言卡？");
+                    }
+
+                }
+                else if (msg.IndexOf("淘宝") == 0 && msg.Length > 2)
+                {
+                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你搜索的" + msg.Replace("淘宝", "") + "的相关优惠结果如下：\r\nhttps://ai.taobao.com/search/index.htm?key=" + System.Web.HttpUtility.UrlEncode(msg.Replace("淘宝", "")) + "&pid=mm_96609811_10528667_128948010");
+                }
+                else if (msg == "pixel")
+                {
+                    int picCount;
+                    try
+                    {
+                        picCount = int.Parse(xml_get(20, "count"));
+                    }
+                    catch
+                    {
+                        SendMinecraftMessage(fromGroup, "遇到致命性错误，请联系晨旭修复");
+                        return;
+                    }
+                    SendMinecraftMessage(fromGroup, "[CQ:image,file=pixel_game\\" + picCount + ".png]\r\n当前图片已被修改过" + picCount + "次。");
+                }
+                else if (msg.IndexOf("pixel") == 0 && (msg.Length - msg.Replace("/", "").Length) == 2)
+                {
+                    string fromqqtime_get = xml_get(20, fromQQ.ToString());
+                    int fromqqtime = 0;
+                    try
+                    {
+                        fromqqtime = int.Parse(fromqqtime_get);
+                    }
+                    catch { }
+
+                    if (ConvertDateTimeInt(DateTime.Now) - fromqqtime < 60)
+                    {
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你需要再等" + (60 - ConvertDateTimeInt(DateTime.Now) + fromqqtime) + "秒才能继续放像素点");
+                        return;
+                    }
+
+                    string get_msg = msg.Replace("pixel", ""), getx = "", gety = "", getcolor = "";
+                    int placex, placey;
+
+                    string[] str2;
+                    int count_temp = 0;
+                    str2 = get_msg.Split('/');
+                    foreach (string i in str2)
+                    {
+                        if (count_temp == 0)
+                        {
+                            getx = i.ToString();
+                            count_temp++;
+                        }
+                        else if (count_temp == 1)
+                        {
+                            gety = i.ToString();
+                            count_temp++;
+                        }
+                        else if (count_temp == 2)
+                        {
+                            getcolor = i.ToString();
+                            count_temp++;
+                        }
+                    }
+                    try
+                    {
+                        placex = int.Parse(getx) - 1;
+                        placey = int.Parse(gety) - 1;
+                        if (getcolor.IndexOf("#") == -1 || placex > 99 || placey > 99)
+                            throw new ArgumentNullException("fuck wrong color");
+                    }
+                    catch
+                    {
+                        SendMinecraftMessage(fromGroup, "放置像素点时遇到未知错误，请检查颜色与坐标是否正确");
+                        return;
+                    }
+                    int picCount;
+                    try
+                    {
+                        picCount = int.Parse(xml_get(20, "count"));
+                    }
+                    catch
+                    {
+                        SendMinecraftMessage(fromGroup, "遇到致命性错误，请联系晨旭修复");
+                        return;
+                    }
+
+                    try
+                    {
+                        string picPath = @"C:\Users\Administrator\Desktop\kuqpro\data\image\pixel_game\" + picCount + ".png";
+                        Bitmap pic = ReadImageFile(picPath);
+                        pic = SetPoint(pic, ColorTranslator.FromHtml(getcolor), placex, placey);
+
+                        picCount++;
+                        picPath = @"C:\Users\Administrator\Desktop\kuqpro\data\image\pixel_game\" + picCount + ".png";
+                        pic.Save(picPath);
+                    }
+                    catch
+                    {
+                        SendMinecraftMessage(fromGroup, "遭遇未知错误");
+                        return;
+                    }
+
+
+                    del(20, "count");
+                    del(20, fromQQ.ToString());
+                    insert(20, "count", picCount.ToString());
+                    insert(20, fromQQ.ToString(), ConvertDateTimeInt(DateTime.Now).ToString());
+
+                    //SendMinecraftMessage(fromGroup, "[CQ:image,file=pixel_game\\" + picCount + ".png]\r\n图片修改完成！" + DateTime.Now.ToString() + CQ.CQCode_At(fromQQ));
+                    SendMinecraftMessage(fromGroup, "图片修改完成！使用命令pixel查看" + CQ.CQCode_At(fromQQ));
+                }
+                else if (msg.IndexOf("查快递") == 0)
+                {
+                    string kdcode = msg.Replace("查快递", "");
+
+                    if (msg == "查快递")
+                    {
+                        kdcode = xml_get(9, fromQQ.ToString());
+                        if (kdcode == "")
+                        {
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "你没有查询过任何快递，请输入要查询的单号");
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        del(9, fromQQ.ToString());
+                        insert(9, fromQQ.ToString(), kdcode);
+                    }
+
+                    string result_msg = "";
+                    try
+                    {
+                        string html = HttpGet("https://www.kuaidi100.com/autonumber/autoComNum", "text=" + kdcode);
+                        JObject jo = (JObject)JsonConvert.DeserializeObject(html);
+                        string comCode = jo["auto"][0]["comCode"].ToString();
+                        result_msg = comCode + "\r\n";
+
+                        html = HttpGet("https://www.kuaidi100.com/query", "type=" + comCode + "&postid=" + kdcode);
+                        jo = (JObject)JsonConvert.DeserializeObject(html);
+                        foreach (var i in jo["data"])
+                        {
+                            result_msg += i["time"].ToString() + " ";
+                            result_msg += i["context"].ToString() + " 地点：";
+                            result_msg += i["location"].ToString() + "\r\n";
+                        }
+                        if (result_msg == comCode + "\r\n")
+                        {
+                            result_msg = "";
+                        }
+                    }
+                    catch
+                    {
+
+                    }
+                    if (result_msg == "")
+                    {
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "无此单号的数据" + "\r\n下次查询该快递可直接发送“查快递”命令，无需在输入单号");
+                    }
+                    else
+                    {
+                        SendMinecraftMessage(fromGroup, result_msg + "下次查询该快递可直接发送“查快递”命令，无需在输入单号\r\n" + CQ.CQCode_At(fromQQ));
+                    }
+                }
+                else if (msg.IndexOf("下载图片") == 0)
+                {
+                    if (fromQQ != 961726194)
+                    {
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n下你mb");
+                        return;
+                    }
+                    bool Value = false;
+                    WebResponse response = null;
+                    Stream stream = null;
+
+                    string FileName = GetRandomString(10, true, false, false, false, "ABCDEF");
+
+                    try
+                    {
+                        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(msg.Replace("下载图片", ""));
+
+                        response = request.GetResponse();
+                        stream = response.GetResponseStream();
+
+                        if (!response.ContentType.ToLower().StartsWith("text/"))
+                        {
+                            Value = SaveBinaryFile(response, @"C:\Users\Administrator\Desktop\kuqpro\data\image\download\" + FileName);
+                        }
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "图片下载完成：\r\n[CQ:image,file=download\\" + FileName + "]");
+                    }
+                    catch (Exception err)
+                    {
+                        string aa = err.Message.ToString();
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n机器人爆炸了，原因：" + aa);
+                    }
+                }
+                else if (msg.IndexOf("网易云") == 0)
+                {
+                    int songID = 0;
+                    try
+                    {
+                        songID = int.Parse(msg.Replace("网易云", ""));
+                    }
+                    catch
+                    {
+                        try
+                        {
+                            string html = HttpGet("http://s.music.163.com/search/get/", "type=1&s=" + msg.Replace("网易云", ""));
+                            JObject jo = (JObject)JsonConvert.DeserializeObject(html);
+                            string idGet = jo["result"]["songs"][0]["id"].ToString();
+                            songID = int.Parse(idGet);
+                        }
+                        catch
+                        {
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n机器人爆炸了，原因：根本没这首歌");
+                            return;
+                        }
+
+                    }
+
+                    bool Value = false;
+                    WebResponse response = null;
+                    Stream stream = null;
+
+                    string FileName = msg.Replace("网易云", "") + ".mp3";
+
+                    string url = HttpGet("https://www.chenxublog.com/163music/", "id=" + songID);
+
+                    try
+                    {
+                        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+
+                        response = request.GetResponse();
+                        stream = response.GetResponseStream();
+
+                        if (!response.ContentType.ToLower().StartsWith("text/"))
+                        {
+                            Value = SaveBinaryFile(response, @"C:\Users\Administrator\Desktop\kuqpro\data\record\download\" + FileName);
+                        }
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "音乐加载完成，正在发送音乐，请稍后~");
+                        SendMinecraftMessage(fromGroup, "[CQ:record,file=download\\" + FileName + "]");
+                    }
+                    catch (Exception err)
+                    {
+                        string aa = err.Message.ToString();
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n机器人爆炸了，原因：" + aa);
+                    }
+                }
+                else if (msg.IndexOf("找番号") == 0 || msg.IndexOf("查番号") == 0 || msg.IndexOf("查磁链") == 0 || msg.IndexOf("找磁链") == 0)
+                {
+                    //if (System.DateTime.Now.Hour > 5 && fromGroup != 115872123 && fromQQ != 961726194)
+                    //{
+                    //    SendMinecraftMessage(fromGroup, "开车时间为00:00-6:00");
+                    //    return;
+                    //}
+                    string url = msg;
+                    url = url.Replace("找番号", "");
+                    url = url.Replace("查番号", "");
+                    url = url.Replace("查磁链", "");
+                    url = url.Replace("找磁链", "");
+
+                    string html = HttpGet("http://torrentkitty.uno/tk/" + url + "/1-0-0.html", "?q=1");
+                    //Console.WriteLine(html);
+                    if (html == "")
+                    {
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "加载失败");
+                    }
+                    else
+                    {
+                        string magnets = "";
+                        int i = 0, j = 0, k = 0;
+                        MatchCollection matchs = Reg_solve(html, "<span>\\[(?<type>.*?)\\]&nbsp;</span><a href=(.*?)target=\"_blank\">(?<name>.*?)</a>");
+                        string[] type = new string[matchs.Count];
+                        string[] name = new string[matchs.Count];
+                        MatchCollection check;
                         foreach (Match item in matchs)
                         {
                             if (item.Success)
                             {
-                                result_msg += "\r\n" + item.Value;
+                                string check_str = "";
+                                check = Reg_solve(item.Groups["name"].Value.Replace("<b>", "").Replace("</b>", ""), "<span class=\"__cf_email__\" data-cfemail=\"(.*?)\">\\[email&#160;protected\\]</span>");
+                                foreach (Match check_item in check)
+                                {
+                                    check_str = check_item.Value;
+                                }
+                                type[i++] = item.Groups["type"].Value;
+                                if (check_str != "")
+                                    name[j++] = item.Groups["name"].Value.Replace("<b>", "").Replace("</b>", "").Replace(check_str, "");
+                                else
+                                    name[j++] = item.Groups["name"].Value.Replace("<b>", "").Replace("</b>", "");
                             }
                         }
-                    }
-                    catch (Exception err)
-                    {
-                        string aa = err.Message.ToString();
-                        result_msg = "\r\n机器人爆炸了，原因：" + aa;
-                    }
-
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + result_msg);
-                }
-                else
-                {
-                    SendMinecraftMessage(fromGroup, "格式错误！");
-                }
-
-            }
-            else if(msg.IndexOf("空气质量") == 0)
-            {
-                if(msg == "空气质量")
-                {
-                    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + 
-                        "\r\n使用帮助：\r\n发送空气质量加城市名称，即可查询\r\n如：空气质量昆山");
-                    return;
-                }
-                string city = PinyinConvert(msg.Replace("空气质量", ""));
-                string html;
-                int city_code = 0;
-                try
-                {
-                    city_code = int.Parse(PinyinConvert(msg.Replace("空气质量", "")));
-                    try
-                    {
-                        html = HttpGet("http://api.waqi.info/feed/@" + city_code + "/",
-                            "token=737aa093c7d9c16b7c6fdc1b70af2fb02bf01e11");
-                        JObject jo = (JObject)JsonConvert.DeserializeObject(html);
-
-                        string station = (string)jo["data"]["city"]["name"];
-                        string result = "";
-                        string from = "";
-                        try { result += "\r\n空气质量指数：" + (int)jo["data"]["aqi"]; } catch { }
-                        try { result += "\r\npm2.5：" + (float)jo["data"]["iaqi"]["pm25"]["v"]; } catch { }
-                        try { result += "\r\npm10：" + (float)jo["data"]["iaqi"]["pm10"]["v"]; } catch { }
-                        try { result += "\r\nco：" + (float)jo["data"]["iaqi"]["co"]["v"]; } catch { }
-                        try { result += "\r\nno2：" + (float)jo["data"]["iaqi"]["no2"]["v"]; } catch { }
-                        try { result += "\r\no3：" + (float)jo["data"]["iaqi"]["o3"]["v"]; } catch { }
-                        try { result += "\r\nso2：" + (float)jo["data"]["iaqi"]["so2"]["v"]; } catch { }
-                        try { from = (string)jo["data"]["attributions"][0]["name"]; } catch { }
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) +
-                            "\r\n" + station + "的空气质量如下：" + result +
-                            "\r\n数据来源：" + from +
-                            "\r\n数据更新时间：" + (string)jo["data"]["time"]["s"]
-                            );
-                    }
-                    catch (Exception err)
-                    {
-                        string aa = err.Message.ToString();
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) +
-                            "\r\n机器人在查询数据时爆炸了，原因：" + aa);
-                        return;
-                    }
-                }
-                catch
-                {
-                    try
-                    {
-                        int station_count = 0;
-                        string result = "";
-                        html = HttpGet("http://api.waqi.info/search/",
-                            "keyword=" + city + "&token=737aa093c7d9c16b7c6fdc1b70af2fb02bf01e11");
-                        JObject jo = (JObject)JsonConvert.DeserializeObject(html);
-                        foreach (var i in jo["data"])
+                        MatchCollection link_matchs = Reg_solve(html, " href='magnet:\\?xt=urn:btih:(?<magnet>.*?)&dn=(.*?)' >磁力链接(.*?)<b>(?<filenum>\\d*?)个文件(.*?)共<b>(?<size>.*?)</b>");
+                        i = 0;
+                        j = 0;
+                        string[] magnet = new string[link_matchs.Count];
+                        string[] filenum = new string[link_matchs.Count];
+                        string[] size = new string[link_matchs.Count];
+                        foreach (Match item in link_matchs)
                         {
-                            result += (int)i["uid"] + "：" + (string)i["station"]["name"] + "\r\n";
-                            station_count++;
+                            if (item.Success)
+                            {
+                                magnet[i++] = item.Groups["magnet"].Value;
+                                filenum[j++] = item.Groups["filenum"].Value;
+                                size[k++] = item.Groups["size"].Value;
+                            }
                         }
-                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) +
-                            "\r\n共找到" + station_count + "个监测站：" +
-                            "\r\n" + result +
-                            "\r\n使用指令“空气质量”加监测站编号查看数据"
-                            );
+
+                        for (i = 0; i < link_matchs.Count; i++)
+                        {
+                            try
+                            {
+                                magnets += "\r\n[" + type[i] + "]" + name[i] + "," + size[i] + "," + filenum[i] + "个文件\r\n" + magnet[i];
+                            }
+                            catch { }
+                        }
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n" + url.Replace(" ", "-") + "的资源：" + magnets + "\r\n小贴士：magnet:?xt=urn:btih:");
                     }
-                    catch (Exception err)
+                }
+                else if (msg.IndexOf("*") == 0 && fromQQ == 961726194)
+                {
+                    foreach (long i in grouplist)
                     {
-                        string aa = err.Message.ToString();
+                        if (i != fromGroup)
+                            SendMinecraftMessage(i, "跨群通知：\r\n" + msg.Substring(1));
+                        System.Threading.Thread.Sleep(500);
+                    }
+                }
+                else if (msg == "开车")
+                {
+                    SendMinecraftMessage(fromGroup, "magnet:?xt=urn:btih:" + GetRandomString(40, true, false, false, false, "ABCDEF"));
+                }
+                else if (msg.IndexOf("正则") == 0)
+                {
+                    string get_msg = msg.Replace("正则", "").Replace("\r", ""), text = "", reg = "";
+
+                    if (get_msg.IndexOf("\n") >= 1 && get_msg.IndexOf("\n") != get_msg.Length - 1)
+                    {
+                        string result_msg = "匹配如下：";
+                        try
+                        {
+                            string[] str2;
+                            int count_temp = 0;
+                            str2 = get_msg.Split('\n');
+                            foreach (string i in str2)
+                            {
+                                if (count_temp == 0)
+                                {
+                                    text = i.ToString();
+                                    count_temp++;
+                                }
+                                else if (count_temp == 1)
+                                {
+                                    reg = i.ToString();
+                                    break;
+                                }
+                            }
+
+                            MatchCollection matchs = Reg_solve(text, reg);
+                            foreach (Match item in matchs)
+                            {
+                                if (item.Success)
+                                {
+                                    result_msg += "\r\n" + item.Value;
+                                }
+                            }
+                        }
+                        catch (Exception err)
+                        {
+                            string aa = err.Message.ToString();
+                            result_msg = "\r\n机器人爆炸了，原因：" + aa;
+                        }
+
+                        SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + result_msg);
+                    }
+                    else
+                    {
+                        SendMinecraftMessage(fromGroup, "格式错误！");
+                    }
+
+                }
+                else if (msg.IndexOf("空气质量") == 0)
+                {
+                    if (msg == "空气质量")
+                    {
                         SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) +
-                            "\r\n机器人在查找监测站时爆炸了，原因：" + aa);
+                            "\r\n使用帮助：\r\n发送空气质量加城市名称，即可查询\r\n如：空气质量昆山");
                         return;
                     }
+                    string city = PinyinConvert(msg.Replace("空气质量", ""));
+                    string html;
+                    int city_code = 0;
+                    try
+                    {
+                        city_code = int.Parse(PinyinConvert(msg.Replace("空气质量", "")));
+                        try
+                        {
+                            html = HttpGet("http://api.waqi.info/feed/@" + city_code + "/",
+                                "token=737aa093c7d9c16b7c6fdc1b70af2fb02bf01e11");
+                            JObject jo = (JObject)JsonConvert.DeserializeObject(html);
+
+                            string station = (string)jo["data"]["city"]["name"];
+                            string result = "";
+                            string from = "";
+                            try { result += "\r\n空气质量指数：" + (int)jo["data"]["aqi"]; } catch { }
+                            try { result += "\r\npm2.5：" + (float)jo["data"]["iaqi"]["pm25"]["v"]; } catch { }
+                            try { result += "\r\npm10：" + (float)jo["data"]["iaqi"]["pm10"]["v"]; } catch { }
+                            try { result += "\r\nco：" + (float)jo["data"]["iaqi"]["co"]["v"]; } catch { }
+                            try { result += "\r\nno2：" + (float)jo["data"]["iaqi"]["no2"]["v"]; } catch { }
+                            try { result += "\r\no3：" + (float)jo["data"]["iaqi"]["o3"]["v"]; } catch { }
+                            try { result += "\r\nso2：" + (float)jo["data"]["iaqi"]["so2"]["v"]; } catch { }
+                            try { from = (string)jo["data"]["attributions"][0]["name"]; } catch { }
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) +
+                                "\r\n" + station + "的空气质量如下：" + result +
+                                "\r\n数据来源：" + from +
+                                "\r\n数据更新时间：" + (string)jo["data"]["time"]["s"]
+                                );
+                        }
+                        catch (Exception err)
+                        {
+                            string aa = err.Message.ToString();
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) +
+                                "\r\n机器人在查询数据时爆炸了，原因：" + aa);
+                            return;
+                        }
+                    }
+                    catch
+                    {
+                        try
+                        {
+                            int station_count = 0;
+                            string result = "";
+                            html = HttpGet("http://api.waqi.info/search/",
+                                "keyword=" + city + "&token=737aa093c7d9c16b7c6fdc1b70af2fb02bf01e11");
+                            JObject jo = (JObject)JsonConvert.DeserializeObject(html);
+                            foreach (var i in jo["data"])
+                            {
+                                result += (int)i["uid"] + "：" + (string)i["station"]["name"] + "\r\n";
+                                station_count++;
+                            }
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) +
+                                "\r\n共找到" + station_count + "个监测站：" +
+                                "\r\n" + result +
+                                "\r\n使用指令“空气质量”加监测站编号查看数据"
+                                );
+                        }
+                        catch (Exception err)
+                        {
+                            string aa = err.Message.ToString();
+                            SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) +
+                                "\r\n机器人在查找监测站时爆炸了，原因：" + aa);
+                            return;
+                        }
+                    }
                 }
-            }
-            else if (msg == "每日单词" || msg == "今日单词")
-            {
-                string need_to_replay = CQ.CQCode_At(fromQQ) + "\r\n";
-                Random ran = new Random(System.DateTime.Now.DayOfYear + (int)(fromQQ - (fromQQ / 10000) * 10000));
-                for (int i = 1;i < 6;i++)
+                else if (msg == "每日单词" || msg == "今日单词")
                 {
-                    string ran_sum = ran.Next(1, 103977).ToString();
-                    need_to_replay += i.ToString() + ".  " + xml_dic_get(ran_sum) + "\r\n";
+                    string need_to_replay = CQ.CQCode_At(fromQQ) + "\r\n";
+                    Random ran = new Random(System.DateTime.Now.DayOfYear + (int)(fromQQ - (fromQQ / 10000) * 10000));
+                    for (int i = 1; i < 6; i++)
+                    {
+                        string ran_sum = ran.Next(1, 103977).ToString();
+                        need_to_replay += i.ToString() + ".  " + xml_dic_get(ran_sum) + "\r\n";
+                    }
+                    need_to_replay += "今日日期：" + System.DateTime.Today.ToString().Replace(" 0:00:00", "");
+                    SendMinecraftMessage(fromGroup, need_to_replay);
                 }
-                need_to_replay += "今日日期：" + System.DateTime.Today.ToString().Replace(" 0:00:00", "");
-                SendMinecraftMessage(fromGroup, need_to_replay);
-            }
-            //else if(msg.IndexOf("osu绑定") == 0)
-            //{
-            //    msg = msg.Replace(" ","").Replace("osu绑定","");
-            //    del(15, fromQQ.ToString());
-            //    insert(15, fromQQ.ToString(), msg);
-            //    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ)+"\r\n绑定osu账号"+msg+"成功");
-            //}
-            //else if (msg.IndexOf("osu查询") == 0)
-            //{
-            //    msg = msg.Replace(" ", "").Replace("osu查询", "");
-            //    if (msg == "")
-            //        msg = xml_get(15, fromQQ.ToString());
-            //    string html = HttpGet("https://osu.ppy.sh/api/get_user", "k=76c9d43a944c66c5ccbb08509b51ef30ce095071&u=" + msg);
-            //    string osu_result = "";
-            //    JObject jo = (JObject)JsonConvert.DeserializeObject(html.Replace("[", "").Replace("]", "").Replace(",\"events\":", ""));
-            //    try
-            //    {
-            //        osu_result += "玩家id：" + (string)jo["user_id"] + "\r\n";
-            //        osu_result += "玩家名：" + (string)jo["username"] + "\r\n";
-            //        osu_result += "游戏次数：" + (string)jo["playcount"] + "\r\n";
-            //        osu_result += "Ranked谱面总分：" + (string)jo["ranked_score"] + "\r\n";
-            //        osu_result += "准确率：" + (string)jo["accuracy"] + "%\r\n";
-            //        osu_result += "总分：" + (string)jo["total_score"] + "\r\n";
-            //        osu_result += "等级：" + (string)jo["level"] + "\r\n";
-            //        osu_result += "全球排名：" + (string)jo["pp_rank"];
-            //    }
-            //    catch (Exception err)
-            //    {
-            //        string aa = err.Message.ToString();
-            //        osu_result += "机器人爆炸了，原因：" + aa;
-            //    }
-            //    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n玩家" + msg + "的osu信息如下：\r\n" + osu_result);
-            //}
-            //else if (msg.IndexOf("osu最近游戏") == 0)
-            //{
-            //    msg = msg.Replace(" ", "").Replace("osu最近游戏", "");
-            //    if (msg == "")
-            //        msg = xml_get(15, fromQQ.ToString());
-            //    string html = HttpGet("https://osu.ppy.sh/api/get_user_recent", "k=76c9d43a944c66c5ccbb08509b51ef30ce095071&u=" + msg);
-            //    string osu_result = "";
-                
-            //    try
-            //    {
-            //        JObject jo = (JObject)JsonConvert.DeserializeObject("{" + html + "}");
-            //        for (int i = 0; i<3; i++)
-            //        {
-            //            osu_result += "\r\n谱面id：" + (string)jo[i]["beatmap_id"] + "\r\n";
-            //            osu_result += "分数：" + (string)jo[i]["score"] + "\r\n";
-            //            osu_result += "连击数：" + (string)jo[i]["maxcombo"] + "\r\n";
-            //            osu_result += "300：" + (string)jo[i]["count300"] + "\r\n";
-            //            osu_result += "100：" + (string)jo[i]["count100"] + "\r\n";
-            //            osu_result += "50：" + (string)jo[i]["count50"] + "\r\n";
-            //            osu_result += "miss：" + (string)jo[i]["countmiss"] + "\r\n";
-            //            osu_result += "结果：" + (string)jo[i]["rank"] + "\r\n";
-            //            osu_result += "日期：" + (string)jo[i]["date"] + "\r\n";
-            //        }
-            //    }
-            //    catch (Exception err)
-            //    {
-            //        string aa = err.Message.ToString();
-            //        osu_result += "机器人爆炸了，原因：" + aa;
-            //    }
-            //    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n玩家" + msg + "的osu最近游戏记录如下：" + osu_result);
-            //}
-            else if(msg.IndexOf("cmd ") == 0 && fromQQ == 961726194)
-            {
-                SendMinecraftMessage(fromGroup, execCMD(msg.Replace("cmd ","")));
-            }
-            else if (replay_ok != "")
-            {
-                if (replay_common != "")
+                //else if(msg.IndexOf("osu绑定") == 0)
+                //{
+                //    msg = msg.Replace(" ","").Replace("osu绑定","");
+                //    del(15, fromQQ.ToString());
+                //    insert(15, fromQQ.ToString(), msg);
+                //    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ)+"\r\n绑定osu账号"+msg+"成功");
+                //}
+                //else if (msg.IndexOf("osu查询") == 0)
+                //{
+                //    msg = msg.Replace(" ", "").Replace("osu查询", "");
+                //    if (msg == "")
+                //        msg = xml_get(15, fromQQ.ToString());
+                //    string html = HttpGet("https://osu.ppy.sh/api/get_user", "k=76c9d43a944c66c5ccbb08509b51ef30ce095071&u=" + msg);
+                //    string osu_result = "";
+                //    JObject jo = (JObject)JsonConvert.DeserializeObject(html.Replace("[", "").Replace("]", "").Replace(",\"events\":", ""));
+                //    try
+                //    {
+                //        osu_result += "玩家id：" + (string)jo["user_id"] + "\r\n";
+                //        osu_result += "玩家名：" + (string)jo["username"] + "\r\n";
+                //        osu_result += "游戏次数：" + (string)jo["playcount"] + "\r\n";
+                //        osu_result += "Ranked谱面总分：" + (string)jo["ranked_score"] + "\r\n";
+                //        osu_result += "准确率：" + (string)jo["accuracy"] + "%\r\n";
+                //        osu_result += "总分：" + (string)jo["total_score"] + "\r\n";
+                //        osu_result += "等级：" + (string)jo["level"] + "\r\n";
+                //        osu_result += "全球排名：" + (string)jo["pp_rank"];
+                //    }
+                //    catch (Exception err)
+                //    {
+                //        string aa = err.Message.ToString();
+                //        osu_result += "机器人爆炸了，原因：" + aa;
+                //    }
+                //    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n玩家" + msg + "的osu信息如下：\r\n" + osu_result);
+                //}
+                //else if (msg.IndexOf("osu最近游戏") == 0)
+                //{
+                //    msg = msg.Replace(" ", "").Replace("osu最近游戏", "");
+                //    if (msg == "")
+                //        msg = xml_get(15, fromQQ.ToString());
+                //    string html = HttpGet("https://osu.ppy.sh/api/get_user_recent", "k=76c9d43a944c66c5ccbb08509b51ef30ce095071&u=" + msg);
+                //    string osu_result = "";
+
+                //    try
+                //    {
+                //        JObject jo = (JObject)JsonConvert.DeserializeObject("{" + html + "}");
+                //        for (int i = 0; i<3; i++)
+                //        {
+                //            osu_result += "\r\n谱面id：" + (string)jo[i]["beatmap_id"] + "\r\n";
+                //            osu_result += "分数：" + (string)jo[i]["score"] + "\r\n";
+                //            osu_result += "连击数：" + (string)jo[i]["maxcombo"] + "\r\n";
+                //            osu_result += "300：" + (string)jo[i]["count300"] + "\r\n";
+                //            osu_result += "100：" + (string)jo[i]["count100"] + "\r\n";
+                //            osu_result += "50：" + (string)jo[i]["count50"] + "\r\n";
+                //            osu_result += "miss：" + (string)jo[i]["countmiss"] + "\r\n";
+                //            osu_result += "结果：" + (string)jo[i]["rank"] + "\r\n";
+                //            osu_result += "日期：" + (string)jo[i]["date"] + "\r\n";
+                //        }
+                //    }
+                //    catch (Exception err)
+                //    {
+                //        string aa = err.Message.ToString();
+                //        osu_result += "机器人爆炸了，原因：" + aa;
+                //    }
+                //    SendMinecraftMessage(fromGroup, CQ.CQCode_At(fromQQ) + "\r\n玩家" + msg + "的osu最近游戏记录如下：" + osu_result);
+                //}
+                else if (msg.IndexOf("cmd ") == 0 && fromQQ == 961726194)
                 {
-                    Random ran = new Random(System.DateTime.Now.Millisecond);
-                    int RandKey = ran.Next(0, 2);
-                    if (RandKey == 0) { SendMinecraftMessage(fromGroup, replay_ok); } else { SendMinecraftMessage(fromGroup, replay_common); }
+                    SendMinecraftMessage(fromGroup, execCMD(msg.Replace("cmd ", "")));
                 }
-                else
+                else if (replay_ok != "")
                 {
-                    SendMinecraftMessage(fromGroup, replay_ok);
+                    if (replay_common != "")
+                    {
+                        Random ran = new Random(System.DateTime.Now.Millisecond);
+                        int RandKey = ran.Next(0, 2);
+                        if (RandKey == 0) { SendMinecraftMessage(fromGroup, replay_ok); } else { SendMinecraftMessage(fromGroup, replay_common); }
+                    }
+                    else
+                    {
+                        SendMinecraftMessage(fromGroup, replay_ok);
+                    }
+                }
+                else if (replay_common != "")
+                {
+                    SendMinecraftMessage(fromGroup, replay_common);
                 }
             }
-            else if (replay_common != "")
+            catch(Exception e)
             {
-                SendMinecraftMessage(fromGroup, replay_common);
+                insert(233, "error" + DateTime.Now, e.ToString());//记录错误
             }
         }
 
