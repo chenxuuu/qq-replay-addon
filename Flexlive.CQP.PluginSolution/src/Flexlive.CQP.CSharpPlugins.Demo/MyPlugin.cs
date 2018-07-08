@@ -61,320 +61,328 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
         {
             while (true)
             {
-                Socket clientSocket = serverSocket.Accept();
-                //clientSocket.Send(Encoding.ASCII.GetBytes("Server Say Hello\r\n"));
-
-                Socket myClientSocket = (Socket)clientSocket;
-                int receiveNumber;
-                receiveNumber = myClientSocket.Receive(result);
-                //Console.WriteLine("接收客户端 {0} 消息{1}", myClientSocket.RemoteEndPoint.ToString(), Encoding.UTF8.GetString(result, 0, receiveNumber));
-                string replay = Encoding.UTF8.GetString(result, 0, receiveNumber);
-                replay = RemoveColorCode(replay);
-                if (replay.IndexOf("<") != -1)
+                try
                 {
-                    
-                    if (replay.IndexOf("]][[") != -1)
+                    Socket clientSocket = serverSocket.Accept();
+                    //clientSocket.Send(Encoding.ASCII.GetBytes("Server Say Hello\r\n"));
+
+                    Socket myClientSocket = (Socket)clientSocket;
+                    int receiveNumber;
+                    receiveNumber = myClientSocket.Receive(result);
+                    //Console.WriteLine("接收客户端 {0} 消息{1}", myClientSocket.RemoteEndPoint.ToString(), Encoding.UTF8.GetString(result, 0, receiveNumber));
+                    string replay = Encoding.UTF8.GetString(result, 0, receiveNumber);
+                    replay = RemoveColorCode(replay);
+                    if (replay.IndexOf("<") != -1)
                     {
-                        try
+
+                        if (replay.IndexOf("]][[") != -1)
                         {
-                            string[] str2;
-                            str2 = replay.Split(new string[] { "]][[" }, StringSplitOptions.None);
-                            foreach (string i in str2)
+                            try
                             {
-                                if( i.IndexOf("<eco100>") == 0)
+                                string[] str2;
+                                str2 = replay.Split(new string[] { "]][[" }, StringSplitOptions.None);
+                                foreach (string i in str2)
                                 {
-                                    long fromQQ = qq_get(i.Replace("<eco100>", ""));
-                                    string CoinStr = xml_get(2, fromQQ.ToString());
-                                    int CoinsTemp;
-                                    if (CoinStr != "")
+                                    if (i.IndexOf("<eco100>") == 0)
                                     {
-                                        CoinsTemp = int.Parse(CoinStr);
-                                    }
-                                    else
-                                    {
-                                        CoinsTemp = 0;
-                                    }
-                                    CoinsTemp += 100;
-                                    SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco100>", "") + "存入100游戏币！");
-                                    del(2, fromQQ.ToString());
-                                    insert(2, fromQQ.ToString(), CoinsTemp.ToString());
-                                }
-                                else if (i.IndexOf("<eco500>") == 0)
-                                {
-                                    long fromQQ = qq_get(i.Replace("<eco500>", ""));
-                                    string CoinStr = xml_get(2, fromQQ.ToString());
-                                    int CoinsTemp;
-                                    if (CoinStr != "")
-                                    {
-                                        CoinsTemp = int.Parse(CoinStr);
-                                    }
-                                    else
-                                    {
-                                        CoinsTemp = 0;
-                                    }
-                                    CoinsTemp += 500;
-                                    SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco500>", "") + "存入500游戏币！");
-                                    del(2, fromQQ.ToString());
-                                    insert(2, fromQQ.ToString(), CoinsTemp.ToString());
-                                }
-                                else if (i.IndexOf("<eco1000>") == 0)
-                                {
-                                    long fromQQ = qq_get(i.Replace("<eco1000>", ""));
-                                    string CoinStr = xml_get(2, fromQQ.ToString());
-                                    int CoinsTemp;
-                                    if (CoinStr != "")
-                                    {
-                                        CoinsTemp = int.Parse(CoinStr);
-                                    }
-                                    else
-                                    {
-                                        CoinsTemp = 0;
-                                    }
-                                    CoinsTemp += 1000;
-                                    SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco1000>", "") + "存入1000游戏币！");
-                                    del(2, fromQQ.ToString());
-                                    insert(2, fromQQ.ToString(), CoinsTemp.ToString());
-                                }
-                                else if (i.IndexOf("<eco5000>") == 0)
-                                {
-                                    long fromQQ = qq_get(i.Replace("<eco5000>", ""));
-                                    string CoinStr = xml_get(2, fromQQ.ToString());
-                                    int CoinsTemp;
-                                    if (CoinStr != "")
-                                    {
-                                        CoinsTemp = int.Parse(CoinStr);
-                                    }
-                                    else
-                                    {
-                                        CoinsTemp = 0;
-                                    }
-                                    CoinsTemp += 5000;
-                                    SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco5000>", "") + "存入5000游戏币！");
-                                    del(2, fromQQ.ToString());
-                                    insert(2, fromQQ.ToString(), CoinsTemp.ToString());
-                                }
-                                else if (i.IndexOf("<eco10000>") == 0)
-                                {
-                                    long fromQQ = qq_get(i.Replace("<eco10000>", ""));
-                                    string CoinStr = xml_get(2, fromQQ.ToString());
-                                    int CoinsTemp;
-                                    if (CoinStr != "")
-                                    {
-                                        CoinsTemp = int.Parse(CoinStr);
-                                    }
-                                    else
-                                    {
-                                        CoinsTemp = 0;
-                                    }
-                                    CoinsTemp += 10000;
-                                    SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco10000>", "") + "存入10000游戏币！");
-                                    del(2, fromQQ.ToString());
-                                    insert(2, fromQQ.ToString(), CoinsTemp.ToString());
-                                }
-                                else if (i.IndexOf("<qd>") == 0)
-                                {
-                                    long fromQQ = qq_get(i.Replace("<qd>", ""));
-                                    if(fromQQ==0)
-                                        fromQQ = qq_get_unregister(i.Replace("<qd>", ""));
-                                    if (fromQQ != 0)
-                                    {
-                                        if (xml_get(3, fromQQ.ToString()) == System.DateTime.Today.ToString())
+                                        long fromQQ = qq_get(i.Replace("<eco100>", ""));
+                                        string CoinStr = xml_get(2, fromQQ.ToString());
+                                        int CoinsTemp;
+                                        if (CoinStr != "")
                                         {
-                                            //SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "你今天已经签过到啦！");
+                                            CoinsTemp = int.Parse(CoinStr);
                                         }
                                         else
                                         {
-                                            string last_time = xml_get(3, fromQQ.ToString());
-                                            string qdTimesStr = xml_get(7, fromQQ.ToString());
-                                            string CoinStr = xml_get(2, fromQQ.ToString());
-                                            int CoinsTemp, qdTimesTemp;
-                                            if (CoinStr != "")
-                                            {
-                                                CoinsTemp = int.Parse(CoinStr);
-                                            }
-                                            else
-                                            {
-                                                CoinsTemp = 0;
-                                            }
-                                            if (qdTimesStr != "")
-                                            {
-                                                qdTimesTemp = int.Parse(qdTimesStr);
-                                            }
-                                            else
-                                            {
-                                                qdTimesTemp = 1;
-                                            }
-                                            if (xml_get(3, fromQQ.ToString()) == System.DateTime.Today.AddDays(-1).ToString())
-                                            {
-                                                qdTimesTemp++;
-                                            }
-                                            else
-                                            {
-                                                qdTimesTemp = 1;
-                                            }
-                                            Random ran = new Random(System.DateTime.Now.Millisecond);
-                                            int RandKey = ran.Next(100, 501);
-                                            CoinsTemp += RandKey + qdTimesTemp * 5;
-                                            SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "\r\n签到成功！已连续签到" + qdTimesTemp.ToString() + "天\r\n获得游戏币" + RandKey + "+"+ qdTimesTemp.ToString() + "*5枚！\r\n银行内游戏币" + CoinsTemp + "枚\r\n抽奖次数已重置为五次！\r\n（可使用“五连抽指令”）\r\n回复“帮助”查看如何取钱");
-                                            del(2, fromQQ.ToString());
-                                            del(3, fromQQ.ToString());
-                                            del(4, fromQQ.ToString());
-                                            del(7, fromQQ.ToString());
-                                            insert(2, fromQQ.ToString(), CoinsTemp.ToString());
-                                            insert(7, fromQQ.ToString(), qdTimesTemp.ToString());
-                                            insert(3, fromQQ.ToString(), System.DateTime.Today.ToString());
-                                            insert(4, fromQQ.ToString(), "0");
-
-                                            string qd_get = xml_get(8, "qd");  //签到数
-                                            int qd = 0;
-                                            try
-                                            {
-                                                qd = int.Parse(qd_get);
-                                            }
-                                            catch { }
-                                            qd++;
-                                            del(8, "qd");
-                                            insert(8, "qd", qd.ToString());
+                                            CoinsTemp = 0;
                                         }
+                                        CoinsTemp += 100;
+                                        SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco100>", "") + "存入100游戏币！");
+                                        del(2, fromQQ.ToString());
+                                        insert(2, fromQQ.ToString(), CoinsTemp.ToString());
                                     }
-                                    else
+                                    else if (i.IndexOf("<eco500>") == 0)
                                     {
-                                        //SendMinecraftMessage(241464054, "玩家" + i.Replace("<qd>", "") + "请到群241464054绑定自己的id！");
-                                        mcmsg += "|||||command>tm msg " + i.Replace("<qd>", "") + " 请打开sweetcreeper.com并加群！";
-                                        broadcastNew = 1;
-                                        broadcastNewID = i.Replace("<qd>", "");
+                                        long fromQQ = qq_get(i.Replace("<eco500>", ""));
+                                        string CoinStr = xml_get(2, fromQQ.ToString());
+                                        int CoinsTemp;
+                                        if (CoinStr != "")
+                                        {
+                                            CoinsTemp = int.Parse(CoinStr);
+                                        }
+                                        else
+                                        {
+                                            CoinsTemp = 0;
+                                        }
+                                        CoinsTemp += 500;
+                                        SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco500>", "") + "存入500游戏币！");
+                                        del(2, fromQQ.ToString());
+                                        insert(2, fromQQ.ToString(), CoinsTemp.ToString());
                                     }
-                                    
+                                    else if (i.IndexOf("<eco1000>") == 0)
+                                    {
+                                        long fromQQ = qq_get(i.Replace("<eco1000>", ""));
+                                        string CoinStr = xml_get(2, fromQQ.ToString());
+                                        int CoinsTemp;
+                                        if (CoinStr != "")
+                                        {
+                                            CoinsTemp = int.Parse(CoinStr);
+                                        }
+                                        else
+                                        {
+                                            CoinsTemp = 0;
+                                        }
+                                        CoinsTemp += 1000;
+                                        SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco1000>", "") + "存入1000游戏币！");
+                                        del(2, fromQQ.ToString());
+                                        insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                                    }
+                                    else if (i.IndexOf("<eco5000>") == 0)
+                                    {
+                                        long fromQQ = qq_get(i.Replace("<eco5000>", ""));
+                                        string CoinStr = xml_get(2, fromQQ.ToString());
+                                        int CoinsTemp;
+                                        if (CoinStr != "")
+                                        {
+                                            CoinsTemp = int.Parse(CoinStr);
+                                        }
+                                        else
+                                        {
+                                            CoinsTemp = 0;
+                                        }
+                                        CoinsTemp += 5000;
+                                        SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco5000>", "") + "存入5000游戏币！");
+                                        del(2, fromQQ.ToString());
+                                        insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                                    }
+                                    else if (i.IndexOf("<eco10000>") == 0)
+                                    {
+                                        long fromQQ = qq_get(i.Replace("<eco10000>", ""));
+                                        string CoinStr = xml_get(2, fromQQ.ToString());
+                                        int CoinsTemp;
+                                        if (CoinStr != "")
+                                        {
+                                            CoinsTemp = int.Parse(CoinStr);
+                                        }
+                                        else
+                                        {
+                                            CoinsTemp = 0;
+                                        }
+                                        CoinsTemp += 10000;
+                                        SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco10000>", "") + "存入10000游戏币！");
+                                        del(2, fromQQ.ToString());
+                                        insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                                    }
+                                    else if (i.IndexOf("<qd>") == 0)
+                                    {
+                                        long fromQQ = qq_get(i.Replace("<qd>", ""));
+                                        if (fromQQ == 0)
+                                            fromQQ = qq_get_unregister(i.Replace("<qd>", ""));
+                                        if (fromQQ != 0)
+                                        {
+                                            if (xml_get(3, fromQQ.ToString()) == System.DateTime.Today.ToString())
+                                            {
+                                                //SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "你今天已经签过到啦！");
+                                            }
+                                            else
+                                            {
+                                                string last_time = xml_get(3, fromQQ.ToString());
+                                                string qdTimesStr = xml_get(7, fromQQ.ToString());
+                                                string CoinStr = xml_get(2, fromQQ.ToString());
+                                                int CoinsTemp, qdTimesTemp;
+                                                if (CoinStr != "")
+                                                {
+                                                    CoinsTemp = int.Parse(CoinStr);
+                                                }
+                                                else
+                                                {
+                                                    CoinsTemp = 0;
+                                                }
+                                                if (qdTimesStr != "")
+                                                {
+                                                    qdTimesTemp = int.Parse(qdTimesStr);
+                                                }
+                                                else
+                                                {
+                                                    qdTimesTemp = 1;
+                                                }
+                                                if (xml_get(3, fromQQ.ToString()) == System.DateTime.Today.AddDays(-1).ToString())
+                                                {
+                                                    qdTimesTemp++;
+                                                }
+                                                else
+                                                {
+                                                    qdTimesTemp = 1;
+                                                }
+                                                Random ran = new Random(System.DateTime.Now.Millisecond);
+                                                int RandKey = ran.Next(100, 501);
+                                                CoinsTemp += RandKey + qdTimesTemp * 5;
+                                                SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "\r\n签到成功！已连续签到" + qdTimesTemp.ToString() + "天\r\n获得游戏币" + RandKey + "+" + qdTimesTemp.ToString() + "*5枚！\r\n银行内游戏币" + CoinsTemp + "枚\r\n抽奖次数已重置为五次！\r\n（可使用“五连抽指令”）\r\n回复“帮助”查看如何取钱");
+                                                del(2, fromQQ.ToString());
+                                                del(3, fromQQ.ToString());
+                                                del(4, fromQQ.ToString());
+                                                del(7, fromQQ.ToString());
+                                                insert(2, fromQQ.ToString(), CoinsTemp.ToString());
+                                                insert(7, fromQQ.ToString(), qdTimesTemp.ToString());
+                                                insert(3, fromQQ.ToString(), System.DateTime.Today.ToString());
+                                                insert(4, fromQQ.ToString(), "0");
+
+                                                string qd_get = xml_get(8, "qd");  //签到数
+                                                int qd = 0;
+                                                try
+                                                {
+                                                    qd = int.Parse(qd_get);
+                                                }
+                                                catch { }
+                                                qd++;
+                                                del(8, "qd");
+                                                insert(8, "qd", qd.ToString());
+                                            }
+                                        }
+                                        else
+                                        {
+                                            //SendMinecraftMessage(241464054, "玩家" + i.Replace("<qd>", "") + "请到群241464054绑定自己的id！");
+                                            mcmsg += "|||||command>tm msg " + i.Replace("<qd>", "") + " 请打开sweetcreeper.com并加群！";
+                                            broadcastNew = 1;
+                                            broadcastNewID = i.Replace("<qd>", "");
+                                        }
+
+                                    }
+                                    else if (i.IndexOf("请打开sweetcreeper") == -1 &&
+                                            i.IndexOf("<提示>tm bc ") == -1 &&
+                                            i.IndexOf("<提示>eco give *") == -1 &&
+                                            i.IndexOf("<提示>ban ") == -1 &&
+                                            i.IndexOf("<提示>unban ") == -1 &&
+                                            i.IndexOf("<提示>kick ") == -1)
+                                    {
+                                        CQ.SendGroupMessage(241464054, i);
+                                        ReplayGroupStatic(241464054, i);
+                                    }
                                 }
-                                else if(i.IndexOf("请打开sweetcreeper") == -1 &&
-                                        i.IndexOf("<提示>tm bc ") == -1 &&
-                                        i.IndexOf("<提示>eco give *") == -1 &&
-                                        i.IndexOf("<提示>ban ") == -1 &&
-                                        i.IndexOf("<提示>unban ") == -1 &&
-                                        i.IndexOf("<提示>kick ") == -1)
+                            }
+                            catch { }
+                        }
+                        else
+                        {
+                            if (replay.IndexOf("<eco100>") == 0)
+                            {
+                                long fromQQ = qq_get(replay.Replace("<eco100>", ""));
+                                string CoinStr = xml_get(2, fromQQ.ToString());
+                                int CoinsTemp;
+                                if (CoinStr != "")
                                 {
-                                    CQ.SendGroupMessage(241464054, i);
-                                    ReplayGroupStatic(241464054, i);
+                                    CoinsTemp = int.Parse(CoinStr);
                                 }
+                                else
+                                {
+                                    CoinsTemp = 0;
+                                }
+                                CoinsTemp += 100;
+                                SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco100>", "") + "存入100游戏币！");
+                                del(2, fromQQ.ToString());
+                                insert(2, fromQQ.ToString(), CoinsTemp.ToString());
                             }
-                        }
-                        catch { }
-                    }
-                    else
-                    {
-                        if (replay.IndexOf("<eco100>") == 0)
-                        {
-                            long fromQQ = qq_get(replay.Replace("<eco100>", ""));
-                            string CoinStr = xml_get(2, fromQQ.ToString());
-                            int CoinsTemp;
-                            if (CoinStr != "")
+                            else if (replay.IndexOf("<eco500>") == 0)
                             {
-                                CoinsTemp = int.Parse(CoinStr);
+                                long fromQQ = qq_get(replay.Replace("<eco500>", ""));
+                                string CoinStr = xml_get(2, fromQQ.ToString());
+                                int CoinsTemp;
+                                if (CoinStr != "")
+                                {
+                                    CoinsTemp = int.Parse(CoinStr);
+                                }
+                                else
+                                {
+                                    CoinsTemp = 0;
+                                }
+                                CoinsTemp += 500;
+                                SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco500>", "") + "存入500游戏币！");
+                                del(2, fromQQ.ToString());
+                                insert(2, fromQQ.ToString(), CoinsTemp.ToString());
                             }
-                            else
+                            else if (replay.IndexOf("<eco1000>") == 0)
                             {
-                                CoinsTemp = 0;
+                                long fromQQ = qq_get(replay.Replace("<eco1000>", ""));
+                                string CoinStr = xml_get(2, fromQQ.ToString());
+                                int CoinsTemp;
+                                if (CoinStr != "")
+                                {
+                                    CoinsTemp = int.Parse(CoinStr);
+                                }
+                                else
+                                {
+                                    CoinsTemp = 0;
+                                }
+                                CoinsTemp += 1000;
+                                SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco1000>", "") + "存入1000游戏币！");
+                                del(2, fromQQ.ToString());
+                                insert(2, fromQQ.ToString(), CoinsTemp.ToString());
                             }
-                            CoinsTemp += 100;
-                            SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco100>", "") + "存入100游戏币！");
-                            del(2, fromQQ.ToString());
-                            insert(2, fromQQ.ToString(), CoinsTemp.ToString());
-                        }
-                        else if (replay.IndexOf("<eco500>") == 0)
-                        {
-                            long fromQQ = qq_get(replay.Replace("<eco500>", ""));
-                            string CoinStr = xml_get(2, fromQQ.ToString());
-                            int CoinsTemp;
-                            if (CoinStr != "")
+                            else if (replay.IndexOf("<eco5000>") == 0)
                             {
-                                CoinsTemp = int.Parse(CoinStr);
+                                long fromQQ = qq_get(replay.Replace("<eco5000>", ""));
+                                string CoinStr = xml_get(2, fromQQ.ToString());
+                                int CoinsTemp;
+                                if (CoinStr != "")
+                                {
+                                    CoinsTemp = int.Parse(CoinStr);
+                                }
+                                else
+                                {
+                                    CoinsTemp = 0;
+                                }
+                                CoinsTemp += 5000;
+                                SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco5000>", "") + "存入5000游戏币！");
+                                del(2, fromQQ.ToString());
+                                insert(2, fromQQ.ToString(), CoinsTemp.ToString());
                             }
-                            else
+                            else if (replay.IndexOf("<eco10000>") == 0)
                             {
-                                CoinsTemp = 0;
+                                long fromQQ = qq_get(replay.Replace("<eco10000>", ""));
+                                string CoinStr = xml_get(2, fromQQ.ToString());
+                                int CoinsTemp;
+                                if (CoinStr != "")
+                                {
+                                    CoinsTemp = int.Parse(CoinStr);
+                                }
+                                else
+                                {
+                                    CoinsTemp = 0;
+                                }
+                                CoinsTemp += 10000;
+                                SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco10000>", "") + "存入10000游戏币！");
+                                del(2, fromQQ.ToString());
+                                insert(2, fromQQ.ToString(), CoinsTemp.ToString());
                             }
-                            CoinsTemp += 500;
-                            SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco500>", "") + "存入500游戏币！");
-                            del(2, fromQQ.ToString());
-                            insert(2, fromQQ.ToString(), CoinsTemp.ToString());
-                        }
-                        else if (replay.IndexOf("<eco1000>") == 0)
-                        {
-                            long fromQQ = qq_get(replay.Replace("<eco1000>", ""));
-                            string CoinStr = xml_get(2, fromQQ.ToString());
-                            int CoinsTemp;
-                            if (CoinStr != "")
+                            else if (replay.IndexOf("请打开sweetcreeper") == -1 &&
+                                     replay.IndexOf("<提示>tm bc ") == -1 &&
+                                     replay.IndexOf("<提示>eco give *") == -1 &&
+                                     replay.IndexOf("<提示>ban ") == -1 &&
+                                     replay.IndexOf("<提示>unban ") == -1 &&
+                                     replay.IndexOf("<提示>kick ") == -1)
                             {
-                                CoinsTemp = int.Parse(CoinStr);
+                                CQ.SendGroupMessage(241464054, replay);
+                                ReplayGroupStatic(241464054, replay);
                             }
-                            else
-                            {
-                                CoinsTemp = 0;
-                            }
-                            CoinsTemp += 1000;
-                            SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco1000>", "") + "存入1000游戏币！");
-                            del(2, fromQQ.ToString());
-                            insert(2, fromQQ.ToString(), CoinsTemp.ToString());
-                        }
-                        else if (replay.IndexOf("<eco5000>") == 0)
-                        {
-                            long fromQQ = qq_get(replay.Replace("<eco5000>", ""));
-                            string CoinStr = xml_get(2, fromQQ.ToString());
-                            int CoinsTemp;
-                            if (CoinStr != "")
-                            {
-                                CoinsTemp = int.Parse(CoinStr);
-                            }
-                            else
-                            {
-                                CoinsTemp = 0;
-                            }
-                            CoinsTemp += 5000;
-                            SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco5000>", "") + "存入5000游戏币！");
-                            del(2, fromQQ.ToString());
-                            insert(2, fromQQ.ToString(), CoinsTemp.ToString());
-                        }
-                        else if (replay.IndexOf("<eco10000>") == 0)
-                        {
-                            long fromQQ = qq_get(replay.Replace("<eco10000>", ""));
-                            string CoinStr = xml_get(2, fromQQ.ToString());
-                            int CoinsTemp;
-                            if (CoinStr != "")
-                            {
-                                CoinsTemp = int.Parse(CoinStr);
-                            }
-                            else
-                            {
-                                CoinsTemp = 0;
-                            }
-                            CoinsTemp += 10000;
-                            SendMinecraftMessage(241464054, CQ.CQCode_At(fromQQ) + "已为玩家" + replay.Replace("<eco10000>", "") + "存入10000游戏币！");
-                            del(2, fromQQ.ToString());
-                            insert(2, fromQQ.ToString(), CoinsTemp.ToString());
-                        }
-                        else if (replay.IndexOf("请打开sweetcreeper") == -1 && 
-                                 replay.IndexOf("<提示>tm bc ") == -1 &&
-                                 replay.IndexOf("<提示>eco give *") == -1 &&
-                                 replay.IndexOf("<提示>ban ") == -1 &&
-                                 replay.IndexOf("<提示>unban ") == -1 &&
-                                 replay.IndexOf("<提示>kick ") == -1)
-                        {
-                            CQ.SendGroupMessage(241464054, replay);
-                            ReplayGroupStatic(241464054, replay);
                         }
                     }
+                    clientSocket.Send(Encoding.UTF8.GetBytes("ok233"));
+                    mcmsg = mcmsg.Replace("\r\n", "|||||<");
+                    mcmsg = mcmsg.Replace("[CQ:image,file=", "[图片：");
+                    mcmsg = mcmsg.Replace("[CQ:at,qq=", "[@");
+                    mcmsg = mcmsg.Replace("[CQ:record,file=", "[语音：");
+
+                    clientSocket.Send(Encoding.UTF8.GetBytes(mcmsg));
+                    mcmsg = "";
+
+                    myClientSocket.Shutdown(SocketShutdown.Both);
+                    myClientSocket.Close();
                 }
-                clientSocket.Send(Encoding.UTF8.GetBytes("ok233"));
-                mcmsg = mcmsg.Replace("\r\n", "|||||<");
-                mcmsg = mcmsg.Replace("[CQ:image,file=", "[图片：");
-                mcmsg = mcmsg.Replace("[CQ:at,qq=", "[@");
-                mcmsg = mcmsg.Replace("[CQ:record,file=", "[语音：");
 
-                clientSocket.Send(Encoding.UTF8.GetBytes(mcmsg));
-                mcmsg = "";
-
-                myClientSocket.Shutdown(SocketShutdown.Both);
-                myClientSocket.Close();
+                catch (Exception e)
+                {
+                    insert(233, "error" + DateTime.Now, e.ToString());//记录错误
+                }
             }//与minecraft消息进行通讯
         }
 
