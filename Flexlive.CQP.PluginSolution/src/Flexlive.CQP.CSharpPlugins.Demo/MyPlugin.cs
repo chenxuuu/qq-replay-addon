@@ -3563,6 +3563,10 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
                 {
                     SendMinecraftMessage(fromGroup, execCMD(msg.Replace("cmd ", "")));
                 }
+                else if(GetRandomNumber(0,100) < 5)
+                {
+                    SendMinecraftMessage(fromGroup, msg);
+                }
                 else if (replay_ok != "")
                 {
                     if (replay_common != "")
@@ -3585,6 +3589,12 @@ namespace Flexlive.CQP.CSharpPlugins.Demo
             {
                 insert(233, "error" + DateTime.Now, e.ToString());//记录错误
             }
+        }
+
+        public static int GetRandomNumber(int min, int max)
+        {
+            Random ran = new Random(System.DateTime.Now.Millisecond);
+            return ran.Next(min, max);
         }
 
         public static MatchCollection Reg_solve(string str, string regstr)
